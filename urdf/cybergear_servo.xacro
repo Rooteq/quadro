@@ -13,7 +13,7 @@ Copyright (c) 2024 Naoki Takahashi
     <link name="${name}_cybergear_link">
       <visual>
         <geometry>
-          <mesh filename="package://cybergear_servo_description/meshes/cybergear_body.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="package://quadro/meshes/cybergear_body.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </visual>
       <collision>
@@ -40,7 +40,7 @@ Copyright (c) 2024 Naoki Takahashi
       <visual>
         <origin rpy="0 0 0" xyz="0 0 -0.028"/>
         <geometry>
-          <mesh filename="package://cybergear_servo_description/meshes/cybergear_table.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="package://quadro/meshes/cybergear_table.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </visual>
       <collision>
@@ -58,7 +58,7 @@ Copyright (c) 2024 Naoki Takahashi
     </link>
 
 
-    <ros2_control name="CybergearMotorWheelJoint" type="actuator">
+    <ros2_control name="CybergearActuators" type="actuator">
     <hardware>
       <plugin>quadro/CybergearActuator</plugin>
       <param name="can_interface">can0</param>

@@ -78,7 +78,7 @@ def generate_launch_description():
             )
     )
 
-    delayed_controller_manager= TimerAction(period=3.0, actions=[controller_manager])
+    delayed_controller_manager= TimerAction(period=2.0, actions=[controller_manager])
 
 
     return LaunchDescription([
@@ -87,9 +87,9 @@ def generate_launch_description():
         # model_file_arg,
         # use_rviz_arg,
         # Nodes
-        # delayed_controller_manager,
-        # delayed_broad_spawner,
-        # delayed_joint_traj_spawner,
+        delayed_controller_manager,
+        delayed_broad_spawner,
+        delayed_joint_traj_spawner,
         robot_state_publisher_node,
         rviz_node
     ])

@@ -4,7 +4,7 @@ MIT License
 Copyright (c) 2024 Naoki Takahashi
 -->
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="cybergear_servo">
-  <xacro:include filename="$(find cybergear_servo_description)/urdf/cybergear_servo.xacro"/>
+  <xacro:include filename="$(find quadro)/urdf/cybergear_servo.xacro"/>
   <link name="base_link">
   </link>
   <xacro:cybergear_servo name="demo" parent="base_link">

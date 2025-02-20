@@ -23,7 +23,7 @@
 
 #include "cybergear_driver_core/cybergear_driver_core.hpp"
 
-namespace roboto
+namespace quadro
 {
 using hardware_interface::ActuatorInterface;
 using hardware_interface::CallbackReturn;
@@ -54,7 +54,8 @@ public:
   return_type read(const rclcpp::Time&, const rclcpp::Duration&) override;
   return_type write(const rclcpp::Time&, const rclcpp::Duration&) override;
 private:
-
+  double simPos;
+private:
   // Create a class responsible for can bus?
 
   std::unique_ptr<cybergear_driver_core::CybergearPacket> packet_;
@@ -78,6 +79,37 @@ private:
   std::atomic_bool is_active_;
   can_msgs::msg::Frame last_received_frame_;
   std::mutex last_frame_mutex_;
+
+
+  double timeout_sec_;
+  double interval_sec_;
+  int device_id_;
+  int primary_id_;
+  
+  // Joint limits
+  double max_position_;
+  double min_position_;
+  double max_velocity_;
+  double min_velocity_;
+  double max_effort_;
+  double min_effort_;
+  
+  // Controller gains
+  double max_gain_kp_;
+  double min_gain_kp_;
+  double max_gain_kd_;
+  double min_gain_kd_;
+  
+  // Current limits
+  double max_current_;
+  double min_current_;
+  double temperature_scale_;
+
+  // State and command variables
+  double position_state_;
+  double velocity_state_;
+  double effort_state_;
+  double position_command_;
 };
 
 }
