@@ -29,6 +29,7 @@ add_library(
   ${PROJECT_NAME}
   SHARED
   hardware/hw_actuators.cpp
+  hardware/cybergear_driver.cpp
 )
 
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)

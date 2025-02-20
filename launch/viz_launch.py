@@ -49,19 +49,25 @@ def generate_launch_description():
         package="controller_manager",
         executable="ros2_control_node",
         parameters=[{'robot_description' : robot_description},
-                    robot_controllers]
+                    robot_controllers],
+        emulate_tty=True,
+        output="screen"
     )
 
     joint_traj_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["joint_trajectory_controller"]
+        arguments=["joint_trajectory_controller"],
+        emulate_tty=True,
+        output="screen"
     )
 
     joint_broad_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["joint_state_broadcaster"]
+        arguments=["joint_state_broadcaster"],
+        emulate_tty=True,
+        output="screen"
     )
 
     delayed_joint_traj_spawner = RegisterEventHandler(

@@ -17,11 +17,11 @@
 #include "rclcpp/macros.hpp"
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
 
-#include "ros2_socketcan/socket_can_sender.hpp"
-#include "ros2_socketcan/socket_can_receiver.hpp"
-#include "can_msgs/msg/frame.hpp"
+#include "cybergear_driver.hpp"
 
-#include "cybergear_driver_core/cybergear_driver_core.hpp"
+
+// #include "cybergear_driver_core/cybergear_driver_core.hpp"
+using namespace std::chrono_literals;
 
 namespace quadro
 {
@@ -56,60 +56,125 @@ public:
 private:
   double simPos;
 private:
-  // Create a class responsible for can bus?
-
-  std::unique_ptr<cybergear_driver_core::CybergearPacket> packet_;
-
-  double joint_command_;
-  double last_joint_command_;
-  can_msgs::msg::Frame joint_command_template_;
-  std::vector<double> joint_states_;
-
-  std::string can_filters_;
-  std::string can_interface_;
-
-  std::chrono::nanoseconds timeout_ns_;
-  std::unique_ptr<drivers::socketcan::SocketCanSender> sender_;
 
   bool use_bus_time_;
-  std::chrono::nanoseconds interval_ns_;
-  std::unique_ptr<drivers::socketcan::SocketCanReceiver> receiver_;
-  std::thread receiver_thread_;
 
-  std::atomic_bool is_active_;
-  can_msgs::msg::Frame last_received_frame_;
-  std::mutex last_frame_mutex_;
+  MotorParams params;
+
+    CallbackReturn enableTorque()
+    {
+      auto msg = std::make_unique<can_msgs::msg::Frame>();
+      setDefaultCanFrame(msg);
+      msg->id = packet_->frameId().getEnableTorqueId();
+      RCLCPP_INFO(get_logger(), "Enable torque ID: 0x%x", msg->id);  // Add this debug line
+      try{
+        sender_->send(msg->data.data(),msg->dlc, drivers::socketcan::CanId(msg->id, 0, drivers::socketcan::FrameType::DATA, drivers::socketcan::ExtendedFrame));
+      } catch (const std::exception& ex)
+      {
+        RCLCPP_WARN(get_logger(), "Failed to send enable torque message!");
+        return CallbackReturn::FAILURE;
+
+      }
+      return CallbackReturn::SUCCESS;
+    }
+
+    CallbackReturn disableTorque()
+    {
+      auto msg = std::make_unique<can_msgs::msg::Frame>();
+      setDefaultCanFrame(msg);
+      msg->id = packet_->frameId().getResetTorqueId();
+      try{
+        sender_->send(msg->data.data(),msg->dlc, drivers::socketcan::CanId(msg->id, 0, drivers::socketcan::FrameType::DATA, drivers::socketcan::ExtendedFrame));
+      } catch (const std::exception& ex)
+      {
+        RCLCPP_WARN(get_logger(), "Failed to send disable torque message!");
+        return CallbackReturn::FAILURE;
+
+      }
+      return CallbackReturn::SUCCESS;
+    }
 
 
-  double timeout_sec_;
-  double interval_sec_;
-  int device_id_;
-  int primary_id_;
-  
-  // Joint limits
-  double max_position_;
-  double min_position_;
-  double max_velocity_;
-  double min_velocity_;
-  double max_effort_;
-  double min_effort_;
-  
-  // Controller gains
-  double max_gain_kp_;
-  double min_gain_kp_;
-  double max_gain_kd_;
-  double min_gain_kd_;
-  
-  // Current limits
-  double max_current_;
-  double min_current_;
-  double temperature_scale_;
+    void receive() {
+        using drivers::socketcan::FrameType;
 
-  // State and command variables
-  double position_state_;
-  double velocity_state_;
-  double effort_state_;
-  double position_command_;
+        drivers::socketcan::CanId receive_id{};
+
+        can_msgs::msg::Frame frame(rosidl_runtime_cpp::MessageInitialization::ZERO);
+        frame.header.frame_id = info_.joints[0].name;
+
+        while (rclcpp::ok()) {
+            if (!is_active_) {
+            std::this_thread::sleep_for(100ms);
+            continue;
+            }
+
+            try {
+            receive_id = receiver_->receive(frame.data.data(), interval_ns_);
+            } catch (const std::exception& ex) {
+            RCLCPP_WARN_THROTTLE(get_logger(), *get_clock(), 1000,
+                                "Error receiving CAN message: %s - %s",
+                                params.can_interface_.c_str(), ex.what());
+            continue;
+            }
+
+            if (params.use_bus_time_) {
+            frame.header.stamp =
+                rclcpp::Time(static_cast<int64_t>(receive_id.get_bus_time() * 1000U));
+            } else {
+            frame.header.stamp = get_clock()->now();
+            }
+
+            frame.id = receive_id.identifier();
+            frame.is_rtr = (receive_id.frame_type() == FrameType::REMOTE);
+            frame.is_extended = receive_id.is_extended();
+            frame.is_error = (receive_id.frame_type() == FrameType::ERROR);
+            frame.dlc = receive_id.length();
+
+            RCLCPP_INFO(get_logger(), "RECEIVED CAN FRAME");
+
+            {
+            std::lock_guard<std::mutex> guard(last_frame_mutex_);
+            last_received_frame_ = frame;
+            }
+        }
+    }
+    
+    void setDefaultCanFrame(can_msgs::msg::Frame::UniquePtr & msg)
+    {
+      constexpr uint8_t kDlc = 8;
+      // TODO(Naoki Takahashi) params_->wait_power_on
+      if (!msg) {
+        return;
+      }
+      msg->header.stamp = this->get_clock()->now();
+      msg->header.frame_id = "cybergear";
+      msg->is_rtr = false;
+      msg->is_extended = true;
+      msg->is_error = false;
+      msg->dlc = kDlc;
+    }
+
+    std::unique_ptr<cybergear_driver_core::CybergearPacket> packet_;
+
+    std::unique_ptr<drivers::socketcan::SocketCanSender> sender_;
+    std::unique_ptr<drivers::socketcan::SocketCanReceiver> receiver_;
+
+    can_msgs::msg::Frame last_joint_command_frame_;
+    can_msgs::msg::Frame last_received_frame_;
+
+    std::string can_filters_;
+    std::thread receiver_thread_;
+
+    std::chrono::nanoseconds timeout_ns_;
+    std::chrono::nanoseconds interval_ns_;
+
+    double position_state;
+    double velocity_state;
+    double position_cmd;
+
+    std::atomic_bool is_active_;
+    std::mutex last_frame_mutex_;
 };
 
 }
