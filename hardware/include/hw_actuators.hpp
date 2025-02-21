@@ -63,6 +63,22 @@ private:
 
     CallbackReturn enableTorque()
     {
+      // change mode to position
+      auto msg_mode = std::make_unique<can_msgs::msg::Frame>();
+      setDefaultCanFrame(msg_mode);
+      const auto can_frame = packet_->createChangeToPositionModeCommand();
+      std::copy(can_frame.data.cbegin(), can_frame.data.cend(), msg_mode->data.begin());
+      msg_mode->id = can_frame.id;
+      RCLCPP_INFO(get_logger(), "Change mode ID: 0x%x", msg_mode->id);  // Add this debug line
+      try{
+        sender_->send(msg_mode->data.data(),msg_mode->dlc, drivers::socketcan::CanId(msg_mode->id, 0, drivers::socketcan::FrameType::DATA, drivers::socketcan::ExtendedFrame));
+      } catch (const std::exception& ex)
+      {
+        RCLCPP_WARN(get_logger(), "Failed to send change mode message!");
+        return CallbackReturn::FAILURE;
+      }
+
+      // enable torque
       auto msg = std::make_unique<can_msgs::msg::Frame>();
       setDefaultCanFrame(msg);
       msg->id = packet_->frameId().getEnableTorqueId();
@@ -115,6 +131,7 @@ private:
             RCLCPP_WARN_THROTTLE(get_logger(), *get_clock(), 1000,
                                 "Error receiving CAN message: %s - %s",
                                 params.can_interface_.c_str(), ex.what());
+            // RCLCPP_INFO(get_logger(), "LAST MESSAGE ID: %x", last_received_frame_.id);
             continue;
             }
 
@@ -131,7 +148,7 @@ private:
             frame.is_error = (receive_id.frame_type() == FrameType::ERROR);
             frame.dlc = receive_id.length();
 
-            RCLCPP_INFO(get_logger(), "RECEIVED CAN FRAME");
+            // RCLCPP_INFO(get_logger(), "RECEIVED CAN FRAME");
 
             {
             std::lock_guard<std::mutex> guard(last_frame_mutex_);
@@ -153,6 +170,23 @@ private:
       msg->is_extended = true;
       msg->is_error = false;
       msg->dlc = kDlc;
+    }
+
+    return_type sendParamRequestMessage(const can_msgs::msg::Frame& msg) {
+      using drivers::socketcan::CanId;
+      using drivers::socketcan::FrameType;
+      using drivers::socketcan::ExtendedFrame;
+
+      try {
+        sender_->send(msg.data.data(), msg.dlc, CanId(msg.id, 0, FrameType::DATA, ExtendedFrame), timeout_ns_);
+      } catch (const std::exception& ex) {
+        RCLCPP_WARN_THROTTLE(get_logger(), *get_clock(), 1000,
+                            "Error sending CAN message: %s - %s",
+                            params.can_interface_.c_str(), ex.what());
+        return return_type::ERROR;
+      }
+
+      return return_type::OK;
     }
 
     std::unique_ptr<cybergear_driver_core::CybergearPacket> packet_;

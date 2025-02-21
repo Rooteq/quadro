@@ -136,9 +136,10 @@ namespace quadro
     {
       receiver_ = std::make_unique<drivers::socketcan::SocketCanReceiver>(
           params.can_interface_, false);
-      // apply CAN filters
+
+      // "00007F00:0000FF00" to accept only incoming messages 
       receiver_->SetCanFilters(
-          drivers::socketcan::SocketCanReceiver::CanFilterList("0:0"));
+          drivers::socketcan::SocketCanReceiver::CanFilterList("00007F00:0000FF00"));
       RCLCPP_DEBUG(get_logger(), "applied filters: %s", can_filters_.c_str());
     }
     catch (const std::exception &ex)
@@ -222,6 +223,18 @@ namespace quadro
 
     //   // RCLCPP_INFO(get_logger(), "READ: %s", name.c_str());
     // }
+    
+    auto msg = std::make_unique<can_msgs::msg::Frame>();
+    setDefaultCanFrame(msg);
+    msg->id = packet_->frameId().getFeedbackId();
+
+    if(sendParamRequestMessage(*msg) != hardware_interface::return_type::OK)
+    {
+      RCLCPP_WARN(get_logger(), "FAILED TO SEND READ FRAME");
+    }
+
+    position_state = -(packet_->parsePosition(last_received_frame_.data));
+    velocity_state = -(packet_->parseVelocity(last_received_frame_.data));
 
     return hardware_interface::return_type::OK;
   }
@@ -229,7 +242,7 @@ namespace quadro
   hardware_interface::return_type CybergearActuator::write(
       const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
   {
-    position_state += 0.01;
+    // position_state += 0.01;
     // for(const auto& [name, descr] : joint_state_interfaces_)
     // {
     //   // RCLCPP_INFO(get_logger(), "READ: %s", name.c_str());
