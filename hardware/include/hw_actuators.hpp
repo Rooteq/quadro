@@ -64,49 +64,44 @@ private:
     CallbackReturn enableTorque()
     {
       // change mode to position
-      auto msg_mode = std::make_unique<can_msgs::msg::Frame>();
+			can_msgs::msg::Frame msg_mode;
       setDefaultCanFrame(msg_mode);
       const auto can_frame = packet_->createChangeToPositionModeCommand();
-      std::copy(can_frame.data.cbegin(), can_frame.data.cend(), msg_mode->data.begin());
-      msg_mode->id = can_frame.id;
-      RCLCPP_INFO(get_logger(), "Change mode ID: 0x%x", msg_mode->id);  // Add this debug line
-      try{
-        sender_->send(msg_mode->data.data(),msg_mode->dlc, drivers::socketcan::CanId(msg_mode->id, 0, drivers::socketcan::FrameType::DATA, drivers::socketcan::ExtendedFrame));
-      } catch (const std::exception& ex)
-      {
+      std::copy(can_frame.data.cbegin(), can_frame.data.cend(), msg_mode.data.begin());
+      msg_mode.id = can_frame.id;
+
+			if(sendFrame(msg_mode) != return_type::OK)
+			{
         RCLCPP_WARN(get_logger(), "Failed to send change mode message!");
         return CallbackReturn::FAILURE;
-      }
+			}
 
       // enable torque
-      auto msg = std::make_unique<can_msgs::msg::Frame>();
+			can_msgs::msg::Frame msg;
       setDefaultCanFrame(msg);
-      msg->id = packet_->frameId().getEnableTorqueId();
-      RCLCPP_INFO(get_logger(), "Enable torque ID: 0x%x", msg->id);  // Add this debug line
-      try{
-        sender_->send(msg->data.data(),msg->dlc, drivers::socketcan::CanId(msg->id, 0, drivers::socketcan::FrameType::DATA, drivers::socketcan::ExtendedFrame));
-      } catch (const std::exception& ex)
-      {
-        RCLCPP_WARN(get_logger(), "Failed to send enable torque message!");
-        return CallbackReturn::FAILURE;
+      msg.id = packet_->frameId().getEnableTorqueId();
 
-      }
+			if(sendFrame(msg) != return_type::OK)
+			{
+				RCLCPP_WARN(get_logger(), "Failed to send enable torque message!");
+        return CallbackReturn::FAILURE;
+			}
+
       return CallbackReturn::SUCCESS;
     }
 
     CallbackReturn disableTorque()
     {
-      auto msg = std::make_unique<can_msgs::msg::Frame>();
+			can_msgs::msg::Frame msg;
       setDefaultCanFrame(msg);
-      msg->id = packet_->frameId().getResetTorqueId();
-      try{
-        sender_->send(msg->data.data(),msg->dlc, drivers::socketcan::CanId(msg->id, 0, drivers::socketcan::FrameType::DATA, drivers::socketcan::ExtendedFrame));
-      } catch (const std::exception& ex)
-      {
-        RCLCPP_WARN(get_logger(), "Failed to send disable torque message!");
-        return CallbackReturn::FAILURE;
+      msg.id = packet_->frameId().getResetTorqueId();
 
-      }
+			if(sendFrame(msg) != return_type::OK)
+			{
+				RCLCPP_WARN(get_logger(), "Failed to disable torque!");
+        return CallbackReturn::FAILURE;
+			}
+
       return CallbackReturn::SUCCESS;
     }
 
@@ -156,23 +151,20 @@ private:
             }
         }
     }
-    
-    void setDefaultCanFrame(can_msgs::msg::Frame::UniquePtr & msg)
+
+    void setDefaultCanFrame(can_msgs::msg::Frame & msg, const std::string& frame = "cybergear")
     {
       constexpr uint8_t kDlc = 8;
-      // TODO(Naoki Takahashi) params_->wait_power_on
-      if (!msg) {
-        return;
-      }
-      msg->header.stamp = this->get_clock()->now();
-      msg->header.frame_id = "cybergear";
-      msg->is_rtr = false;
-      msg->is_extended = true;
-      msg->is_error = false;
-      msg->dlc = kDlc;
+
+      msg.header.stamp = this->get_clock()->now();
+      msg.header.frame_id = frame;
+      msg.is_rtr = false;
+      msg.is_extended = true;
+      msg.is_error = false;
+      msg.dlc = kDlc;
     }
 
-    return_type sendParamRequestMessage(const can_msgs::msg::Frame& msg) {
+    return_type sendFrame(const can_msgs::msg::Frame& msg) {
       using drivers::socketcan::CanId;
       using drivers::socketcan::FrameType;
       using drivers::socketcan::ExtendedFrame;

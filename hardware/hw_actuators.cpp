@@ -22,8 +22,6 @@ namespace quadro
       return CallbackReturn::ERROR;
     }
 
-    simPos = 0;
-
     // Initialize parameters from URDF
     params.can_interface_ = info_.hardware_parameters["can_interface"];
     params.timeout_sec_ = std::stod(info_.hardware_parameters["timeout_sec"]);
@@ -42,8 +40,8 @@ namespace quadro
 
     // Create multiple packets!!!
     cybergear_driver_core::CybergearPacketParam packet_param;
-    packet_param.device_id = static_cast<int>(127);
-    packet_param.primary_id = static_cast<int>(0);
+    packet_param.device_id = static_cast<int>(params.device_id_);
+    packet_param.primary_id = static_cast<int>(params.primary_id_);
     packet_param.max_position = static_cast<float>(12.56637061);
     packet_param.min_position = static_cast<float>(-12.56637061);
     packet_param.max_velocity = static_cast<float>(30.0);
@@ -226,15 +224,16 @@ namespace quadro
     //   // RCLCPP_INFO(get_logger(), "READ: %s", name.c_str());
     // }
     
-    auto msg = std::make_unique<can_msgs::msg::Frame>();
+    can_msgs::msg::Frame msg;
     setDefaultCanFrame(msg);
-    msg->id = packet_->frameId().getFeedbackId();
+    msg.id = packet_->frameId().getFeedbackId();
 
-    if(sendParamRequestMessage(*msg) != hardware_interface::return_type::OK)
+    if(sendFrame(msg) != hardware_interface::return_type::OK)
     {
       RCLCPP_WARN(get_logger(), "FAILED TO SEND READ FRAME");
     }
 
+    // PARSE AT RECEIVE???
     position_state = -(packet_->parsePosition(last_received_frame_.data));
     velocity_state = -(packet_->parseVelocity(last_received_frame_.data));
 
@@ -244,21 +243,15 @@ namespace quadro
   hardware_interface::return_type CybergearActuator::write(
       const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
   {
-    // position_state += 0.01;
-    // for(const auto& [name, descr] : joint_state_interfaces_)
-    // {
-    //   // RCLCPP_INFO(get_logger(), "READ: %s", name.c_str());
-    // }
-    // Add write logic here
     if(std::isnan(position_cmd)) {return hardware_interface::return_type::OK;}
     if(position_cmd == last_command_) {return hardware_interface::return_type::OK;}
 
-    auto msg = std::make_unique<can_msgs::msg::Frame>();
+    can_msgs::msg::Frame msg;
     setDefaultCanFrame(msg);
     const auto can_frame = packet_->createPositionCommand(-position_cmd);
-    std::copy(can_frame.data.cbegin(), can_frame.data.cend(), msg->data.begin());
-    msg->id = can_frame.id;
-    return sendParamRequestMessage(*msg);
+    std::copy(can_frame.data.cbegin(), can_frame.data.cend(), msg.data.begin());
+    msg.id = can_frame.id;
+    return sendFrame(msg);
   }
 
 }
