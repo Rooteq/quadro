@@ -20,6 +20,13 @@ foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
   find_package(${Dependency} REQUIRED)
 endforeach()
 
+#--------------------CUSTOM NODE--------------------------#
+add_executable(trajectory_publisher src/simple_trajectory_publisher.cpp)
+ament_target_dependencies(trajectory_publisher
+  rclcpp
+  trajectory_msgs
+)
+
 
 # uncomment the following section in order to fill in
 # further dependencies manually.
@@ -63,6 +70,10 @@ install(TARGETS ${PROJECT_NAME}
   RUNTIME DESTINATION bin
 )
 
+#--------------------CUSTOM NODE--------------------------#
+install(TARGETS
+  trajectory_publisher
+  DESTINATION lib/${PROJECT_NAME})
 
 install(
   DIRECTORY

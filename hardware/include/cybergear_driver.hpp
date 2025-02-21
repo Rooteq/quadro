@@ -103,6 +103,7 @@ private:
     std::string can_filters_;
     std::thread receiver_thread_;
 
+
 };
 
 }

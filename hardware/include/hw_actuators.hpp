@@ -209,6 +209,8 @@ private:
 
     std::atomic_bool is_active_;
     std::mutex last_frame_mutex_;
+
+    double last_command_;
 };
 
 }

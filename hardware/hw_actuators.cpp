@@ -114,7 +114,9 @@ namespace quadro
 
     position_state = 0;
     velocity_state = 0;
-    position_cmd = 0;
+    position_cmd = std::numeric_limits<double>::quiet_NaN();
+
+    last_command_ = std::numeric_limits<double>::quiet_NaN();
 
     timeout_ns_ = std::chrono::duration_cast<std::chrono::nanoseconds>(
         std::chrono::duration<double>(params.timeout_sec_));
@@ -248,7 +250,15 @@ namespace quadro
     //   // RCLCPP_INFO(get_logger(), "READ: %s", name.c_str());
     // }
     // Add write logic here
-    return hardware_interface::return_type::OK;
+    if(std::isnan(position_cmd)) {return hardware_interface::return_type::OK;}
+    if(position_cmd == last_command_) {return hardware_interface::return_type::OK;}
+
+    auto msg = std::make_unique<can_msgs::msg::Frame>();
+    setDefaultCanFrame(msg);
+    const auto can_frame = packet_->createPositionCommand(-position_cmd);
+    std::copy(can_frame.data.cbegin(), can_frame.data.cend(), msg->data.begin());
+    msg->id = can_frame.id;
+    return sendParamRequestMessage(*msg);
   }
 
 }
