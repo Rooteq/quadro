@@ -37,25 +37,7 @@ namespace quadro
     params.min_velocity_ = std::stod(info_.hardware_parameters["min_velocity"]);
     params.max_effort_ = std::stod(info_.hardware_parameters["max_effort"]);
     params.min_effort_ = std::stod(info_.hardware_parameters["min_effort"]);
-
-    // Create multiple packets!!!
-    cybergear_driver_core::CybergearPacketParam packet_param;
-    packet_param.device_id = static_cast<int>(params.device_id_);
-    packet_param.primary_id = static_cast<int>(params.primary_id_);
-    packet_param.max_position = static_cast<float>(12.56637061);
-    packet_param.min_position = static_cast<float>(-12.56637061);
-    packet_param.max_velocity = static_cast<float>(30.0);
-    packet_param.min_velocity = static_cast<float>(-30.0);
-    packet_param.max_effort = static_cast<float>(12.0);
-    packet_param.min_effort = static_cast<float>(-12.0);
-    packet_param.max_gain_kp = static_cast<float>(500.0);
-    packet_param.min_gain_kp = static_cast<float>(0);
-    packet_param.max_gain_kd = static_cast<float>(5.0);
-    packet_param.min_gain_kd = static_cast<float>(0.0);
-    packet_param.temperature_scale = static_cast<float>(0.1);
-    packet_ = std::make_unique<cybergear_driver_core::CybergearPacket>(packet_param);
-
-
+    unsigned int device_id = 127;
     // Initialize state and command variables
     for (const hardware_interface::ComponentInfo &joint : info_.joints)
     {
@@ -101,21 +83,27 @@ namespace quadro
             joint.state_interfaces[1].name.c_str(), hardware_interface::HW_IF_VELOCITY);
         return hardware_interface::CallbackReturn::ERROR;
       }
+
+      actuators[joint.name] = std::make_unique<Actuator>(joint.name, device_id, params.primary_id_);
+      device_id_to_actuator_name_[device_id] = joint.name;
+      device_id--;
+
       RCLCPP_INFO(get_logger(), "Loaded joint with name: %s", joint.name.c_str());
     }
+
+
+    for(const auto& [name,actuator] : actuators)
+    {
+
+      RCLCPP_INFO(get_logger(), "JOINT: %s", name.c_str());
+    }
+
 
     return CallbackReturn::SUCCESS;
   }
 
   CallbackReturn CybergearActuator::on_configure(const rclcpp_lifecycle::State & /*previous_state*/)
   {
-
-    position_state = 0;
-    velocity_state = 0;
-    position_cmd = std::numeric_limits<double>::quiet_NaN();
-
-    last_command_ = std::numeric_limits<double>::quiet_NaN();
-
     timeout_ns_ = std::chrono::duration_cast<std::chrono::nanoseconds>(
         std::chrono::duration<double>(params.timeout_sec_));
     interval_ns_ = std::chrono::duration_cast<std::chrono::nanoseconds>(
@@ -164,15 +152,55 @@ namespace quadro
 
   CallbackReturn CybergearActuator::on_activate(const rclcpp_lifecycle::State & /*previous_state*/)
   {
+
+    for(const auto& [name,actuator] : actuators)
+    {
+      // change mode to position
+			can_msgs::msg::Frame msg_mode;
+      setDefaultCanFrame(msg_mode);
+      const auto can_frame = actuator->packet_->createChangeToPositionModeCommand();
+      std::copy(can_frame.data.cbegin(), can_frame.data.cend(), msg_mode.data.begin());
+      msg_mode.id = can_frame.id;
+
+			if(sendFrame(msg_mode) != return_type::OK)
+			{
+        RCLCPP_WARN(get_logger(), "Failed to send change mode message!");
+        return CallbackReturn::FAILURE;
+			}
+
+      // enable torque
+			can_msgs::msg::Frame msg;
+      setDefaultCanFrame(msg);
+      msg.id = actuator->packet_->frameId().getEnableTorqueId();
+
+			if(sendFrame(msg) != return_type::OK)
+			{
+				RCLCPP_WARN(get_logger(), "Failed to send enable torque message!");
+        return CallbackReturn::FAILURE;
+			}
+    }
+
     is_active_ = true;
     // Add activation logic here
-    return enableTorque();
+    return CallbackReturn::SUCCESS;
   }
 
   CallbackReturn CybergearActuator::on_deactivate(const rclcpp_lifecycle::State & /*previous_state*/)
   {
-    // Add deactivation logic here
-    return disableTorque();
+    for(const auto& [name,actuator] : actuators)
+    {
+      can_msgs::msg::Frame msg;
+      setDefaultCanFrame(msg);
+      msg.id = actuator->packet_->frameId().getResetTorqueId();
+
+      if(sendFrame(msg) != return_type::OK)
+      {
+        RCLCPP_WARN(get_logger(), "Failed to disable torque!");
+        return CallbackReturn::FAILURE;
+      }
+    }
+
+    return CallbackReturn::SUCCESS;
   }
 
   CallbackReturn CybergearActuator::on_shutdown(const rclcpp_lifecycle::State & /*previous_state*/)
@@ -191,11 +219,14 @@ namespace quadro
   {
     std::vector<hardware_interface::StateInterface> state_interfaces;
 
-    state_interfaces.emplace_back(hardware_interface::StateInterface(
-        info_.joints[0].name, hardware_interface::HW_IF_POSITION, &position_state));
-    state_interfaces.emplace_back(hardware_interface::StateInterface(
-        info_.joints[0].name, hardware_interface::HW_IF_VELOCITY, &velocity_state));
+    for(const auto& state : info_.joints)
+    {
+      state_interfaces.emplace_back(hardware_interface::StateInterface(
+        state.name, hardware_interface::HW_IF_POSITION, &(actuators[state.name]->state_pos_)));
 
+      state_interfaces.emplace_back(hardware_interface::StateInterface(
+        state.name, hardware_interface::HW_IF_VELOCITY, &(actuators[state.name]->state_vel_)));
+    }
     return state_interfaces;
   }
 
@@ -203,39 +234,33 @@ namespace quadro
   {
     std::vector<hardware_interface::CommandInterface> command_interfaces;
 
-    command_interfaces.emplace_back(hardware_interface::CommandInterface(
-        info_.joints[0].name, hardware_interface::HW_IF_POSITION, &position_cmd));
-
+    for(const auto& command : info_.joints)
+    {
+      command_interfaces.emplace_back(hardware_interface::CommandInterface(
+        command.name, hardware_interface::HW_IF_POSITION, &(actuators[command.name]->cmd_vel_)));
+    }
     return command_interfaces;
   }
 
   hardware_interface::return_type CybergearActuator::read(
       const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
   {
-    // std::stringstream ss;
-    // ss << "Reading states: ";
-    // for(const auto& [name, descr] : joint_state_interfaces_)
-    // {
 
-    //   // set_state(name, new_value);
-    //   ss << std::fixed << std::setprecision(2) << std::endl
-    //      << "\t" << get_state(name) << " for joint '" << name << ", interface_name: '" << descr.get_interface_name().c_str();
 
-    //   // RCLCPP_INFO(get_logger(), "READ: %s", name.c_str());
-    // }
-    
-    can_msgs::msg::Frame msg;
-    setDefaultCanFrame(msg);
-    msg.id = packet_->frameId().getFeedbackId();
-
-    if(sendFrame(msg) != hardware_interface::return_type::OK)
+    for(const auto& [name,actuator] : actuators)
     {
-      RCLCPP_WARN(get_logger(), "FAILED TO SEND READ FRAME");
-    }
+      can_msgs::msg::Frame msg;
+      setDefaultCanFrame(msg);
 
-    // PARSE AT RECEIVE???
-    position_state = -(packet_->parsePosition(last_received_frame_.data));
-    velocity_state = -(packet_->parseVelocity(last_received_frame_.data));
+      msg.id = actuator->packet_->frameId().getFeedbackId();
+
+      if(sendFrame(msg) != hardware_interface::return_type::OK)
+      {
+        RCLCPP_WARN(get_logger(), "FAILED TO SEND READ FRAME");
+      }
+
+    }
+    
 
     return hardware_interface::return_type::OK;
   }
@@ -243,15 +268,27 @@ namespace quadro
   hardware_interface::return_type CybergearActuator::write(
       const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
   {
-    if(std::isnan(position_cmd)) {return hardware_interface::return_type::OK;}
-    if(position_cmd == last_command_) {return hardware_interface::return_type::OK;}
 
-    can_msgs::msg::Frame msg;
-    setDefaultCanFrame(msg);
-    const auto can_frame = packet_->createPositionCommand(-position_cmd);
-    std::copy(can_frame.data.cbegin(), can_frame.data.cend(), msg.data.begin());
-    msg.id = can_frame.id;
-    return sendFrame(msg);
+    for(const auto& [name,actuator] : actuators)
+    {
+      if(std::isnan(actuator->cmd_vel_)) {return hardware_interface::return_type::OK;}
+
+      // DELETE LATER
+      if(actuator->cmd_vel_ == last_command_) {return hardware_interface::return_type::OK;}
+
+      can_msgs::msg::Frame msg;
+      setDefaultCanFrame(msg);
+      const auto can_frame = actuator->packet_->createPositionCommand(-(actuator->cmd_vel_));
+      std::copy(can_frame.data.cbegin(), can_frame.data.cend(), msg.data.begin());
+      msg.id = can_frame.id;
+      if(sendFrame(msg) != hardware_interface::return_type::OK)
+      {
+        return hardware_interface::return_type::ERROR;
+      }
+    }
+
+    return hardware_interface::return_type::OK;
+
   }
 
 }
