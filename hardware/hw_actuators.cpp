@@ -37,7 +37,7 @@ namespace quadro
     params.min_velocity_ = std::stod(info_.hardware_parameters["min_velocity"]);
     params.max_effort_ = std::stod(info_.hardware_parameters["max_effort"]);
     params.min_effort_ = std::stod(info_.hardware_parameters["min_effort"]);
-    unsigned int device_id = 127;
+    unsigned int device_id = 1;
     // Initialize state and command variables
     for (const hardware_interface::ComponentInfo &joint : info_.joints)
     {
@@ -90,16 +90,8 @@ namespace quadro
       actuators[joint.name] = std::make_unique<Actuator>(joint.name, device_id, params.primary_id_);
       device_id_to_actuator_name_[device_id] = joint.name;
 
-      // Log the IDs that will be used for this actuator
-      uint32_t feedback_id = actuators[joint.name]->packet_->frameId().getFeedbackId();
-      uint32_t enable_id = actuators[joint.name]->packet_->frameId().getEnableTorqueId();
-      
-      RCLCPP_INFO(get_logger(), "Joint %s IDs - Device: %d, Feedback: 0x%08X, Enable: 0x%08X", 
-                  joint.name.c_str(), device_id, feedback_id, enable_id);
-      
-      device_id--;
+      device_id++;
     }
-
 
     RCLCPP_INFO(get_logger(), "Total actuators configured: %zu", actuators.size());
     
@@ -147,7 +139,7 @@ namespace quadro
       // "00007F00:0000FF00" to accept only incoming messages 
       receiver_->SetCanFilters(
           drivers::socketcan::SocketCanReceiver::CanFilterList(filter_str));
-      RCLCPP_DEBUG(get_logger(), "applied filters: %s", can_filters_.c_str());
+      RCLCPP_DEBUG(get_logger(), "applied filters: %s", filter_str.c_str());
 
     }
     catch (const std::exception &ex)
@@ -176,6 +168,17 @@ namespace quadro
     for(const auto& [name,actuator] : actuators)
     {
       // set zero position
+			can_msgs::msg::Frame msg_pos;
+      setDefaultCanFrame(msg_pos, name);
+      const auto can_frame_pos = actuator->packet_->createZeroPosition();
+      std::copy(can_frame_pos.data.cbegin(), can_frame_pos.data.cend(), msg_pos.data.begin());
+      msg_pos.id = can_frame_pos.id;
+
+			if(sendFrame(msg_pos) != return_type::OK)
+			{
+        RCLCPP_WARN(get_logger(), "Failed to set zero position!");
+        return CallbackReturn::FAILURE;
+			}
 
       // change mode to position
 			can_msgs::msg::Frame msg_mode;

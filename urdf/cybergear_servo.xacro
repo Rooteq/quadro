@@ -6,7 +6,7 @@ Copyright (c) 2024 Naoki Takahashi
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
   <xacro:macro name="cybergear_servo" params="name parent *origin">
     <joint name="${name}_FR1_base_joint" type="fixed">
-      <origin rpy="${-pi/2} 0 0" xyz="0.0 0 0.1"/>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
       <parent link="${parent}"/>
       <child link="${name}_FR1_link"/>
     </joint>
@@ -50,7 +50,7 @@ Copyright (c) 2024 Naoki Takahashi
     <!-- SECOND LINK -->
 
     <joint name="${name}_FR2_base_joint" type="fixed">
-      <origin rpy="0 0 0" xyz="0.1 0 0.0"/>
+      <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.05"/>
       <parent link="${parent}"/>
       <child link="${name}_FR2_link"/>
     </joint>
@@ -98,7 +98,7 @@ Copyright (c) 2024 Naoki Takahashi
       <param name="timeout_sec">3.0</param>
       <param name="use_bus_time">false</param>
       <param name="interval_sec">0.5</param>
-      <param name="device_id">127</param>
+      <param name="device_id">1</param>
       <param name="primary_id">0</param>
       <param name="max_position">12.56637061</param>
       <param name="min_position">-12.56637061</param>
