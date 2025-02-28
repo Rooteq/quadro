@@ -81,6 +81,7 @@ public:
 
   CanFrame createGetParamCommand(const uint16_t param_index)
   {
+    (void)param_index;
     CanFrame can_frame;
     can_frame.id = frame_id_.getReadParameterId();
     return can_frame;
@@ -141,6 +142,27 @@ public:
     CanFrame can_frame;
     can_frame.data[0] = 1;
     can_frame.id = frame_id_.getZeroPositionId();
+    return can_frame;
+  }
+
+  CanFrame createEnableTorqueCommand()
+  {
+    CanFrame can_frame;
+    can_frame.id = frame_id_.getEnableTorqueId();
+    return can_frame;
+  }
+
+  CanFrame createDisableTorqueCommand()
+  {
+    CanFrame can_frame;
+    can_frame.id = frame_id_.getResetTorqueId();
+    return can_frame;
+  }
+
+  CanFrame createGetFeedbackCommand()
+  {
+    CanFrame can_frame;
+    can_frame.id = frame_id_.getFeedbackId();
     return can_frame;
   }
 

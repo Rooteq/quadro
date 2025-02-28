@@ -26,18 +26,10 @@ public:
     double timeout_sec_;
     bool use_bus_time_;
     double interval_sec_;
-    int device_id_;
     int primary_id_;
-
-    double max_position_;
-    double min_position_;
-    double max_velocity_;
-    double min_velocity_;
-    double max_effort_;
-    double min_effort_;
 };
 
-struct Actuator
+class Actuator
 {
 public:
     Actuator(const std::string &frame, const int device_id, const int primary_id)
@@ -65,8 +57,56 @@ public:
         packet_param.temperature_scale = static_cast<float>(0.1);
 
         packet_ = std::make_unique<cybergear_driver_core::CybergearPacket>(packet_param);
+
+        setDefaultCanFrame();
+
     }
 
+    // TODO: try to avoid copying
+
+    const can_msgs::msg::Frame &getZeroingMessage()
+    {
+        default_frame_ = packet_->createZeroPosition();
+        std::copy(default_frame_.data.cbegin(), default_frame_.data.cend(), default_msg_.data.begin());
+        default_msg_.id = default_frame_.id; 
+        return default_msg_;
+    }
+    const can_msgs::msg::Frame &getPositionModeMessage()
+    {
+        default_frame_ = packet_->createChangeToPositionModeCommand();
+        std::copy(default_frame_.data.cbegin(), default_frame_.data.cend(), default_msg_.data.begin());
+        default_msg_.id = default_frame_.id; 
+        return default_msg_;
+    }
+    const can_msgs::msg::Frame &getEnableTorqueMessage()
+    {
+        default_frame_ = packet_->createEnableTorqueCommand();
+        std::copy(default_frame_.data.cbegin(), default_frame_.data.cend(), default_msg_.data.begin());
+        default_msg_.id = default_frame_.id; 
+        return default_msg_;
+    }
+    const can_msgs::msg::Frame &getDisableTorqueMessage()
+    {
+        default_frame_ = packet_->createDisableTorqueCommand();
+        std::copy(default_frame_.data.cbegin(), default_frame_.data.cend(), default_msg_.data.begin());
+        default_msg_.id = default_frame_.id; 
+        return default_msg_;
+    }
+
+    const can_msgs::msg::Frame &getPositionCommandMessage(double command_pos)
+    {
+        default_frame_ = packet_->createPositionCommand(command_pos);
+        std::copy(default_frame_.data.cbegin(), default_frame_.data.cend(), default_msg_.data.begin());
+        default_msg_.id = default_frame_.id; 
+        return default_msg_;
+    }
+    const can_msgs::msg::Frame& getCreateFeedbackMessage()
+    {
+        default_frame_ = packet_->createGetFeedbackCommand();
+        std::copy(default_frame_.data.cbegin(), default_frame_.data.cend(), default_msg_.data.begin());
+        default_msg_.id = default_frame_.id; 
+        return default_msg_;
+    }
 
 public:
     std::unique_ptr<cybergear_driver_core::CybergearPacket> packet_;
@@ -78,6 +118,20 @@ public:
 
     double state_vel_;
     double state_pos_;
+
+private:
+    can_msgs::msg::Frame default_msg_;
+    cybergear_driver_core::CanFrame default_frame_;
+
+    void setDefaultCanFrame()
+    {
+      constexpr uint8_t kDlc = 8;
+
+      default_msg_.is_rtr = false;
+      default_msg_.is_extended = true;
+      default_msg_.is_error = false;
+      default_msg_.dlc = kDlc;
+    }
 };
 
 } // namespace quadro

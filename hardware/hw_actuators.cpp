@@ -27,16 +27,8 @@ namespace quadro
     params.timeout_sec_ = std::stod(info_.hardware_parameters["timeout_sec"]);
     params.use_bus_time_ = info_.hardware_parameters["use_bus_time"] == "true";
     params.interval_sec_ = std::stod(info_.hardware_parameters["interval_sec"]);
-    params.device_id_ = std::stoi(info_.hardware_parameters["device_id"]);
     params.primary_id_ = std::stoi(info_.hardware_parameters["primary_id"]);
 
-    // Initialize limits from URDF
-    params.max_position_ = std::stod(info_.hardware_parameters["max_position"]);
-    params.min_position_ = std::stod(info_.hardware_parameters["min_position"]);
-    params.max_velocity_ = std::stod(info_.hardware_parameters["max_velocity"]);
-    params.min_velocity_ = std::stod(info_.hardware_parameters["min_velocity"]);
-    params.max_effort_ = std::stod(info_.hardware_parameters["max_effort"]);
-    params.min_effort_ = std::stod(info_.hardware_parameters["min_effort"]);
     unsigned int device_id = 1;
     // Initialize state and command variables
     for (const hardware_interface::ComponentInfo &joint : info_.joints)
@@ -121,18 +113,14 @@ namespace quadro
       receiver_ = std::make_unique<drivers::socketcan::SocketCanReceiver>(
           params.can_interface_, false);
 
-                // Create a filter for all the device IDs by using their mask
       std::stringstream filter_ss;
       
-      // Start with an empty filter string
       std::string filter_str = "";
       
-      // Add filters for all device IDs in the map
       for (const auto& [id, name] : device_id_to_actuator_name_) {
           if (!filter_str.empty()) {
               filter_str += ",";
           }
-          // Create a filter specifically for this ID (adjust the shift based on where the ID is positioned)
           filter_str += fmt::format("0000{:02X}00:0000FF00", id);
       }
       
@@ -158,7 +146,6 @@ namespace quadro
 
   CallbackReturn CybergearActuator::on_cleanup(const rclcpp_lifecycle::State & /*previous_state*/)
   {
-    // Add cleanup logic here
     return CallbackReturn::SUCCESS;
   }
 
@@ -167,38 +154,21 @@ namespace quadro
 
     for(const auto& [name,actuator] : actuators)
     {
-      // set zero position
-			can_msgs::msg::Frame msg_pos;
-      setDefaultCanFrame(msg_pos, name);
-      const auto can_frame_pos = actuator->packet_->createZeroPosition();
-      std::copy(can_frame_pos.data.cbegin(), can_frame_pos.data.cend(), msg_pos.data.begin());
-      msg_pos.id = can_frame_pos.id;
 
-			if(sendFrame(msg_pos) != return_type::OK)
+
+			if(sendFrame(actuator->getZeroingMessage()) != return_type::OK)
 			{
         RCLCPP_WARN(get_logger(), "Failed to set zero position!");
         return CallbackReturn::FAILURE;
 			}
 
-      // change mode to position
-			can_msgs::msg::Frame msg_mode;
-      setDefaultCanFrame(msg_mode, name);
-      const auto can_frame = actuator->packet_->createChangeToPositionModeCommand();
-      std::copy(can_frame.data.cbegin(), can_frame.data.cend(), msg_mode.data.begin());
-      msg_mode.id = can_frame.id;
-
-			if(sendFrame(msg_mode) != return_type::OK)
+			if(sendFrame(actuator->getPositionModeMessage()) != return_type::OK)
 			{
         RCLCPP_WARN(get_logger(), "Failed to send change mode message!");
         return CallbackReturn::FAILURE;
 			}
 
-      // enable torque
-			can_msgs::msg::Frame msg;
-      setDefaultCanFrame(msg, name);
-      msg.id = actuator->packet_->frameId().getEnableTorqueId();
-
-			if(sendFrame(msg) != return_type::OK)
+			if(sendFrame(actuator->getEnableTorqueMessage()) != return_type::OK)
 			{
 				RCLCPP_WARN(get_logger(), "Failed to send enable torque message!");
         return CallbackReturn::FAILURE;
@@ -206,7 +176,6 @@ namespace quadro
     }
 
     is_active_ = true;
-    // Add activation logic here
     return CallbackReturn::SUCCESS;
   }
 
@@ -214,11 +183,7 @@ namespace quadro
   {
     for(const auto& [name,actuator] : actuators)
     {
-      can_msgs::msg::Frame msg;
-      setDefaultCanFrame(msg, name);
-      msg.id = actuator->packet_->frameId().getResetTorqueId();
-
-      if(sendFrame(msg) != return_type::OK)
+      if(sendFrame(actuator->getDisableTorqueMessage()) != return_type::OK)
       {
         RCLCPP_WARN(get_logger(), "Failed to disable torque!");
         return CallbackReturn::FAILURE;
@@ -238,11 +203,7 @@ namespace quadro
   {
      for(const auto& [name,actuator] : actuators)
     {
-      can_msgs::msg::Frame msg;
-      setDefaultCanFrame(msg, name);
-      msg.id = actuator->packet_->frameId().getResetTorqueId();
-
-      if(sendFrame(msg) != return_type::OK)
+      if(sendFrame(actuator->getDisableTorqueMessage()) != return_type::OK)
       {
         RCLCPP_WARN(get_logger(), "Failed to disable torque!");
         return CallbackReturn::FAILURE;
@@ -285,12 +246,7 @@ namespace quadro
 
     for(const auto& [name,actuator] : actuators)
     {
-      can_msgs::msg::Frame msg;
-      setDefaultCanFrame(msg, name);
-
-      msg.id = actuator->packet_->frameId().getFeedbackId();
-
-      if(sendFrame(msg) != hardware_interface::return_type::OK)
+      if(sendFrame(actuator->getCreateFeedbackMessage()) != hardware_interface::return_type::OK)
       {
         RCLCPP_WARN(get_logger(), "FAILED TO SEND READ FRAME");
       }
@@ -311,12 +267,7 @@ namespace quadro
 
       if(actuator->cmd_vel_ == actuator->last_cmd_vel_) {return hardware_interface::return_type::OK;}
 
-      can_msgs::msg::Frame msg;
-      setDefaultCanFrame(msg, name);
-      const auto can_frame = actuator->packet_->createPositionCommand(-(actuator->cmd_vel_));
-      std::copy(can_frame.data.cbegin(), can_frame.data.cend(), msg.data.begin());
-      msg.id = can_frame.id;
-      if(sendFrame(msg) != hardware_interface::return_type::OK)
+      if(sendFrame(actuator->getPositionCommandMessage(-(actuator->cmd_vel_))) != hardware_interface::return_type::OK)
       {
         return hardware_interface::return_type::ERROR;
       }
