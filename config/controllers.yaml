@@ -8,7 +8,8 @@ controller_manager:
 joint_trajectory_controller:
   ros__parameters:
     joints:
-      - cybergear
+      - FR1
+      - FR2
 
     command_interfaces:
       - position
@@ -17,7 +18,7 @@ joint_trajectory_controller:
       - position
       - velocity
 
-    action_monitor_rate: 20.0
+    action_monitor_rate: 15.0
 
     allow_partial_joints_goal: false
     open_loop_control: true

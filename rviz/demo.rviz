@@ -59,19 +59,26 @@ Visualization Manager:
         All Enabled: true
         base_link:
           Value: true
-        demo_cybergear_link:
+        quadro_FR1_link:
           Value: true
-        demo_cybergear_table_link:
+        quadro_FR1_table_link:
+          Value: true
+        quadro_FR2_link:
+          Value: true
+        quadro_FR2_table_link:
           Value: true
       Marker Scale: 0.25
       Name: TF
-      Show Arrows: true
+      Show Arrows: false
       Show Axes: true
       Show Names: false
       Tree:
         base_link:
-          demo_cybergear_link:
-            demo_cybergear_table_link:
+          quadro_FR1_link:
+            quadro_FR1_table_link:
+              {}
+          quadro_FR2_link:
+            quadro_FR2_table_link:
               {}
       Update Interval: 0
       Value: true
@@ -97,12 +104,22 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        demo_cybergear_link:
+        quadro_FR1_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        demo_cybergear_table_link:
+        quadro_FR1_table_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        quadro_FR2_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        quadro_FR2_table_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -168,18 +185,18 @@ Visualization Manager:
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.0412672758102417
-        Y: -0.048335008323192596
-        Z: 0.029997633770108223
+        X: 0.057925622910261154
+        Y: -0.06634864211082458
+        Z: 0.03897053748369217
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.689797043800354
+      Pitch: 0.7547969818115234
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 0.5353977680206299
+      Yaw: 1.3403970003128052
     Saved: ~
 Window Geometry:
   Displays:
@@ -198,4 +215,4 @@ Window Geometry:
     collapsed: true
   Width: 1200
   X: 3159
-  Y: 198
+  Y: 173

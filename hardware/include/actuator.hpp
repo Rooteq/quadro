@@ -44,6 +44,7 @@ public:
         : frame_(frame), device_id_(device_id)
     {
         cmd_vel_ = std::numeric_limits<double>::quiet_NaN();
+        last_cmd_vel_ = std::numeric_limits<double>::quiet_NaN();
         state_vel_ = 0.0;
         state_pos_ = 0.0;
 
@@ -73,6 +74,8 @@ public:
     const std::string frame_;
     const int device_id_;
     double cmd_vel_;
+    double last_cmd_vel_;
+
     double state_vel_;
     double state_pos_;
 };

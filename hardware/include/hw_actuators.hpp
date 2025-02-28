@@ -25,6 +25,7 @@
 #include "can_msgs/msg/frame.hpp"
 
 #include "actuator.hpp"
+#include <fmt/core.h>
 
 // #include "cybergear_driver_core/cybergear_driver_core.hpp"
 using namespace std::chrono_literals;
@@ -68,67 +69,10 @@ private:
 
   MotorParams params;
 
-    void receive() 
-    {
-        using drivers::socketcan::FrameType;
+    void receive();
+    void processFrame(const can_msgs::msg::Frame& frame);
 
-        drivers::socketcan::CanId receive_id{};
-
-        can_msgs::msg::Frame frame(rosidl_runtime_cpp::MessageInitialization::ZERO);
-
-      while (rclcpp::ok()) {
-        if (!is_active_) {
-          std::this_thread::sleep_for(100ms);
-          continue;
-        }
-
-        try {
-          // Non-blocking receive with a short timeout
-          receive_id = receiver_->receive(frame.data.data(), std::chrono::milliseconds(10));
-          
-          if (params.use_bus_time_) {
-            frame.header.stamp = rclcpp::Time(static_cast<int64_t>(receive_id.get_bus_time() * 1000U));
-          } else {
-            frame.header.stamp = get_clock()->now();
-          }
-
-          frame.id = receive_id.identifier();
-          frame.is_rtr = (receive_id.frame_type() == FrameType::REMOTE);
-          frame.is_extended = receive_id.is_extended();
-          frame.is_error = (receive_id.frame_type() == FrameType::ERROR);
-          frame.dlc = receive_id.length();
-
-          // Process the frame immediately
-          processFrame(frame);
-        } 
-        catch (const drivers::socketcan::SocketCanTimeout&) {
-          // Timeout is expected, just continue
-          continue;
-        }
-        catch (const std::exception& ex) {
-          RCLCPP_WARN_THROTTLE(get_logger(), *get_clock(), 1000,
-                              "Error receiving CAN message: %s - %s",
-                              params.can_interface_.c_str(), ex.what());
-          continue;
-        }
-      }
-    }
-
-    void processFrame(const can_msgs::msg::Frame& frame) {
-      std::lock_guard<std::mutex> guard(frames_mutex_);
-
-      uint8_t device_id = (frame.id >> 8) & 0xFF;
-
-      
-      auto& actuator = actuators[device_id_to_actuator_name_[device_id]];
-      
-      actuator->state_pos_ = -(actuator->packet_->parsePosition(frame.data));
-      actuator->state_vel_ = -(actuator->packet_->parseVelocity(frame.data));
-
-    }
-
-
-    void setDefaultCanFrame(can_msgs::msg::Frame & msg, const std::string& frame = "cybergear")
+    void setDefaultCanFrame(can_msgs::msg::Frame & msg, const std::string& frame)
     {
       constexpr uint8_t kDlc = 8;
 
@@ -157,13 +101,8 @@ private:
       return return_type::OK;
     }
 
-    // std::unique_ptr<cybergear_driver_core::CybergearPacket> packet_;
-
     std::unique_ptr<drivers::socketcan::SocketCanSender> sender_;
     std::unique_ptr<drivers::socketcan::SocketCanReceiver> receiver_;
-
-    can_msgs::msg::Frame last_joint_command_frame_;
-    can_msgs::msg::Frame last_received_frame_;
 
     std::string can_filters_;
     std::thread receiver_thread_;
@@ -172,9 +111,7 @@ private:
     std::chrono::nanoseconds interval_ns_;
 
     std::atomic_bool is_active_;
-    // std::mutex last_frame_mutex_;
 
-    double last_command_;
     std::mutex frames_mutex_;
     std::unordered_map<std::string, std::unique_ptr<Actuator>> actuators;
     std::unordered_map<unsigned int, std::string> device_id_to_actuator_name_;

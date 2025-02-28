@@ -84,21 +84,25 @@ namespace quadro
         return hardware_interface::CallbackReturn::ERROR;
       }
 
+      RCLCPP_INFO(get_logger(), "Creating actuator for joint: %s with device ID: %d", 
+                  joint.name.c_str(), device_id);
+      
       actuators[joint.name] = std::make_unique<Actuator>(joint.name, device_id, params.primary_id_);
       device_id_to_actuator_name_[device_id] = joint.name;
+
+      // Log the IDs that will be used for this actuator
+      uint32_t feedback_id = actuators[joint.name]->packet_->frameId().getFeedbackId();
+      uint32_t enable_id = actuators[joint.name]->packet_->frameId().getEnableTorqueId();
+      
+      RCLCPP_INFO(get_logger(), "Joint %s IDs - Device: %d, Feedback: 0x%08X, Enable: 0x%08X", 
+                  joint.name.c_str(), device_id, feedback_id, enable_id);
+      
       device_id--;
-
-      RCLCPP_INFO(get_logger(), "Loaded joint with name: %s", joint.name.c_str());
     }
 
 
-    for(const auto& [name,actuator] : actuators)
-    {
-
-      RCLCPP_INFO(get_logger(), "JOINT: %s", name.c_str());
-    }
-
-
+    RCLCPP_INFO(get_logger(), "Total actuators configured: %zu", actuators.size());
+    
     return CallbackReturn::SUCCESS;
   }
 
@@ -125,10 +129,26 @@ namespace quadro
       receiver_ = std::make_unique<drivers::socketcan::SocketCanReceiver>(
           params.can_interface_, false);
 
+                // Create a filter for all the device IDs by using their mask
+      std::stringstream filter_ss;
+      
+      // Start with an empty filter string
+      std::string filter_str = "";
+      
+      // Add filters for all device IDs in the map
+      for (const auto& [id, name] : device_id_to_actuator_name_) {
+          if (!filter_str.empty()) {
+              filter_str += ",";
+          }
+          // Create a filter specifically for this ID (adjust the shift based on where the ID is positioned)
+          filter_str += fmt::format("0000{:02X}00:0000FF00", id);
+      }
+      
       // "00007F00:0000FF00" to accept only incoming messages 
       receiver_->SetCanFilters(
-          drivers::socketcan::SocketCanReceiver::CanFilterList("00007F00:0000FF00"));
+          drivers::socketcan::SocketCanReceiver::CanFilterList(filter_str));
       RCLCPP_DEBUG(get_logger(), "applied filters: %s", can_filters_.c_str());
+
     }
     catch (const std::exception &ex)
     {
@@ -155,9 +175,11 @@ namespace quadro
 
     for(const auto& [name,actuator] : actuators)
     {
+      // set zero position
+
       // change mode to position
 			can_msgs::msg::Frame msg_mode;
-      setDefaultCanFrame(msg_mode);
+      setDefaultCanFrame(msg_mode, name);
       const auto can_frame = actuator->packet_->createChangeToPositionModeCommand();
       std::copy(can_frame.data.cbegin(), can_frame.data.cend(), msg_mode.data.begin());
       msg_mode.id = can_frame.id;
@@ -170,7 +192,7 @@ namespace quadro
 
       // enable torque
 			can_msgs::msg::Frame msg;
-      setDefaultCanFrame(msg);
+      setDefaultCanFrame(msg, name);
       msg.id = actuator->packet_->frameId().getEnableTorqueId();
 
 			if(sendFrame(msg) != return_type::OK)
@@ -190,7 +212,7 @@ namespace quadro
     for(const auto& [name,actuator] : actuators)
     {
       can_msgs::msg::Frame msg;
-      setDefaultCanFrame(msg);
+      setDefaultCanFrame(msg, name);
       msg.id = actuator->packet_->frameId().getResetTorqueId();
 
       if(sendFrame(msg) != return_type::OK)
@@ -211,7 +233,18 @@ namespace quadro
 
   CallbackReturn CybergearActuator::on_error(const rclcpp_lifecycle::State & /*previous_state*/)
   {
-    // Add error handling logic here
+     for(const auto& [name,actuator] : actuators)
+    {
+      can_msgs::msg::Frame msg;
+      setDefaultCanFrame(msg, name);
+      msg.id = actuator->packet_->frameId().getResetTorqueId();
+
+      if(sendFrame(msg) != return_type::OK)
+      {
+        RCLCPP_WARN(get_logger(), "Failed to disable torque!");
+        return CallbackReturn::FAILURE;
+      }
+    }
     return CallbackReturn::SUCCESS;
   }
 
@@ -250,7 +283,7 @@ namespace quadro
     for(const auto& [name,actuator] : actuators)
     {
       can_msgs::msg::Frame msg;
-      setDefaultCanFrame(msg);
+      setDefaultCanFrame(msg, name);
 
       msg.id = actuator->packet_->frameId().getFeedbackId();
 
@@ -273,11 +306,10 @@ namespace quadro
     {
       if(std::isnan(actuator->cmd_vel_)) {return hardware_interface::return_type::OK;}
 
-      // DELETE LATER
-      if(actuator->cmd_vel_ == last_command_) {return hardware_interface::return_type::OK;}
+      if(actuator->cmd_vel_ == actuator->last_cmd_vel_) {return hardware_interface::return_type::OK;}
 
       can_msgs::msg::Frame msg;
-      setDefaultCanFrame(msg);
+      setDefaultCanFrame(msg, name);
       const auto can_frame = actuator->packet_->createPositionCommand(-(actuator->cmd_vel_));
       std::copy(can_frame.data.cbegin(), can_frame.data.cend(), msg.data.begin());
       msg.id = can_frame.id;
@@ -285,14 +317,74 @@ namespace quadro
       {
         return hardware_interface::return_type::ERROR;
       }
+
+      actuator->last_cmd_vel_ = actuator->cmd_vel_;
     }
 
     return hardware_interface::return_type::OK;
 
   }
 
-}
+  void CybergearActuator::receive() 
+  {
+      using drivers::socketcan::FrameType;
 
+      drivers::socketcan::CanId receive_id{};
+
+      can_msgs::msg::Frame frame(rosidl_runtime_cpp::MessageInitialization::ZERO);
+
+    while (rclcpp::ok()) {
+      if (!is_active_) {
+        std::this_thread::sleep_for(100ms);
+        continue;
+      }
+
+      try {
+        // Non-blocking receive with a short timeout
+        receive_id = receiver_->receive(frame.data.data(), std::chrono::milliseconds(10));
+        
+        if (params.use_bus_time_) {
+          frame.header.stamp = rclcpp::Time(static_cast<int64_t>(receive_id.get_bus_time() * 1000U));
+        } else {
+          frame.header.stamp = get_clock()->now();
+        }
+
+        frame.id = receive_id.identifier();
+        frame.is_rtr = (receive_id.frame_type() == FrameType::REMOTE);
+        frame.is_extended = receive_id.is_extended();
+        frame.is_error = (receive_id.frame_type() == FrameType::ERROR);
+        frame.dlc = receive_id.length();
+
+        // Process the frame immediately
+        processFrame(frame);
+      } 
+      catch (const drivers::socketcan::SocketCanTimeout&) {
+        // RCLCPP_INFO(get_logger(), "Timeout");
+        // Timeout is expected, just continue
+        continue;
+      }
+      catch (const std::exception& ex) {
+        RCLCPP_WARN_THROTTLE(get_logger(), *get_clock(), 1000,
+                            "Error receiving CAN message: %s - %s",
+                            params.can_interface_.c_str(), ex.what());
+        continue;
+      }
+    }
+  }
+
+  void CybergearActuator::processFrame(const can_msgs::msg::Frame& frame) {
+    std::lock_guard<std::mutex> guard(frames_mutex_);
+
+    uint8_t device_id = (frame.id >> 8) & 0xFF;
+
+    auto& actuator = actuators[device_id_to_actuator_name_[device_id]];
+    
+    actuator->state_pos_ = -(actuator->packet_->parsePosition(frame.data));
+    actuator->state_vel_ = -(actuator->packet_->parseVelocity(frame.data));
+
+  }
+
+}
 #include "pluginlib/class_list_macros.hpp"
 
 PLUGINLIB_EXPORT_CLASS(
