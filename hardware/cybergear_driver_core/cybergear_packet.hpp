@@ -30,7 +30,7 @@
 #include "cybergear_packet_param.hpp"
 #include "protocol_constant.hpp"
 #include "scaled_float_byte_converter.hpp"
-
+#include "can_msgs/msg/frame.hpp"
 namespace cybergear_driver_core
 {
 struct MoveParam
@@ -52,11 +52,11 @@ struct MoveParam
 
 using CanData = std::array<uint8_t, 8>;
 
-struct CanFrame
-{
-  uint32_t id;
-  CanData data;
-};
+// struct canFrame
+// {
+//   uint32_t id;
+//   CanData data;
+// };
 
 class CybergearPacket
 {
@@ -69,7 +69,14 @@ public:
     pid_kp_converter_(param.max_gain_kp, param.min_gain_kp),
     pid_kd_converter_(param.max_gain_kd, param.min_gain_kd),
     motor_current_converter_(param.max_current, param.min_current),
-    temperature_converter_(param.temperature_scale) {
+    temperature_converter_(param.temperature_scale)   
+  {
+    constexpr uint8_t kDlc = 8;
+
+    default_msg_.is_rtr = false;
+    default_msg_.is_extended = true;
+    default_msg_.is_error = false;
+    default_msg_.dlc = kDlc;
   }
 
   ~CybergearPacket() {}
@@ -79,17 +86,17 @@ public:
     return frame_id_;
   }
 
-  CanFrame createGetParamCommand(const uint16_t param_index)
+  can_msgs::msg::Frame createGetParamCommand(const uint16_t param_index)
   {
     (void)param_index;
-    CanFrame can_frame;
+    can_msgs::msg::Frame can_frame;
     can_frame.id = frame_id_.getReadParameterId();
     return can_frame;
   }
 
-  CanFrame createMoveCommand(const MoveParam & param)
+  can_msgs::msg::Frame createMoveCommand(const MoveParam & param)
   {
-    CanFrame can_frame;
+    can_msgs::msg::Frame can_frame;
 
     const auto cmd_pos = anguler_position_converter_.toTwoBytes(param.position);
     const auto cmd_vel = anguler_velocity_converter_.toTwoBytes(param.velocity);
@@ -107,27 +114,25 @@ public:
     return can_frame;
   }
 
-  CanFrame createWriteParameter(const uint16_t index, const std::array<uint8_t, 4> & param)
+  can_msgs::msg::Frame createWriteParameter(const uint16_t index, const std::array<uint8_t, 4> & param)
   {
-    CanFrame can_frame;
+    default_msg_.data[0] = index & 0x00ff;
+    default_msg_.data[1] = index >> 8;
+    std::copy(param.cbegin(), param.cend(), default_msg_.data.begin() + 4);
 
-    can_frame.data[0] = index & 0x00ff;
-    can_frame.data[1] = index >> 8;
-    std::copy(param.cbegin(), param.cend(), can_frame.data.begin() + 4);
+    default_msg_.id = frame_id_.getWriteParameterId();
 
-    can_frame.id = frame_id_.getWriteParameterId();
-
-    return can_frame;
+    return default_msg_;
   }
 
-  CanFrame createChangeRunMode(const uint8_t mode_id)
+  can_msgs::msg::Frame createChangeRunMode(const uint8_t mode_id)
   {
     std::array<uint8_t, 4> param;
     param[0] = mode_id;
     return createWriteParameter(ram_parameters::RUN_MODE, param);
   }
 
-  CanFrame createPositionWithGainCommand(
+  can_msgs::msg::Frame createPositionWithGainCommand(
     const float position, const float kp, const float kd)
   {
     MoveParam param;
@@ -137,69 +142,68 @@ public:
     return createMoveCommand(param);
   }
 
-  CanFrame createZeroPosition()
+  can_msgs::msg::Frame createZeroPosition()
   {
-    CanFrame can_frame;
-    can_frame.data[0] = 1;
-    can_frame.id = frame_id_.getZeroPositionId();
-    return can_frame;
+    default_msg_.data.fill(0);
+    default_msg_.data[0] = 1;
+    default_msg_.id = frame_id_.getZeroPositionId();
+    return default_msg_;
   }
 
-  CanFrame createEnableTorqueCommand()
+  can_msgs::msg::Frame createEnableTorqueCommand()
   {
-    CanFrame can_frame;
-    can_frame.id = frame_id_.getEnableTorqueId();
-    return can_frame;
+    default_msg_.data.fill(0);
+    default_msg_.id = frame_id_.getEnableTorqueId();
+    return default_msg_;
   }
 
-  CanFrame createDisableTorqueCommand()
+  can_msgs::msg::Frame createDisableTorqueCommand()
   {
-    CanFrame can_frame;
-    can_frame.id = frame_id_.getResetTorqueId();
-    return can_frame;
+    default_msg_.data.fill(0);
+    default_msg_.id = frame_id_.getResetTorqueId();
+    return default_msg_;
   }
 
-  CanFrame createGetFeedbackCommand()
+  can_msgs::msg::Frame createGetFeedbackCommand()
   {
-    CanFrame can_frame;
-    can_frame.id = frame_id_.getFeedbackId();
-    return can_frame;
+    default_msg_.id = frame_id_.getFeedbackId();
+    return default_msg_;
   }
 
-  CanFrame createPositionCommand(const float position)
+  can_msgs::msg::Frame createPositionCommand(const float position)
   {
     const auto param = anguler_position_converter_.toFourBytes(position);
     return createWriteParameter(ram_parameters::DEST_POSITION_REF, param);
   }
 
-  CanFrame createVelocityCommand(const float velocity)
+  can_msgs::msg::Frame createVelocityCommand(const float velocity)
   {
     const auto param = anguler_velocity_converter_.toFourBytes(velocity);
     return createWriteParameter(ram_parameters::SPEED_REF, param);
   }
 
-  CanFrame createCurrentCommand(const float current)
+  can_msgs::msg::Frame createCurrentCommand(const float current)
   {
     const auto param = motor_current_converter_.toFourBytes(current);
     return createWriteParameter(ram_parameters::IQ_REF, param);
   }
 
-  CanFrame createChangeToOperationModeCommand()
+  can_msgs::msg::Frame createChangeToOperationModeCommand()
   {
     return createChangeRunMode(run_modes::OPERATION);
   }
 
-  CanFrame createChangeToPositionModeCommand()
+  can_msgs::msg::Frame createChangeToPositionModeCommand()
   {
     return createChangeRunMode(run_modes::POSITION);
   }
 
-  CanFrame createChangeToVelocityModeCommand()
+  can_msgs::msg::Frame createChangeToVelocityModeCommand()
   {
     return createChangeRunMode(run_modes::SPEED);
   }
 
-  CanFrame createChangeToCurrentModeCommand()
+  can_msgs::msg::Frame createChangeToCurrentModeCommand()
   {
     return createChangeRunMode(run_modes::CURRENT);
   }
@@ -233,5 +237,7 @@ private:
   BoundedFloatByteConverter pid_kd_converter_;
   BoundedFloatByteConverter motor_current_converter_;
   ScaledFloatByteConverter temperature_converter_;
+
+  can_msgs::msg::Frame default_msg_;
 };
 }  // namespace cybergear_driver_core

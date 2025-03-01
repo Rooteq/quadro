@@ -22,7 +22,6 @@
 #include "cybergear_driver_core/cybergear_driver_core.hpp"
 #include "ros2_socketcan/socket_can_sender.hpp"
 #include "ros2_socketcan/socket_can_receiver.hpp"
-#include "can_msgs/msg/frame.hpp"
 
 #include "actuator.hpp"
 #include <fmt/core.h>
@@ -64,57 +63,25 @@ public:
 private:
   double simPos;
 private:
-
-  bool use_bus_time_;
-
   MotorParams params;
 
-    void receive();
-    void processFrame(const can_msgs::msg::Frame& frame);
+  void receive();
+  void processFrame(const can_msgs::msg::Frame& frame);
+  return_type sendFrame(const can_msgs::msg::Frame& msg);    
 
-    void setDefaultCanFrame(can_msgs::msg::Frame & msg, const std::string& frame)
-    {
-      constexpr uint8_t kDlc = 8;
+  std::unique_ptr<drivers::socketcan::SocketCanSender> sender_;
+  std::unique_ptr<drivers::socketcan::SocketCanReceiver> receiver_;
 
-      msg.header.stamp = this->get_clock()->now();
-      msg.header.frame_id = frame;
-      msg.is_rtr = false;
-      msg.is_extended = true;
-      msg.is_error = false;
-      msg.dlc = kDlc;
-    }
+  std::thread receiver_thread_;
 
-    return_type sendFrame(const can_msgs::msg::Frame& msg) {
-      using drivers::socketcan::CanId;
-      using drivers::socketcan::FrameType;
-      using drivers::socketcan::ExtendedFrame;
+  std::chrono::nanoseconds timeout_ns_;
+  std::chrono::nanoseconds interval_ns_;
 
-      try {
-        sender_->send(msg.data.data(), msg.dlc, CanId(msg.id, 0, FrameType::DATA, ExtendedFrame), timeout_ns_);
-      } catch (const std::exception& ex) {
-        RCLCPP_WARN_THROTTLE(get_logger(), *get_clock(), 1000,
-                            "Error sending CAN message: %s - %s",
-                            params.can_interface_.c_str(), ex.what());
-        return return_type::ERROR;
-      }
+  std::atomic_bool is_active_;
 
-      return return_type::OK;
-    }
-
-    std::unique_ptr<drivers::socketcan::SocketCanSender> sender_;
-    std::unique_ptr<drivers::socketcan::SocketCanReceiver> receiver_;
-
-    std::string can_filters_;
-    std::thread receiver_thread_;
-
-    std::chrono::nanoseconds timeout_ns_;
-    std::chrono::nanoseconds interval_ns_;
-
-    std::atomic_bool is_active_;
-
-    std::mutex frames_mutex_;
-    std::unordered_map<std::string, std::unique_ptr<Actuator>> actuators;
-    std::unordered_map<unsigned int, std::string> device_id_to_actuator_name_;
+  std::mutex frames_mutex_;
+  std::unordered_map<std::string, std::unique_ptr<Actuator>> actuators;
+  std::unordered_map<unsigned int, std::string> device_id_to_actuator_name_;
 };
 }
 

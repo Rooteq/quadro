@@ -338,6 +338,23 @@ namespace quadro
 
   }
 
+  return_type CybergearActuator::sendFrame(const can_msgs::msg::Frame& msg) {
+    using drivers::socketcan::CanId;
+    using drivers::socketcan::FrameType;
+    using drivers::socketcan::ExtendedFrame;
+
+    try {
+      sender_->send(msg.data.data(), msg.dlc, CanId(msg.id, 0, FrameType::DATA, ExtendedFrame), timeout_ns_);
+    } catch (const std::exception& ex) {
+      RCLCPP_WARN_THROTTLE(get_logger(), *get_clock(), 1000,
+                          "Error sending CAN message: %s - %s",
+                          params.can_interface_.c_str(), ex.what());
+      return return_type::ERROR;
+    }
+
+    return return_type::OK;
+  }
+
 }
 #include "pluginlib/class_list_macros.hpp"
 

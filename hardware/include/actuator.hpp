@@ -57,55 +57,31 @@ public:
         packet_param.temperature_scale = static_cast<float>(0.1);
 
         packet_ = std::make_unique<cybergear_driver_core::CybergearPacket>(packet_param);
-
-        setDefaultCanFrame();
-
     }
 
-    // TODO: try to avoid copying
-
-    const can_msgs::msg::Frame &getZeroingMessage()
+     can_msgs::msg::Frame getZeroingMessage()
     {
-        default_frame_ = packet_->createZeroPosition();
-        std::copy(default_frame_.data.cbegin(), default_frame_.data.cend(), default_msg_.data.begin());
-        default_msg_.id = default_frame_.id; 
-        return default_msg_;
+        return packet_->createZeroPosition();
     }
-    const can_msgs::msg::Frame &getPositionModeMessage()
+     can_msgs::msg::Frame getPositionModeMessage()
     {
-        default_frame_ = packet_->createChangeToPositionModeCommand();
-        std::copy(default_frame_.data.cbegin(), default_frame_.data.cend(), default_msg_.data.begin());
-        default_msg_.id = default_frame_.id; 
-        return default_msg_;
+        return packet_->createChangeToPositionModeCommand();
     }
-    const can_msgs::msg::Frame &getEnableTorqueMessage()
+     can_msgs::msg::Frame getEnableTorqueMessage()
     {
-        default_frame_ = packet_->createEnableTorqueCommand();
-        std::copy(default_frame_.data.cbegin(), default_frame_.data.cend(), default_msg_.data.begin());
-        default_msg_.id = default_frame_.id; 
-        return default_msg_;
+        return packet_->createEnableTorqueCommand();
     }
-    const can_msgs::msg::Frame &getDisableTorqueMessage()
+     can_msgs::msg::Frame getDisableTorqueMessage()
     {
-        default_frame_ = packet_->createDisableTorqueCommand();
-        std::copy(default_frame_.data.cbegin(), default_frame_.data.cend(), default_msg_.data.begin());
-        default_msg_.id = default_frame_.id; 
-        return default_msg_;
+        return packet_->createDisableTorqueCommand();
     }
-
-    const can_msgs::msg::Frame &getPositionCommandMessage(double command_pos)
+    can_msgs::msg::Frame getPositionCommandMessage(double command_pos)
     {
-        default_frame_ = packet_->createPositionCommand(command_pos);
-        std::copy(default_frame_.data.cbegin(), default_frame_.data.cend(), default_msg_.data.begin());
-        default_msg_.id = default_frame_.id; 
-        return default_msg_;
+        return packet_->createPositionCommand(command_pos);
     }
-    const can_msgs::msg::Frame& getCreateFeedbackMessage()
+    can_msgs::msg::Frame getCreateFeedbackMessage()
     {
-        default_frame_ = packet_->createGetFeedbackCommand();
-        std::copy(default_frame_.data.cbegin(), default_frame_.data.cend(), default_msg_.data.begin());
-        default_msg_.id = default_frame_.id; 
-        return default_msg_;
+        return packet_->createGetFeedbackCommand();
     }
 
 public:
@@ -120,18 +96,6 @@ public:
     double state_pos_;
 
 private:
-    can_msgs::msg::Frame default_msg_;
-    cybergear_driver_core::CanFrame default_frame_;
-
-    void setDefaultCanFrame()
-    {
-      constexpr uint8_t kDlc = 8;
-
-      default_msg_.is_rtr = false;
-      default_msg_.is_extended = true;
-      default_msg_.is_error = false;
-      default_msg_.dlc = kDlc;
-    }
 };
 
 } // namespace quadro
