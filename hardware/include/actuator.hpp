@@ -59,27 +59,27 @@ public:
         packet_ = std::make_unique<cybergear_driver_core::CybergearPacket>(packet_param);
     }
 
-     can_msgs::msg::Frame getZeroingMessage()
+    const can_msgs::msg::Frame &getZeroingMessage()
     {
         return packet_->createZeroPosition();
     }
-     can_msgs::msg::Frame getPositionModeMessage()
+    const can_msgs::msg::Frame &getPositionModeMessage()
     {
         return packet_->createChangeToPositionModeCommand();
     }
-     can_msgs::msg::Frame getEnableTorqueMessage()
+    const can_msgs::msg::Frame &getEnableTorqueMessage()
     {
         return packet_->createEnableTorqueCommand();
     }
-     can_msgs::msg::Frame getDisableTorqueMessage()
+    const can_msgs::msg::Frame &getDisableTorqueMessage()
     {
         return packet_->createDisableTorqueCommand();
     }
-    can_msgs::msg::Frame getPositionCommandMessage(double command_pos)
+    const can_msgs::msg::Frame &getPositionCommandMessage(double command_pos)
     {
         return packet_->createPositionCommand(command_pos);
     }
-    can_msgs::msg::Frame getCreateFeedbackMessage()
+    const can_msgs::msg::Frame &getCreateFeedbackMessage()
     {
         return packet_->createGetFeedbackCommand();
     }

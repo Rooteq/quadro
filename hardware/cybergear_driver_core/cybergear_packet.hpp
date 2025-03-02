@@ -114,7 +114,7 @@ public:
     return can_frame;
   }
 
-  can_msgs::msg::Frame createWriteParameter(const uint16_t index, const std::array<uint8_t, 4> & param)
+  const can_msgs::msg::Frame &createWriteParameter(const uint16_t index, const std::array<uint8_t, 4> & param)
   {
     default_msg_.data[0] = index & 0x00ff;
     default_msg_.data[1] = index >> 8;
@@ -125,7 +125,7 @@ public:
     return default_msg_;
   }
 
-  can_msgs::msg::Frame createChangeRunMode(const uint8_t mode_id)
+  const can_msgs::msg::Frame &createChangeRunMode(const uint8_t mode_id)
   {
     std::array<uint8_t, 4> param;
     param[0] = mode_id;
@@ -142,7 +142,7 @@ public:
     return createMoveCommand(param);
   }
 
-  can_msgs::msg::Frame createZeroPosition()
+  const can_msgs::msg::Frame &createZeroPosition()
   {
     default_msg_.data.fill(0);
     default_msg_.data[0] = 1;
@@ -150,27 +150,27 @@ public:
     return default_msg_;
   }
 
-  can_msgs::msg::Frame createEnableTorqueCommand()
+  const can_msgs::msg::Frame &createEnableTorqueCommand()
   {
     default_msg_.data.fill(0);
     default_msg_.id = frame_id_.getEnableTorqueId();
     return default_msg_;
   }
 
-  can_msgs::msg::Frame createDisableTorqueCommand()
+  const can_msgs::msg::Frame &createDisableTorqueCommand()
   {
     default_msg_.data.fill(0);
     default_msg_.id = frame_id_.getResetTorqueId();
     return default_msg_;
   }
 
-  can_msgs::msg::Frame createGetFeedbackCommand()
+  const can_msgs::msg::Frame& createGetFeedbackCommand()
   {
     default_msg_.id = frame_id_.getFeedbackId();
     return default_msg_;
   }
 
-  can_msgs::msg::Frame createPositionCommand(const float position)
+  const can_msgs::msg::Frame &createPositionCommand(const float position)
   {
     const auto param = anguler_position_converter_.toFourBytes(position);
     return createWriteParameter(ram_parameters::DEST_POSITION_REF, param);
@@ -193,7 +193,7 @@ public:
     return createChangeRunMode(run_modes::OPERATION);
   }
 
-  can_msgs::msg::Frame createChangeToPositionModeCommand()
+  const can_msgs::msg::Frame &createChangeToPositionModeCommand()
   {
     return createChangeRunMode(run_modes::POSITION);
   }
