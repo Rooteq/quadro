@@ -21,7 +21,7 @@ def generate_launch_description():
     default_rviz_config = os.path.join(pkg_path, 'rviz', 'demo.rviz')
     robot_controllers = os.path.join(pkg_path, "config", "controllers.yaml")    
 
-    xacro_file = os.path.join(pkg_path,'urdf','cybergear_servo.urdf.xacro')
+    xacro_file = os.path.join(pkg_path,'description','quadro.xacro')
     robot_desc = Command(['xacro ', xacro_file])
 
 

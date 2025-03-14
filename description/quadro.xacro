@@ -1,0 +1,119 @@
+<?xml version="1.0" ?>
+<robot name="quadro" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<xacro:arg name="sim_mode" default="true"/>
+
+<xacro:include filename="$(find quadro)/description/materials.xacro" />
+<!-- <xacro:include filename="$(find quadro)/description/quadro.trans" /> -->
+<xacro:if value="$(arg sim_mode)">
+  <xacro:include filename="$(find quadro)/description/quadro.gazebo" />
+</xacro:if>
+
+<link name="base_link">
+  <inertial>
+    <origin xyz="-0.000584411215524606 0.00012078668947847333 0.020036075822933482" rpy="0 0 0"/>
+    <mass value="0.8821101167454488"/>
+    <inertia ixx="0.000352" iyy="0.000363" izz="0.000583" ixy="3e-06" iyz="0.0" ixz="-0.0"/>
+  </inertial>
+  <visual>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadro)/description/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadro)/description/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="link_1_1">
+  <inertial>
+    <origin xyz="-0.012749021534557922 0.0001313434135850603 0.04451702298542016" rpy="0 0 0"/>
+    <mass value="1.621189326543191"/>
+    <inertia ixx="0.001785" iyy="0.001338" izz="0.000977" ixy="2e-06" iyz="6e-06" ixz="-1.2e-05"/>
+  </inertial>
+  <visual>
+    <origin xyz="0.000251 -7e-06 -0.0365" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadro)/description/meshes/link_1_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="0.000251 -7e-06 -0.0365" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadro)/description/meshes/link_1_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="link_2_1">
+  <inertial>
+    <origin xyz="0.025429277256362695 -0.008464137973570403 0.008149150240915351" rpy="0 0 0"/>
+    <mass value="1.5970767317820915"/>
+    <inertia ixx="0.003865" iyy="0.002207" izz="0.002316" ixy="0.00029" iyz="0.001344" ixz="-0.00026"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.010269 0.000144 -0.090593" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadro)/description/meshes/link_2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.010269 0.000144 -0.090593" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadro)/description/meshes/link_2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="link_3_1">
+  <inertial>
+    <origin xyz="0.003501872886119403 -0.04049316234641598 -0.0005238984066143759" rpy="0 0 0"/>
+    <mass value="0.2609392030209961"/>
+    <inertia ixx="0.000861" iyy="2.8e-05" izz="0.000835" ixy="-0.0" iyz="1.3e-05" ixz="-0.0"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.056769 0.141957 -0.232219" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadro)/description/meshes/link_3_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.056769 0.141957 -0.232219" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadro)/description/meshes/link_3_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<joint name="BR1" type="continuous">
+  <origin xyz="-0.000251 7e-06 0.0365" rpy="0 0 0"/>
+  <parent link="base_link"/>
+  <child link="link_1_1"/>
+  <axis xyz="0.0 0.0 -1.0"/>
+  <limit effort="12" velocity="30" lower="-12.565" upper="12.565"/>
+</joint>
+
+<joint name="BR2" type="continuous">
+  <origin xyz="0.01052 -0.000151 0.054093" rpy="0 0 0"/>
+  <parent link="link_1_1"/>
+  <child link="link_2_1"/>
+  <axis xyz="-1.0 0.0 0.0"/>
+  <limit effort="12" velocity="30" lower="-12.565" upper="12.565"/>
+</joint>
+
+<joint name="BR3" type="continuous">
+  <origin xyz="0.0465 -0.141813 0.141626" rpy="0 0 0"/>
+  <parent link="link_2_1"/>
+  <child link="link_3_1"/>
+  <axis xyz="-1.0 0.0 0.0"/>
+  <limit effort="12" velocity="30" lower="-12.565" upper="12.565"/>
+</joint>
+
+</robot>

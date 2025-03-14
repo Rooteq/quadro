@@ -77,8 +77,7 @@ install(TARGETS
 
 install(
   DIRECTORY
-    meshes
-    urdf
+    description
     launch
     rviz
     hardware

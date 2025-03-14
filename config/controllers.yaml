@@ -8,8 +8,9 @@ controller_manager:
 joint_trajectory_controller:
   ros__parameters:
     joints:
-      - FR1
-      - FR2
+      - BR1
+      - BR2
+      - BR3
 
     command_interfaces:
       - position
