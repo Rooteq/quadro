@@ -8,6 +8,8 @@
   <xacro:include filename="$(find quadro)/description/quadro.gazebo" />
 </xacro:if>
 
+<link name="world"></link>
+
 <link name="base_link">
   <inertial>
     <origin xyz="-0.000584411215524606 0.00012078668947847333 0.020036075822933482" rpy="0 0 0"/>
@@ -92,12 +94,19 @@
   </collision>
 </link>
 
+<joint name="base_joint" type="fixed">
+    <origin xyz="0.0 0.0 -0.07" rpy="0 0 0"/>
+    <parent link="world"/>
+    <child link="base_link"/>        
+</joint>
+
+
 <joint name="BR1" type="continuous">
   <origin xyz="-0.000251 7e-06 0.0365" rpy="0 0 0"/>
   <parent link="base_link"/>
   <child link="link_1_1"/>
   <axis xyz="0.0 0.0 -1.0"/>
-  <limit effort="12" velocity="30" lower="-12.565" upper="12.565"/>
+  <limit effort="12" velocity="2" lower="-12.565" upper="12.565"/>
 </joint>
 
 <joint name="BR2" type="continuous">
@@ -105,7 +114,7 @@
   <parent link="link_1_1"/>
   <child link="link_2_1"/>
   <axis xyz="-1.0 0.0 0.0"/>
-  <limit effort="12" velocity="30" lower="-12.565" upper="12.565"/>
+  <limit effort="12" velocity="2" lower="-12.565" upper="12.565"/>
 </joint>
 
 <joint name="BR3" type="continuous">
@@ -113,7 +122,7 @@
   <parent link="link_2_1"/>
   <child link="link_3_1"/>
   <axis xyz="-1.0 0.0 0.0"/>
-  <limit effort="12" velocity="30" lower="-12.565" upper="12.565"/>
+  <limit effort="12" velocity="2" lower="-12.565" upper="12.565"/>
 </joint>
 
 </robot>
