@@ -267,7 +267,7 @@ namespace quadro
 
       if(actuator->cmd_vel_ == actuator->last_cmd_vel_) {return hardware_interface::return_type::OK;}
 
-      if(sendFrame(actuator->getPositionCommandMessage(-(actuator->cmd_vel_))) != hardware_interface::return_type::OK)
+      if(sendFrame(actuator->getPositionCommandMessage(actuator->device_id_ == 3 ? (actuator->cmd_vel_) : -(actuator->cmd_vel_))) != hardware_interface::return_type::OK) // FIX THIS SOMEHOW
       {
         return hardware_interface::return_type::ERROR;
       }
@@ -332,9 +332,18 @@ namespace quadro
     uint8_t device_id = (frame.id >> 8) & 0xFF;
 
     auto& actuator = actuators[device_id_to_actuator_name_[device_id]];
-    
-    actuator->state_pos_ = -(actuator->packet_->parsePosition(frame.data));
-    actuator->state_vel_ = -(actuator->packet_->parseVelocity(frame.data));
+   
+    // FIX THIS SOMEHOW 
+    if (actuator->device_id_ == 3)
+    {
+      actuator->state_pos_ = (actuator->packet_->parsePosition(frame.data));
+      actuator->state_vel_ = (actuator->packet_->parseVelocity(frame.data));
+    }
+    else
+    {
+      actuator->state_pos_ = -(actuator->packet_->parsePosition(frame.data));
+      actuator->state_vel_ = -(actuator->packet_->parseVelocity(frame.data));
+    }
 
   }
 

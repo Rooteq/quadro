@@ -1,12 +1,16 @@
 <?xml version="1.0" ?>
 <robot name="quadro" xmlns:xacro="http://www.ros.org/wiki/xacro">
-<xacro:arg name="sim_mode" default="true"/>
+<xacro:arg name="sim_mode" default="false"/>
 
 <xacro:include filename="$(find quadro)/description/materials.xacro" />
 <!-- <xacro:include filename="$(find quadro)/description/quadro.trans" /> -->
 <xacro:if value="$(arg sim_mode)">
   <xacro:include filename="$(find quadro)/description/quadro.gazebo" />
 </xacro:if>
+
+<xacro:unless value="$(arg sim_mode)">
+  <xacro:include filename="$(find quadro)/description/ros2_control.xacro" />
+</xacro:unless>
 
 <link name="world"></link>
 
@@ -106,7 +110,7 @@
   <parent link="base_link"/>
   <child link="link_1_1"/>
   <axis xyz="0.0 0.0 -1.0"/>
-  <limit effort="12" velocity="2" lower="-12.565" upper="12.565"/>
+  <limit effort="12" velocity="2" lower="-1.57" upper="1.57"/>
 </joint>
 
 <joint name="BR2" type="continuous">
@@ -114,7 +118,7 @@
   <parent link="link_1_1"/>
   <child link="link_2_1"/>
   <axis xyz="-1.0 0.0 0.0"/>
-  <limit effort="12" velocity="2" lower="-12.565" upper="12.565"/>
+  <limit effort="120" velocity="4" lower="0.0" upper="1.20"/>
 </joint>
 
 <joint name="BR3" type="continuous">
@@ -122,7 +126,7 @@
   <parent link="link_2_1"/>
   <child link="link_3_1"/>
   <axis xyz="-1.0 0.0 0.0"/>
-  <limit effort="12" velocity="2" lower="-12.565" upper="12.565"/>
+  <limit effort="120" velocity="4" lower="0.0" upper="1.20"/>
 </joint>
 
 </robot>

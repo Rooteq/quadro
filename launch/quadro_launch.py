@@ -18,7 +18,7 @@ from launch_ros.actions import Node
 def generate_launch_description():
     # Get package directory
     pkg_path = get_package_share_directory('quadro')
-    default_rviz_config = os.path.join(pkg_path, 'rviz', 'demo.rviz')
+    default_rviz_config = os.path.join(pkg_path, 'config', 'rviz_real.rviz')
     robot_controllers = os.path.join(pkg_path, "config", "controllers.yaml")    
 
     xacro_file = os.path.join(pkg_path,'description','quadro.xacro')
@@ -50,6 +50,7 @@ def generate_launch_description():
         executable="ros2_control_node",
         parameters=[{'robot_description' : robot_description},
                     robot_controllers],
+        # arguments=["--ros-args", "--log-level", "DEBUG"],
         emulate_tty=True,
         output="screen"
     )
