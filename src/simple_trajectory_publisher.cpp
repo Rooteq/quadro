@@ -10,7 +10,7 @@ class TrajectoryPublisher : public rclcpp::Node
 {
 public:
   TrajectoryPublisher()
-  : Node("trajectory_publisher"), position_(0.0), total_duration(1.0)
+  : Node("trajectory_publisher"), position_(0.0), total_duration(3.0)
   {
     // Create publisher with reliable QoS
     auto qos = rclcpp::QoS(1).reliable();
@@ -20,11 +20,6 @@ public:
 
     num_of_points = 60;
     positions.resize(3);
-    l1 = 0.2;
-    l2 = 0.15;
-
-    joint_offset_1 = 0.3491;
-    joint_offset_2 = 2.3562;
 
     // Create timer for periodic publishing
     timer_ = this->create_wall_timer(
@@ -77,12 +72,6 @@ private:
 
   void ik_get_3dof_joints_pos(const double x, const double y, const double z)
   {
-      double l1 = 0.062;
-      double l2 = 0.2;   // Length of first link
-      double l3 = 0.15;  // Length of second link
-
-      double joint_offset_2 = 0.349;  // Offset for joint 1
-      double joint_offset_3 = 0.785;  // Offset for joint 2
       double q1, q2, q3;
       double alfa, beta;
       
@@ -126,7 +115,7 @@ private:
       double robot_q3 = M_PI - q3 - joint_offset_3;
 
 
-    if(-1.57 < 0 || q1 > 1.57)
+    if(q1 < -1.57 || q1 > 1.57)
     {
       RCLCPP_INFO(get_logger(), "Wrong joint 1 setting");
       return;
@@ -152,9 +141,10 @@ private:
     trajectory_msg.joint_names = {"BR1", "BR2", "BR3"}; // Replace with your joint name
 
 
-    double radius = 0.05;
+    double radius = 0.04;
     double origin_x = 0.00;
-    double origin_y = 0.20;
+    double origin_y = -0.20;
+    double origin_z = 0.062;
 
     double angle_increment = 2.0 * M_PI / num_of_points;
     double time_increment = total_duration / num_of_points;
@@ -166,7 +156,8 @@ private:
       double angle = i * angle_increment;
       double point_time = i * time_increment;
 
-      ik_get_joints_pos(origin_x + radius*std::cos(angle), origin_y + radius*std::sin(angle));
+      // ik_get_3dof_joints_pos(0.0, origin_y + radius * std::cos(angle), origin_z + radius*std::sin(angle));
+      ik_get_3dof_joints_pos(origin_x + radius * std::cos(angle), origin_y + radius*std::sin(angle), 0.04);
 
       point.positions = positions;
       point.time_from_start.sec = static_cast<int>(point_time);
@@ -186,8 +177,12 @@ private:
   int num_of_points;
   const double total_duration;
 
-  double l1, l2;
-  double joint_offset_1, joint_offset_2;
+  double l1 = 0.062;
+  double l2 = 0.2;   // Length of first link
+  double l3 = 0.15;  // Length of second link
+
+  double joint_offset_2 = 0.349;  // Offset for joint 1
+  double joint_offset_3 = 0.785;  // Offset for joint 2
 
   unsigned int corner = 0;
 };
