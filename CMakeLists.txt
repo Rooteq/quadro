@@ -11,7 +11,13 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   rclcpp
   rclcpp_lifecycle
   ros2_socketcan
+  ament_index_cpp
+  sensor_msgs
 )
+
+#-----------------DELETE LATER ------------------
+list(APPEND CMAKE_PREFIX_PATH "/opt/openrobots")
+find_package(pinocchio REQUIRED)
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
@@ -26,6 +32,16 @@ ament_target_dependencies(trajectory_publisher
   rclcpp
   trajectory_msgs
 )
+
+#-------------------TORQUE WITH PINOCCHIO--------------------
+add_executable(torque_controller src/torque_controller.cpp)
+ament_target_dependencies(torque_controller
+  rclcpp
+  ament_index_cpp
+  sensor_msgs
+)
+target_link_libraries(torque_controller pinocchio::pinocchio)
+
 
 
 # uncomment the following section in order to fill in
@@ -73,6 +89,7 @@ install(TARGETS ${PROJECT_NAME}
 #--------------------CUSTOM NODE--------------------------#
 install(TARGETS
   trajectory_publisher
+  torque_controller
   DESTINATION lib/${PROJECT_NAME})
 
 install(
