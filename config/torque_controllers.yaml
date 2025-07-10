@@ -1,13 +1,17 @@
 controller_manager:
   ros__parameters:
-    effort_controller:
-      type: effort_controllers/JointGroupEffortController
+    update_rate: 100  # Hz
+    
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
-    update_rate: 100  # Hz
-
+    
+    effort_controller:
+      type: forward_command_controller/ForwardCommandController
 
 effort_controller:
   ros__parameters:
     joints:
-      - shaft_joint
+      - joint_br_1
+      - joint_br_2
+      - joint_br_3
+    interface_name: effort

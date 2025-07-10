@@ -9,17 +9,41 @@
     <hardware>
       <plugin>gz_ros2_control/GazeboSimSystem</plugin>
     </hardware>
-    <joint name="shaft_joint">
+    <joint name="joint_br_1">
       <command_interface name="effort">
         <param name="min">-12</param>
         <param name="max">12</param>
       </command_interface>
       <state_interface name="position">
-        <param name="initial_value">1.0</param>
+        <param name="initial_value">0.0</param>
       </state_interface>
       <state_interface name="velocity"/>
-      <state_interface name="effort"/>
     </joint>
+    <joint name="joint_br_2">
+      <command_interface name="effort">
+        <param name="min">-12</param>
+        <param name="max">12</param>
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">0.0</param>
+      </state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="joint_br_3">
+      <command_interface name="effort">
+        <param name="min">-12</param>
+        <param name="max">12</param>
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">0.0</param>
+      </state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+
+      <!-- <joint name="l4_l3">
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+    </joint> -->
   </ros2_control>
 
   <gazebo>
@@ -38,6 +62,16 @@
     <material>${body_color}</material>
     <self_collide>true</self_collide>
   </gazebo>
-</xacro:if>
 
+  <gazebo reference="joint_br_1">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="joint_br_2">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+  <gazebo reference="joint_br_3">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+</xacro:if>
 </robot>

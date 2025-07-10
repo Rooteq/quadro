@@ -11,7 +11,7 @@ from launch.actions import (
     ExecuteProcess,
     IncludeLaunchDescription,
 )
-from launch.actions import RegisterEventHandler, SetEnvironmentVariable
+from launch.actions import RegisterEventHandler, SetEnvironmentVariable, TimerAction
 from launch.event_handlers import OnProcessExit, OnProcessStart
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, Command
@@ -66,7 +66,9 @@ def generate_launch_description():
                 "/gz_sim.launch.py",
             ]
         ),
-        launch_arguments=[("gz_args", [LaunchConfiguration("world"), ".sdf", " -r"])],
+        # launch_arguments=[("gz_args", [LaunchConfiguration("world"), ".sdf", " -r"])],
+        # launch_arguments=[("gz_args", [LaunchConfiguration("world"), ".sdf", " -r -v 4" " --physics-engine gz-physics-bullet-featherstone-plugin"])],
+        launch_arguments=[("gz_args", ["empty.sdf", " -r -v 4" " --physics-engine gz-physics-bullet-featherstone-plugin"])],
     )
 
     gz_spawn_entity = Node(
@@ -81,8 +83,8 @@ def generate_launch_description():
             "-R","0.0",
             "-P","0.0",
             "-Y","0.0",
-            "-name","quadro",
-            "-allow_renaming","false",
+            "-name","robot",
+            "-allow_renaming","true",
         ],
     )
 
@@ -139,6 +141,8 @@ def generate_launch_description():
         output='screen'
     )
 
+    delayed_spawn = TimerAction(period=5.0, actions=[gz_spawn_entity])
+
     return LaunchDescription(
         [
             DeclareLaunchArgument(
@@ -152,8 +156,7 @@ def generate_launch_description():
                 default_value='link',
                 description='Name of end-effector frame'
             ),
-            
-            
+
             RegisterEventHandler(
                 event_handler=OnProcessExit(
                     target_action=gz_spawn_entity,
@@ -162,7 +165,7 @@ def generate_launch_description():
             ),
             RegisterEventHandler(
                 event_handler=OnProcessExit(
-                    target_action=gz_spawn_entity,
+                    target_action=load_joint_state_broadcaster,
                     on_exit=[load_diff_drive_controller],
                 )
             ),
@@ -170,20 +173,20 @@ def generate_launch_description():
             arguments,
             gazebo,
             node_robot_state_publisher,
-            gz_spawn_entity,
+            delayed_spawn,
             bridge,
             rviz,
 
-            Node(
-            package='quadro',
-            executable='torque_controller',
-            name='forward_kinematics_node',
-            arguments=[
-                LaunchConfiguration('urdf_file'),
-                LaunchConfiguration('end_effector_frame')
-            ],
-            output='screen'
-        )
+            # Node(
+            # package='quadro',
+            # executable='torque_controller',
+            # name='forward_kinematics_node',
+            # arguments=[
+            #     LaunchConfiguration('urdf_file'),
+            #     LaunchConfiguration('end_effector_frame')
+            # ],
+            # output='screen'
+        # )
 
         ]
     )
