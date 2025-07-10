@@ -13,6 +13,7 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   ros2_socketcan
   ament_index_cpp
   sensor_msgs
+  std_msgs
 )
 
 #-----------------DELETE LATER ------------------
@@ -39,6 +40,7 @@ ament_target_dependencies(torque_controller
   rclcpp
   ament_index_cpp
   sensor_msgs
+  std_msgs
 )
 target_link_libraries(torque_controller pinocchio::pinocchio)
 
