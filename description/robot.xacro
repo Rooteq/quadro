@@ -5,29 +5,93 @@
 <xacro:arg name="sim_mode" default="false"/>
 
 <xacro:if value="$(arg sim_mode)">
-  <xacro:include filename="$(find quadro)/description/robot.gazebo" />
+  <xacro:include filename="$(find quadro)/description/robot_joint_position.gazebo" />
 </xacro:if>
 
 <xacro:unless value="$(arg sim_mode)">
   <xacro:include filename="$(find quadro)/description/robot_ros2_control.xacro" />
 </xacro:unless>
   <!-- Link motor -->
-  <link name="world"/>
+  <!-- <link name="world"/>
 
   <joint name="fixed" type="fixed">
     <parent link="world"/>
     <child link="motor"/>
-  </joint>
+  </joint> -->
 
-  <link name="motor">
+  <link name="back_plate">
     <inertial>
-      <origin xyz="0.00027739 0.000267795 0.0236674" rpy="0 0 0"/>
-      <mass value="0.254057"/>
-      <inertia ixx="0.000130963" ixy="2.48748e-08" ixz="1.56476e-08" iyy="0.000134228" iyz="-9.95815e-07" izz="0.0002245"/>
+      <origin xyz="-0.139034 0.00943483 -0.0243213" rpy="0 0 0"/>
+      <mass value="2.38325"/>
+      <inertia ixx="0.0204343" ixy="-3.21203e-05" ixz="6.9264e-20" iyy="0.00715196" iyz="-4.17004e-19" izz="0.0254162"/>
     </inertial>
+    <!-- Part back_stop -->
+    <visual>
+      <origin xyz="-0.139034 -0.0331652 -0.058441" rpy="0 -0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/back_stop.stl"/>
+      </geometry>
+      <material name="back_stop_material">
+        <color rgba="1 0.756863 0.054902 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.139034 -0.0331652 -0.058441" rpy="0 -0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/back_stop.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part side_pipe -->
+    <visual>
+      <origin xyz="-0.0083688 0.0999348 -0.058441" rpy="0 -0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/side_pipe.stl"/>
+      </geometry>
+      <material name="side_pipe_material">
+        <color rgba="0 0 0 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.0083688 0.0999348 -0.058441" rpy="0 -0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/side_pipe.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part back_plate -->
+    <visual>
+      <origin xyz="-0.139034 0.0999348 -0.058441" rpy="0 -0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/back_plate.stl"/>
+      </geometry>
+      <material name="back_plate_material">
+        <color rgba="1 0.756863 0.054902 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.139034 0.0999348 -0.058441" rpy="0 -0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/back_plate.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part battery -->
+    <visual>
+      <origin xyz="-0.0725337 -0.0125652 -0.028441" rpy="0 -6.12323e-17 1.5708"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/battery.stl"/>
+      </geometry>
+      <material name="battery_material">
+        <color rgba="0.768627 0.886275 0.952941 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.0725337 -0.0125652 -0.028441" rpy="0 -6.12323e-17 1.5708"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/battery.stl"/>
+      </geometry>
+    </collision>
     <!-- Part motor -->
     <visual>
-      <origin xyz="-9.04138e-15 0.000467452 0.011" rpy="-1.5708 -1.5708 0"/>
+      <origin xyz="-0.194034 -0.0920652 -0.023441" rpy="3.14159 5.95406e-36 -1.5708"/>
       <geometry>
         <mesh filename="file://$(find quadro)/description/assets/motor.stl"/>
       </geometry>
@@ -36,54 +100,14 @@
       </material>
     </visual>
     <collision>
-      <origin xyz="-9.04138e-15 0.000467452 0.011" rpy="-1.5708 -1.5708 0"/>
+      <origin xyz="-0.194034 -0.0920652 -0.023441" rpy="3.14159 5.95406e-36 -1.5708"/>
       <geometry>
         <mesh filename="file://$(find quadro)/description/assets/motor.stl"/>
       </geometry>
     </collision>
-  </link>
-  <!-- Link shaft -->
-  <link name="shaft">
-    <inertial>
-      <origin xyz="-0.0116844 -0.000821852 -0.0537485" rpy="0 0 0"/>
-      <mass value="0.655553"/>
-      <inertia ixx="0.000962851" ixy="-5.48395e-06" ixz="-5.70703e-05" iyy="0.000812955" iyz="-2.51975e-06" izz="0.000413677"/>
-    </inertial>
-    <!-- Part lin_1_support_br -->
-    <visual>
-      <origin xyz="-0.028 -4.90198e-17 -0.0735" rpy="1.5708 -1.5708 0"/>
-      <geometry>
-        <mesh filename="file://$(find quadro)/description/assets/lin_1_support_br.stl"/>
-      </geometry>
-      <material name="lin_1_support_br_material">
-        <color rgba="1 0.756863 0.054902 1"/>
-      </material>
-    </visual>
-    <collision>
-      <origin xyz="-0.028 -4.90198e-17 -0.0735" rpy="1.5708 -1.5708 0"/>
-      <geometry>
-        <mesh filename="file://$(find quadro)/description/assets/lin_1_support_br.stl"/>
-      </geometry>
-    </collision>
-    <!-- Part shaft -->
-    <visual>
-      <origin xyz="-5.42101e-20 1.05626e-18 0.01" rpy="1.5708 1.5708 0"/>
-      <geometry>
-        <mesh filename="file://$(find quadro)/description/assets/shaft.stl"/>
-      </geometry>
-      <material name="shaft_material">
-        <color rgba="0.498039 0.498039 0.498039 1"/>
-      </material>
-    </visual>
-    <collision>
-      <origin xyz="-5.42101e-20 1.05626e-18 0.01" rpy="1.5708 1.5708 0"/>
-      <geometry>
-        <mesh filename="file://$(find quadro)/description/assets/shaft.stl"/>
-      </geometry>
-    </collision>
     <!-- Part motor_2 -->
     <visual>
-      <origin xyz="-0.017 -4.95232e-17 -0.0735" rpy="-1.5708 1.69014e-15 8.3359e-16"/>
+      <origin xyz="-0.194034 0.110935 -0.023441" rpy="3.14159 5.95406e-36 1.5708"/>
       <geometry>
         <mesh filename="file://$(find quadro)/description/assets/motor.stl"/>
       </geometry>
@@ -92,86 +116,14 @@
       </material>
     </visual>
     <collision>
-      <origin xyz="-0.017 -4.95232e-17 -0.0735" rpy="-1.5708 1.69014e-15 8.3359e-16"/>
+      <origin xyz="-0.194034 0.110935 -0.023441" rpy="3.14159 5.95406e-36 1.5708"/>
       <geometry>
         <mesh filename="file://$(find quadro)/description/assets/motor.stl"/>
       </geometry>
     </collision>
-  </link>
-  <!-- Link lin_2_br -->
-  <link name="lin_2_br">
-    <inertial>
-      <origin xyz="-0.00848816 -0.0181227 -0.0467514" rpy="0 0 0"/>
-      <mass value="0.772124"/>
-      <inertia ixx="0.00261391" ixy="-0.000696337" ixz="-0.000208013" iyy="0.000968067" iyz="-0.000398431" izz="0.00272243"/>
-    </inertial>
-    <!-- Part lin_2_br -->
-    <visual>
-      <origin xyz="-0.0577297 0.123802 -0.0195" rpy="1.5708 1.39416e-15 2.00713"/>
-      <geometry>
-        <mesh filename="file://$(find quadro)/description/assets/lin_2_br.stl"/>
-      </geometry>
-      <material name="lin_2_br_material">
-        <color rgba="1 0.756863 0.054902 1"/>
-      </material>
-    </visual>
-    <collision>
-      <origin xyz="-0.0577297 0.123802 -0.0195" rpy="1.5708 1.39416e-15 2.00713"/>
-      <geometry>
-        <mesh filename="file://$(find quadro)/description/assets/lin_2_br.stl"/>
-      </geometry>
-    </collision>
-    <!-- Part shaft_2 -->
-    <visual>
-      <origin xyz="1.57772e-30 0 0.01" rpy="1.5708 1.5708 0"/>
-      <geometry>
-        <mesh filename="file://$(find quadro)/description/assets/shaft.stl"/>
-      </geometry>
-      <material name="shaft_2_material">
-        <color rgba="0.498039 0.498039 0.498039 1"/>
-      </material>
-    </visual>
-    <collision>
-      <origin xyz="1.57772e-30 0 0.01" rpy="1.5708 1.5708 0"/>
-      <geometry>
-        <mesh filename="file://$(find quadro)/description/assets/shaft.stl"/>
-      </geometry>
-    </collision>
-    <!-- Part lin_3_top_r -->
-    <visual>
-      <origin xyz="6.64905e-16 -1.38778e-16 -0.0645" rpy="1.5708 -1.0245e-15 1.22173"/>
-      <geometry>
-        <mesh filename="file://$(find quadro)/description/assets/lin_3_top_r.stl"/>
-      </geometry>
-      <material name="lin_3_top_r_material">
-        <color rgba="1 0.756863 0.054902 1"/>
-      </material>
-    </visual>
-    <collision>
-      <origin xyz="6.64905e-16 -1.38778e-16 -0.0645" rpy="1.5708 -1.0245e-15 1.22173"/>
-      <geometry>
-        <mesh filename="file://$(find quadro)/description/assets/lin_3_top_r.stl"/>
-      </geometry>
-    </collision>
-    <!-- Part lin_3_bot_r -->
-    <visual>
-      <origin xyz="6.87456e-16 -1.11022e-16 -0.0645" rpy="1.5708 -1.0245e-15 1.22173"/>
-      <geometry>
-        <mesh filename="file://$(find quadro)/description/assets/lin_3_bot_r.stl"/>
-      </geometry>
-      <material name="lin_3_bot_r_material">
-        <color rgba="1 0.756863 0.054902 1"/>
-      </material>
-    </visual>
-    <collision>
-      <origin xyz="6.87456e-16 -1.11022e-16 -0.0645" rpy="1.5708 -1.0245e-15 1.22173"/>
-      <geometry>
-        <mesh filename="file://$(find quadro)/description/assets/lin_3_bot_r.stl"/>
-      </geometry>
-    </collision>
     <!-- Part motor_3 -->
     <visual>
-      <origin xyz="7.51249e-16 -9.71445e-17 -0.0385" rpy="2.70526 1.5708 0"/>
+      <origin xyz="-0.0840337 -0.0920652 -0.023441" rpy="3.14159 5.95406e-36 -1.5708"/>
       <geometry>
         <mesh filename="file://$(find quadro)/description/assets/motor.stl"/>
       </geometry>
@@ -180,14 +132,262 @@
       </material>
     </visual>
     <collision>
-      <origin xyz="7.51249e-16 -9.71445e-17 -0.0385" rpy="2.70526 1.5708 0"/>
+      <origin xyz="-0.0840337 -0.0920652 -0.023441" rpy="3.14159 5.95406e-36 -1.5708"/>
       <geometry>
         <mesh filename="file://$(find quadro)/description/assets/motor.stl"/>
       </geometry>
     </collision>
+    <!-- Part side_pipe_2 -->
+    <visual>
+      <origin xyz="-0.139034 -0.0810652 0.0614484" rpy="3.14159 -0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/side_pipe.stl"/>
+      </geometry>
+      <material name="side_pipe_2_material">
+        <color rgba="0 0 0 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.139034 -0.0810652 0.0614484" rpy="3.14159 -0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/side_pipe.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part motor_4 -->
+    <visual>
+      <origin xyz="-0.0840337 0.110935 -0.023441" rpy="3.14159 5.95406e-36 1.5708"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/motor.stl"/>
+      </geometry>
+      <material name="motor_4_material">
+        <color rgba="0.498039 0.498039 0.498039 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.0840337 0.110935 -0.023441" rpy="3.14159 5.95406e-36 1.5708"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/motor.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part back_stop_2 -->
+    <visual>
+      <origin xyz="-0.139034 0.0520348 -0.058441" rpy="0 -0 3.14159"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/back_stop.stl"/>
+      </geometry>
+      <material name="back_stop_2_material">
+        <color rgba="1 0.756863 0.054902 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.139034 0.0520348 -0.058441" rpy="0 -0 3.14159"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/back_stop.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part back_plate_2 -->
+    <visual>
+      <origin xyz="-0.139034 -0.0810652 -0.058441" rpy="0 -0 3.14159"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/back_plate.stl"/>
+      </geometry>
+      <material name="back_plate_2_material">
+        <color rgba="1 0.756863 0.054902 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.139034 -0.0810652 -0.058441" rpy="0 -0 3.14159"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/back_plate.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part main_pipe -->
+    <visual>
+      <origin xyz="-0.139034 -0.133065 -0.058441" rpy="0 -0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/main_pipe.stl"/>
+      </geometry>
+      <material name="main_pipe_material">
+        <color rgba="0 0 0 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.139034 -0.133065 -0.058441" rpy="0 -0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/main_pipe.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part battery_2 -->
+    <visual>
+      <origin xyz="-0.205534 -0.0125652 -0.028441" rpy="3.14159 -6.12323e-17 1.5708"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/battery.stl"/>
+      </geometry>
+      <material name="battery_2_material">
+        <color rgba="0.768627 0.886275 0.952941 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.205534 -0.0125652 -0.028441" rpy="3.14159 -6.12323e-17 1.5708"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/battery.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Link shaft -->
+  <link name="shaft">
+    <inertial>
+      <origin xyz="-0.00743033 0.00365203 -0.0538481" rpy="0 0 0"/>
+      <mass value="0.500834"/>
+      <inertia ixx="0.000715416" ixy="-4.87254e-05" ixz="-3.36343e-05" iyy="0.000667976" iyz="1.74582e-05" izz="0.000280763"/>
+    </inertial>
+    <!-- Part lin_1_support_br -->
+    <visual>
+      <origin xyz="-0.0242487 0.014 -0.0735" rpy="1.0472 -1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_1_support_br.stl"/>
+      </geometry>
+      <material name="lin_1_support_br_material">
+        <color rgba="1 0.756863 0.054902 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.0242487 0.014 -0.0735" rpy="1.0472 -1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_1_support_br.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part motor_5 -->
+    <visual>
+      <origin xyz="-0.0147224 0.0085 -0.0735" rpy="-1.5708 6.61824e-17 -0.523599"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/motor.stl"/>
+      </geometry>
+      <material name="motor_5_material">
+        <color rgba="0.498039 0.498039 0.498039 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.0147224 0.0085 -0.0735" rpy="-1.5708 6.61824e-17 -0.523599"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/motor.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part shaft -->
+    <visual>
+      <origin xyz="0 0 0.01" rpy="1.5708 1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/shaft.stl"/>
+      </geometry>
+      <material name="shaft_material">
+        <color rgba="0.498039 0.498039 0.498039 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.01" rpy="1.5708 1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/shaft.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Link shaft_2 -->
+  <link name="shaft_2">
+    <inertial>
+      <origin xyz="0.0106548 -0.00501565 -0.0435875" rpy="0 0 0"/>
+      <mass value="0.551476"/>
+      <inertia ixx="0.000599797" ixy="0.000304448" ixz="0.000186335" iyy="0.00130385" iyz="-9.91623e-05" izz="0.00132343"/>
+    </inertial>
+    <!-- Part lin_3_bot_r -->
+    <visual>
+      <origin xyz="2.77556e-17 8.04912e-16 -0.0645" rpy="1.5708 -3.60822e-16 2.79253"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_3_bot_r.stl"/>
+      </geometry>
+      <material name="lin_3_bot_r_material">
+        <color rgba="1 0.756863 0.054902 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="2.77556e-17 8.04912e-16 -0.0645" rpy="1.5708 -3.60822e-16 2.79253"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_3_bot_r.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part lin_3_top_r -->
+    <visual>
+      <origin xyz="2.77556e-17 8.04912e-16 -0.0645" rpy="1.5708 -2.77556e-16 2.79253"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_3_top_r.stl"/>
+      </geometry>
+      <material name="lin_3_top_r_material">
+        <color rgba="1 0.756863 0.054902 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="2.77556e-17 8.04912e-16 -0.0645" rpy="1.5708 -2.77556e-16 2.79253"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_3_top_r.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part shaft_2 -->
+    <visual>
+      <origin xyz="-2.77556e-17 -1.38778e-17 0.01" rpy="1.5708 1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/shaft.stl"/>
+      </geometry>
+      <material name="shaft_2_material">
+        <color rgba="0.498039 0.498039 0.498039 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-2.77556e-17 -1.38778e-17 0.01" rpy="1.5708 1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/shaft.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part lin_2_br -->
+    <visual>
+      <origin xyz="-0.123802 -0.0577297 -0.0195" rpy="1.5708 2.77556e-17 -2.70526"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_2_br.stl"/>
+      </geometry>
+      <material name="lin_2_br_material">
+        <color rgba="1 0.756863 0.054902 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.123802 -0.0577297 -0.0195" rpy="1.5708 2.77556e-17 -2.70526"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_2_br.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part motor_6 -->
+    <visual>
+      <origin xyz="2.77556e-17 8.04912e-16 -0.0385" rpy="1.13446 1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/motor.stl"/>
+      </geometry>
+      <material name="motor_6_material">
+        <color rgba="0.498039 0.498039 0.498039 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="2.77556e-17 8.04912e-16 -0.0385" rpy="1.13446 1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/motor.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Link shaft_3 -->
+  <link name="shaft_3">
+    <inertial>
+      <origin xyz="0.00299793 0.00329395 -0.0125923" rpy="0 0 0"/>
+      <mass value="0.140118"/>
+      <inertia ixx="3.25345e-05" ixy="-1.26752e-05" ixz="5.42207e-06" iyy="3.12409e-05" iyz="5.95746e-06" izz="4.62705e-05"/>
+    </inertial>
     <!-- Part bearing -->
     <visual>
-      <origin xyz="-0.068404 -0.187939 -0.074" rpy="3.14159 -2.10258e-15 0.436332"/>
+      <origin xyz="0.0353553 0.0353553 -0.0255" rpy="3.14159 -4.88498e-15 2.35619"/>
       <geometry>
         <mesh filename="file://$(find quadro)/description/assets/bearing.stl"/>
       </geometry>
@@ -196,22 +396,30 @@
       </material>
     </visual>
     <collision>
-      <origin xyz="-0.068404 -0.187939 -0.074" rpy="3.14159 -2.10258e-15 0.436332"/>
+      <origin xyz="0.0353553 0.0353553 -0.0255" rpy="3.14159 -4.88498e-15 2.35619"/>
       <geometry>
         <mesh filename="file://$(find quadro)/description/assets/bearing.stl"/>
       </geometry>
     </collision>
-  </link>
-  <!-- Link lin_top_r -->
-  <link name="lin_top_r">
-    <inertial>
-      <origin xyz="0.000389193 -0.00571215 -0.0142725" rpy="0 0 0"/>
-      <mass value="0.16278"/>
-      <inertia ixx="5.89235e-05" ixy="1.31711e-06" ixz="7.11295e-07" iyy="2.43111e-05" iyz="-1.04396e-05" izz="5.97519e-05"/>
-    </inertial>
+    <!-- Part shaft_3 -->
+    <visual>
+      <origin xyz="-2.77556e-17 -2.77556e-17 0.01" rpy="1.5708 1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/shaft.stl"/>
+      </geometry>
+      <material name="shaft_3_material">
+        <color rgba="0.498039 0.498039 0.498039 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-2.77556e-17 -2.77556e-17 0.01" rpy="1.5708 1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/shaft.stl"/>
+      </geometry>
+    </collision>
     <!-- Part lin_top_r -->
     <visual>
-      <origin xyz="7.00828e-16 0 0.003" rpy="1.5708 1.05466e-16 1.11022e-16"/>
+      <origin xyz="0 0 0.003" rpy="1.5708 -4.88498e-15 2.35619"/>
       <geometry>
         <mesh filename="file://$(find quadro)/description/assets/lin_top_r.stl"/>
       </geometry>
@@ -220,14 +428,63 @@
       </material>
     </visual>
     <collision>
-      <origin xyz="7.00828e-16 0 0.003" rpy="1.5708 1.05466e-16 1.11022e-16"/>
+      <origin xyz="0 0 0.003" rpy="1.5708 -4.88498e-15 2.35619"/>
       <geometry>
         <mesh filename="file://$(find quadro)/description/assets/lin_top_r.stl"/>
       </geometry>
     </collision>
+  </link>
+  <!-- Joint from shaft_2 to shaft_3 -->
+  <joint name="br_m3_s3" type="revolute">
+    <origin xyz="2.77556e-17 8.04912e-16 -0.0485" rpy="6.66134e-16 8.32667e-17 -0.349066"/>
+    <parent link="shaft_2"/>
+    <child link="shaft_3"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
+    <joint_properties friction="0.5"/>
+  </joint>
+  <!-- Link lin_4_r -->
+  <link name="lin_4_r">
+    <inertial>
+      <origin xyz="-0.000262324 0.0491557 -0.0035" rpy="0 0 0"/>
+      <mass value="0.0701023"/>
+      <inertia ixx="0.000371839" ixy="-2.10379e-06" ixz="-2.70636e-13" iyy="6.27155e-06" iyz="2.29312e-12" izz="0.000376266"/>
+    </inertial>
+    <!-- Part lin_4_r -->
+    <visual>
+      <origin xyz="0.2 5.55112e-17 0.005" rpy="1.5708 -5.55112e-17 5.55112e-17"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_4_r.stl"/>
+      </geometry>
+      <material name="lin_4_r_material">
+        <color rgba="1 0.756863 0.054902 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.2 5.55112e-17 0.005" rpy="1.5708 -5.55112e-17 5.55112e-17"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_4_r.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part feet -->
+    <visual>
+      <origin xyz="0.2 1.11022e-16 0.0315" rpy="1.5708 -5.55112e-17 5.55112e-17"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/feet.stl"/>
+      </geometry>
+      <material name="feet_material">
+        <color rgba="0 0 0 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.2 1.11022e-16 0.0315" rpy="1.5708 -5.55112e-17 5.55112e-17"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/feet.stl"/>
+      </geometry>
+    </collision>
     <!-- Part bearing_2 -->
     <visual>
-      <origin xyz="4.78784e-16 -0.05 -0.0255" rpy="3.14159 1.05466e-16 1.66533e-16"/>
+      <origin xyz="0 -0.05 -0.0035" rpy="3.14159 -0 5.55112e-17"/>
       <geometry>
         <mesh filename="file://$(find quadro)/description/assets/bearing.stl"/>
       </geometry>
@@ -236,18 +493,190 @@
       </material>
     </visual>
     <collision>
-      <origin xyz="4.78784e-16 -0.05 -0.0255" rpy="3.14159 1.05466e-16 1.66533e-16"/>
+      <origin xyz="0 -0.05 -0.0035" rpy="3.14159 -0 5.55112e-17"/>
       <geometry>
         <mesh filename="file://$(find quadro)/description/assets/bearing.stl"/>
       </geometry>
     </collision>
-    <!-- Part shaft_3 -->
+    <!-- Part bearing_3 -->
+    <visual>
+      <origin xyz="5.55112e-17 5.55112e-17 -0.0035" rpy="3.14159 -0 5.55112e-17"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/bearing.stl"/>
+      </geometry>
+      <material name="bearing_3_material">
+        <color rgba="0.615686 0.811765 0.929412 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="5.55112e-17 5.55112e-17 -0.0035" rpy="3.14159 -0 5.55112e-17"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/bearing.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Joint from shaft_2 to lin_4_r -->
+  <joint name="br_l4_l3" type="revolute">
+    <origin xyz="0.187939 -0.068404 -0.0705" rpy="1.38778e-15 9.4369e-16 2.00713"/>
+    <parent link="shaft_2"/>
+    <child link="lin_4_r"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
+    <joint_properties friction="0.5"/>
+    <mimic joint="br_m3_s3" multiplier="1.0"/>
+  </joint>
+  <!-- Joint from shaft to shaft_2 -->
+  <joint name="br_m2_s2" type="revolute">
+    <origin xyz="-0.00606218 0.0035 -0.0735" rpy="-2.61799 1.5708 0"/>
+    <parent link="shaft"/>
+    <child link="shaft_2"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
+    <joint_properties friction="0.5"/>
+  </joint>
+  <!-- Joint from back_plate to shaft -->
+  <joint name="br_m1_s1" type="revolute">
+    <origin xyz="-0.194034 0.120935 -0.023441" rpy="-1.5708 -5.95406e-36 -3.14159"/>
+    <parent link="back_plate"/>
+    <child link="shaft"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
+    <joint_properties friction="0.5"/>
+  </joint>
+  <!-- Link shaft_4 -->
+  <link name="shaft_4">
+    <inertial>
+      <origin xyz="0.00743033 0.00365203 -0.0535667" rpy="0 0 0"/>
+      <mass value="0.500834"/>
+      <inertia ixx="0.000709837" ixy="4.87254e-05" ixz="3.40867e-05" iyy="0.000662397" iyz="1.77194e-05" izz="0.000280763"/>
+    </inertial>
+    <!-- Part shaft_4 -->
+    <visual>
+      <origin xyz="0 0 0.01" rpy="1.5708 1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/shaft.stl"/>
+      </geometry>
+      <material name="shaft_4_material">
+        <color rgba="0.498039 0.498039 0.498039 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.01" rpy="1.5708 1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/shaft.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part motor_7 -->
+    <visual>
+      <origin xyz="0.0147224 0.0085 -0.0735" rpy="1.5708 -2.9934e-16 -2.61799"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/motor.stl"/>
+      </geometry>
+      <material name="motor_7_material">
+        <color rgba="0.498039 0.498039 0.498039 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.0147224 0.0085 -0.0735" rpy="1.5708 -2.9934e-16 -2.61799"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/motor.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part lin_1_support_bl -->
+    <visual>
+      <origin xyz="0.0840045 0.0485 -0.0735" rpy="2.0944 -1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_1_support_bl.stl"/>
+      </geometry>
+      <material name="lin_1_support_bl_material">
+        <color rgba="1 0.756863 0.054902 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.0840045 0.0485 -0.0735" rpy="2.0944 -1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_1_support_bl.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Link shaft_5 -->
+  <link name="shaft_5">
+    <inertial>
+      <origin xyz="0.00646492 0.00964883 -0.0435875" rpy="0 0 0"/>
+      <mass value="0.551476"/>
+      <inertia ixx="0.00103972" ixy="-0.000458604" ixz="0.000110756" iyy="0.000866019" iyz="0.000178954" izz="0.00132552"/>
+    </inertial>
+    <!-- Part lin_2_bl -->
+    <visual>
+      <origin xyz="2.77556e-17 1.38778e-17 -0.0195" rpy="1.5708 5.55112e-17 0.0872665"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_2_bl.stl"/>
+      </geometry>
+      <material name="lin_2_bl_material">
+        <color rgba="1 0.756863 0.054902 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="2.77556e-17 1.38778e-17 -0.0195" rpy="1.5708 5.55112e-17 0.0872665"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_2_bl.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part lin_3_top_l -->
+    <visual>
+      <origin xyz="-1.66533e-16 -8.18789e-16 0.087" rpy="-1.5708 4.02456e-15 -2.26893"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_3_top_l.stl"/>
+      </geometry>
+      <material name="lin_3_top_l_material">
+        <color rgba="1 0.756863 0.054902 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-1.66533e-16 -8.18789e-16 0.087" rpy="-1.5708 4.02456e-15 -2.26893"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_3_top_l.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part motor_8 -->
+    <visual>
+      <origin xyz="4.71845e-16 -7.35523e-16 -0.0385" rpy="-1.65806 1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/motor.stl"/>
+      </geometry>
+      <material name="motor_8_material">
+        <color rgba="0.498039 0.498039 0.498039 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="4.71845e-16 -7.35523e-16 -0.0385" rpy="-1.65806 1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/motor.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part lin_3_bot_l -->
+    <visual>
+      <origin xyz="3.05311e-16 -2.63678e-16 0.087" rpy="-1.5708 3.9968e-15 -2.26893"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_3_bot_l.stl"/>
+      </geometry>
+      <material name="lin_3_bot_l_material">
+        <color rgba="1 0.756863 0.054902 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="3.05311e-16 -2.63678e-16 0.087" rpy="-1.5708 3.9968e-15 -2.26893"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_3_bot_l.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part shaft_5 -->
     <visual>
       <origin xyz="0 1.38778e-17 0.01" rpy="1.5708 1.5708 0"/>
       <geometry>
         <mesh filename="file://$(find quadro)/description/assets/shaft.stl"/>
       </geometry>
-      <material name="shaft_3_material">
+      <material name="shaft_5_material">
         <color rgba="0.498039 0.498039 0.498039 1"/>
       </material>
     </visual>
@@ -258,81 +687,787 @@
       </geometry>
     </collision>
   </link>
-  <!-- Joint from lin_2_br to lin_top_r -->
-  <joint name="joint_br_3" type="revolute">
-    <origin xyz="7.31211e-16 -1.11022e-16 -0.0485" rpy="1.09146e-14 2.93123e-14 0.436332"/>
-    <parent link="lin_2_br"/>
-    <child link="lin_top_r"/>
-    <axis xyz="0 0 1"/>
-    <limit effort="10" velocity="12" lower="0.0" upper="1.57"/>
-    <joint_properties friction="0.5"/>
-  </joint>
-  <!-- Link lin_4_r -->
-  <link name="lin_4_r">
+  <!-- Link shaft_6 -->
+  <link name="shaft_6">
     <inertial>
-      <origin xyz="-0.000408625 -0.0336111 -5.65939e-10" rpy="0 0 0"/>
-      <mass value="0.0970714"/>
-      <inertia ixx="0.000341977" ixy="3.93308e-06" ixz="5.81744e-13" iyy="9.75737e-06" iyz="4.09918e-12" izz="0.000350941"/>
+      <origin xyz="-0.00299792 0.00329395 -0.0125923" rpy="0 0 0"/>
+      <mass value="0.140118"/>
+      <inertia ixx="3.25345e-05" ixy="1.26751e-05" ixz="-5.42205e-06" iyy="3.12408e-05" iyz="5.95745e-06" izz="4.62705e-05"/>
     </inertial>
-    <!-- Part lin_4_r -->
+    <!-- Part bearing_4 -->
     <visual>
-      <origin xyz="0.2 -2.77556e-17 -0.0085" rpy="-1.5708 9.74247e-17 -2.22045e-16"/>
-      <geometry>
-        <mesh filename="file://$(find quadro)/description/assets/lin_4_r.stl"/>
-      </geometry>
-      <material name="lin_4_r_material">
-        <color rgba="1 0.756863 0.054902 1"/>
-      </material>
-    </visual>
-    <collision>
-      <origin xyz="0.2 -2.77556e-17 -0.0085" rpy="-1.5708 9.74247e-17 -2.22045e-16"/>
-      <geometry>
-        <mesh filename="file://$(find quadro)/description/assets/lin_4_r.stl"/>
-      </geometry>
-    </collision>
-    <!-- Part bearing_3 -->
-    <visual>
-      <origin xyz="0 0.05 -2.77556e-17" rpy="-3.14159 9.74247e-17 -2.22045e-16"/>
+      <origin xyz="-0.0353553 0.0353553 -0.0255" rpy="3.05311e-15 5.55112e-17 0.785398"/>
       <geometry>
         <mesh filename="file://$(find quadro)/description/assets/bearing.stl"/>
       </geometry>
-      <material name="bearing_3_material">
+      <material name="bearing_4_material">
         <color rgba="0.615686 0.811765 0.929412 1"/>
       </material>
     </visual>
     <collision>
-      <origin xyz="0 0.05 -2.77556e-17" rpy="-3.14159 9.74247e-17 -2.22045e-16"/>
+      <origin xyz="-0.0353553 0.0353553 -0.0255" rpy="3.05311e-15 5.55112e-17 0.785398"/>
       <geometry>
         <mesh filename="file://$(find quadro)/description/assets/bearing.stl"/>
       </geometry>
     </collision>
+    <!-- Part shaft_6 -->
+    <visual>
+      <origin xyz="0 0 0.01" rpy="1.5708 1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/shaft.stl"/>
+      </geometry>
+      <material name="shaft_6_material">
+        <color rgba="0.498039 0.498039 0.498039 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.01" rpy="1.5708 1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/shaft.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part lin_top_l -->
+    <visual>
+      <origin xyz="-6.66134e-16 -6.10623e-16 0.1545" rpy="-1.5708 1.66533e-16 0.785398"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_top_l.stl"/>
+      </geometry>
+      <material name="lin_top_l_material">
+        <color rgba="1 0.756863 0.054902 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-6.66134e-16 -6.10623e-16 0.1545" rpy="-1.5708 1.66533e-16 0.785398"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_top_l.stl"/>
+      </geometry>
+    </collision>
   </link>
-  <!-- Joint from lin_2_br to lin_4_r -->
-  <joint name="l4_l3" type="revolute">
-    <origin xyz="-0.068404 -0.187939 -0.074" rpy="3.14159 -2.10258e-15 0.436332"/>
-    <parent link="lin_2_br"/>
-    <child link="lin_4_r"/>
+  <!-- Joint from shaft_5 to shaft_6 -->
+  <joint name="bl_m3_s3" type="revolute">
+    <origin xyz="3.05311e-16 -1.38778e-17 -0.0485" rpy="2.60902e-15 3.66374e-15 -2.26893"/>
+    <parent link="shaft_5"/>
+    <child link="shaft_6"/>
     <axis xyz="0 0 1"/>
     <limit effort="10" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
     <joint_properties friction="0.5"/>
-    <mimic joint="joint_br_3" multiplier="-1.0"/>
   </joint>
-  <!-- Joint from shaft to lin_2_br -->
-  <joint name="joint_br_2" type="revolute">
-    <origin xyz="-0.007 -8.6657e-16 -0.0735" rpy="1.5708 9.02056e-17 -1.5708"/>
-    <parent link="shaft"/>
-    <child link="lin_2_br"/>
+  <!-- Link lin_4_l -->
+  <link name="lin_4_l">
+    <inertial>
+      <origin xyz="-0.000262328 -0.0491558 -0.0035" rpy="0 0 0"/>
+      <mass value="0.0701023"/>
+      <inertia ixx="0.000371839" ixy="2.10381e-06" ixz="2.70636e-13" iyy="6.27154e-06" iyz="2.29312e-12" izz="0.000376266"/>
+    </inertial>
+    <!-- Part bearing_5 -->
+    <visual>
+      <origin xyz="-8.32667e-17 0 -0.0035" rpy="5.38458e-15 5.55112e-17 -1.11022e-16"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/bearing.stl"/>
+      </geometry>
+      <material name="bearing_5_material">
+        <color rgba="0.615686 0.811765 0.929412 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-8.32667e-17 0 -0.0035" rpy="5.38458e-15 5.55112e-17 -1.11022e-16"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/bearing.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part bearing_6 -->
+    <visual>
+      <origin xyz="-5.55112e-17 0.05 -0.0035" rpy="5.38458e-15 5.55112e-17 -1.11022e-16"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/bearing.stl"/>
+      </geometry>
+      <material name="bearing_6_material">
+        <color rgba="0.615686 0.811765 0.929412 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-5.55112e-17 0.05 -0.0035" rpy="5.38458e-15 5.55112e-17 -1.11022e-16"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/bearing.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part feet_2 -->
+    <visual>
+      <origin xyz="-0.2 0 0.0315" rpy="1.5708 -1.11022e-16 3.14159"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/feet.stl"/>
+      </geometry>
+      <material name="feet_2_material">
+        <color rgba="0 0 0 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.2 0 0.0315" rpy="1.5708 -1.11022e-16 3.14159"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/feet.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part lin_4_l -->
+    <visual>
+      <origin xyz="0.2 -5.55112e-17 0.1565" rpy="-1.5708 1.11022e-16 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_4_l.stl"/>
+      </geometry>
+      <material name="lin_4_l_material">
+        <color rgba="1 0.756863 0.054902 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.2 -5.55112e-17 0.1565" rpy="-1.5708 1.11022e-16 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_4_l.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Joint from shaft_5 to lin_4_l -->
+  <joint name="bl_l4_l3" type="revolute">
+    <origin xyz="0.128558 0.153209 -0.0705" rpy="1.02696e-15 -2.9976e-15 -1.48353"/>
+    <parent link="shaft_5"/>
+    <child link="lin_4_l"/>
     <axis xyz="0 0 1"/>
-    <limit effort="10" velocity="12" lower="-1.57" upper="0.0"/>
+    <limit effort="10" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
+    <joint_properties friction="0.5"/>
+    <mimic joint="bl_m3_s3" multiplier="1.0"/>
+  </joint>
+  <!-- Joint from shaft_4 to shaft_5 -->
+  <joint name="bl_m2_s2" type="revolute">
+    <origin xyz="0.00606218 0.0035 -0.0735" rpy="-1.5708 1.0472 -1.0472"/>
+    <parent link="shaft_4"/>
+    <child link="shaft_5"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
     <joint_properties friction="0.5"/>
   </joint>
-  <!-- Joint from motor to shaft -->
-  <joint name="joint_br_1" type="revolute">
-    <origin xyz="-9.8531e-15 0.000467452 0.021" rpy="-3.14159 6.71342e-16 -1.5708"/>
-    <parent link="motor"/>
-    <child link="shaft"/>
+  <!-- Joint from back_plate to shaft_4 -->
+  <joint name="bl_m1_s1" type="revolute">
+    <origin xyz="-0.0840337 0.120935 -0.023441" rpy="-1.5708 -5.95406e-36 -3.14159"/>
+    <parent link="back_plate"/>
+    <child link="shaft_4"/>
     <axis xyz="0 0 1"/>
-    <limit effort="10" velocity="12" lower="0.0" upper="1.57"/>
+    <limit effort="10" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
+    <joint_properties friction="0.5"/>
+  </joint>
+  <!-- Link shaft_7 -->
+  <link name="shaft_7">
+    <inertial>
+      <origin xyz="-0.00738234 -0.00373514 -0.0535667" rpy="0 0 0"/>
+      <mass value="0.500834"/>
+      <inertia ixx="0.000708695" ixy="4.94266e-05" ixz="-3.48065e-05" iyy="0.000663587" iyz="-1.64726e-05" izz="0.000280811"/>
+    </inertial>
+    <!-- Part lin_1_support_fr -->
+    <visual>
+      <origin xyz="-0.133888 -0.0773 -0.0735" rpy="2.0944 -1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_1_support_fr.stl"/>
+      </geometry>
+      <material name="lin_1_support_fr_material">
+        <color rgba="1 0.756863 0.054902 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.133888 -0.0773 -0.0735" rpy="2.0944 -1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_1_support_fr.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part motor_9 -->
+    <visual>
+      <origin xyz="-0.0147224 -0.0085 -0.0735" rpy="1.5708 -1.67792e-15 0.523599"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/motor.stl"/>
+      </geometry>
+      <material name="motor_9_material">
+        <color rgba="0.498039 0.498039 0.498039 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.0147224 -0.0085 -0.0735" rpy="1.5708 -1.67792e-15 0.523599"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/motor.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part shaft_7 -->
+    <visual>
+      <origin xyz="0 0 0.01" rpy="1.5708 1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/shaft.stl"/>
+      </geometry>
+      <material name="shaft_7_material">
+        <color rgba="0.498039 0.498039 0.498039 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.01" rpy="1.5708 1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/shaft.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Link shaft_8 -->
+  <link name="shaft_8">
+    <inertial>
+      <origin xyz="0.0110758 -0.00536086 -0.0435639" rpy="0 0 0"/>
+      <mass value="0.55218"/>
+      <inertia ixx="0.000598933" ixy="0.000301365" ixz="0.000181665" iyy="0.00129908" iyz="-9.53153e-05" izz="0.00131731"/>
+    </inertial>
+    <!-- Part lin_2_fr -->
+    <visual>
+      <origin xyz="0 5.55112e-17 0.0692" rpy="-1.5708 -2.22045e-16 0.436332"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_2_fr.stl"/>
+      </geometry>
+      <material name="lin_2_fr_material">
+        <color rgba="1 0.756863 0.054902 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 5.55112e-17 0.0692" rpy="-1.5708 -2.22045e-16 0.436332"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_2_fr.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part motor_10 -->
+    <visual>
+      <origin xyz="-7.21645e-16 6.10623e-16 -0.0385" rpy="1.13446 1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/motor.stl"/>
+      </geometry>
+      <material name="motor_10_material">
+        <color rgba="0.498039 0.498039 0.498039 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-7.21645e-16 6.10623e-16 -0.0385" rpy="1.13446 1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/motor.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part lin_3_top_r_2 -->
+    <visual>
+      <origin xyz="-5.82867e-16 6.52256e-16 -0.0645" rpy="1.5708 -6.10623e-16 2.79253"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_3_top_r.stl"/>
+      </geometry>
+      <material name="lin_3_top_r_2_material">
+        <color rgba="1 0.756863 0.054902 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-5.82867e-16 6.52256e-16 -0.0645" rpy="1.5708 -6.10623e-16 2.79253"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_3_top_r.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part shaft_8 -->
+    <visual>
+      <origin xyz="0 -1.38778e-17 0.01" rpy="1.5708 1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/shaft.stl"/>
+      </geometry>
+      <material name="shaft_8_material">
+        <color rgba="0.498039 0.498039 0.498039 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 -1.38778e-17 0.01" rpy="1.5708 1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/shaft.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part lin_3_bot_r_2 -->
+    <visual>
+      <origin xyz="-6.66134e-16 6.66134e-16 -0.0645" rpy="1.5708 -2.498e-16 2.79253"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_3_bot_r.stl"/>
+      </geometry>
+      <material name="lin_3_bot_r_2_material">
+        <color rgba="1 0.756863 0.054902 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-6.66134e-16 6.66134e-16 -0.0645" rpy="1.5708 -2.498e-16 2.79253"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_3_bot_r.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Link shaft_9 -->
+  <link name="shaft_9">
+    <inertial>
+      <origin xyz="0.00299793 0.00329395 -0.0125923" rpy="0 0 0"/>
+      <mass value="0.140118"/>
+      <inertia ixx="3.25345e-05" ixy="-1.26752e-05" ixz="5.42207e-06" iyy="3.12409e-05" iyz="5.95746e-06" izz="4.62705e-05"/>
+    </inertial>
+    <!-- Part lin_top_r_2 -->
+    <visual>
+      <origin xyz="4.16334e-17 -2.77556e-17 0.003" rpy="1.5708 3.88578e-16 2.35619"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_top_r.stl"/>
+      </geometry>
+      <material name="lin_top_r_2_material">
+        <color rgba="1 0.756863 0.054902 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="4.16334e-17 -2.77556e-17 0.003" rpy="1.5708 3.88578e-16 2.35619"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_top_r.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part bearing_7 -->
+    <visual>
+      <origin xyz="0.0353553 0.0353553 -0.0255" rpy="3.14159 -1.11022e-16 2.35619"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/bearing.stl"/>
+      </geometry>
+      <material name="bearing_7_material">
+        <color rgba="0.615686 0.811765 0.929412 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.0353553 0.0353553 -0.0255" rpy="3.14159 -1.11022e-16 2.35619"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/bearing.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part shaft_9 -->
+    <visual>
+      <origin xyz="2.77556e-17 2.77556e-17 0.01" rpy="1.5708 1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/shaft.stl"/>
+      </geometry>
+      <material name="shaft_9_material">
+        <color rgba="0.498039 0.498039 0.498039 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="2.77556e-17 2.77556e-17 0.01" rpy="1.5708 1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/shaft.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Joint from shaft_8 to shaft_9 -->
+  <joint name="fr_m3_s3" type="revolute">
+    <origin xyz="-7.21645e-16 5.96745e-16 -0.0485" rpy="-7.77156e-16 -4.71845e-16 -0.349066"/>
+    <parent link="shaft_8"/>
+    <child link="shaft_9"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
+    <joint_properties friction="0.5"/>
+  </joint>
+  <!-- Link lin_4_r_2 -->
+  <link name="lin_4_r_2">
+    <inertial>
+      <origin xyz="-0.000262324 0.0491557 -0.0035" rpy="0 0 0"/>
+      <mass value="0.0701023"/>
+      <inertia ixx="0.000371839" ixy="-2.10379e-06" ixz="-2.70636e-13" iyy="6.27155e-06" iyz="2.29312e-12" izz="0.000376266"/>
+    </inertial>
+    <!-- Part bearing_8 -->
+    <visual>
+      <origin xyz="-8.32667e-17 -1.38778e-16 -0.0035" rpy="-3.14159 6.10623e-16 -3.14159"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/bearing.stl"/>
+      </geometry>
+      <material name="bearing_8_material">
+        <color rgba="0.615686 0.811765 0.929412 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-8.32667e-17 -1.38778e-16 -0.0035" rpy="-3.14159 6.10623e-16 -3.14159"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/bearing.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part feet_3 -->
+    <visual>
+      <origin xyz="0.2 1.38778e-17 0.0315" rpy="1.5708 -0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/feet.stl"/>
+      </geometry>
+      <material name="feet_3_material">
+        <color rgba="0 0 0 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.2 1.38778e-17 0.0315" rpy="1.5708 -0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/feet.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part bearing_9 -->
+    <visual>
+      <origin xyz="-1.11022e-16 -0.05 -0.0035" rpy="-3.14159 2.22045e-16 -3.14159"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/bearing.stl"/>
+      </geometry>
+      <material name="bearing_9_material">
+        <color rgba="0.615686 0.811765 0.929412 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-1.11022e-16 -0.05 -0.0035" rpy="-3.14159 2.22045e-16 -3.14159"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/bearing.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part lin_4_r_2 -->
+    <visual>
+      <origin xyz="0.2 1.38778e-17 0.005" rpy="1.5708 -0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_4_r.stl"/>
+      </geometry>
+      <material name="lin_4_r_2_material">
+        <color rgba="1 0.756863 0.054902 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.2 1.38778e-17 0.005" rpy="1.5708 -0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_4_r.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Joint from shaft_8 to lin_4_r_2 -->
+  <joint name="fr_l4_l3" type="revolute">
+    <origin xyz="0.187939 -0.068404 -0.0705" rpy="1.66533e-16 -3.88578e-16 2.00713"/>
+    <parent link="shaft_8"/>
+    <child link="lin_4_r_2"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
+    <joint_properties friction="0.5"/>
+    <mimic joint="fr_m3_s3" multiplier="1.0"/>
+  </joint>
+  <!-- Joint from shaft_7 to shaft_8 -->
+  <joint name="fr_m2_s2" type="revolute">
+    <origin xyz="-0.00606218 -0.0035 -0.0735" rpy="0.523599 -1.5708 0"/>
+    <parent link="shaft_7"/>
+    <child link="shaft_8"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
+    <joint_properties friction="0.5"/>
+  </joint>
+  <!-- Joint from back_plate to shaft_7 -->
+  <joint name="fr_m1_s1" type="revolute">
+    <origin xyz="-0.194034 -0.102065 -0.023441" rpy="1.5708 -0 -3.14159"/>
+    <parent link="back_plate"/>
+    <child link="shaft_7"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
+    <joint_properties friction="0.5"/>
+  </joint>
+  <!-- Link motor -->
+  <link name="motor">
+    <inertial>
+      <origin xyz="0.00738234 -0.00373514 -0.0538481" rpy="0 0 0"/>
+      <mass value="0.500834"/>
+      <inertia ixx="0.000714274" ixy="-4.94266e-05" ixz="3.43609e-05" iyy="0.000669166" iyz="-1.61997e-05" izz="0.000280811"/>
+    </inertial>
+    <!-- Part motor_11 -->
+    <visual>
+      <origin xyz="0.0147224 -0.0085 -0.0735" rpy="-1.5708 -1.07746e-14 2.61799"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/motor.stl"/>
+      </geometry>
+      <material name="motor_11_material">
+        <color rgba="0.498039 0.498039 0.498039 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.0147224 -0.0085 -0.0735" rpy="-1.5708 -1.07746e-14 2.61799"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/motor.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part shaft_10 -->
+    <visual>
+      <origin xyz="0 0 0.01" rpy="1.5708 1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/shaft.stl"/>
+      </geometry>
+      <material name="shaft_10_material">
+        <color rgba="0.498039 0.498039 0.498039 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.01" rpy="1.5708 1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/shaft.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part lin_1_support_fl -->
+    <visual>
+      <origin xyz="0.193643 -0.1118 -0.0735" rpy="1.0472 -1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_1_support_fl.stl"/>
+      </geometry>
+      <material name="lin_1_support_fl_material">
+        <color rgba="1 0.756863 0.054902 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.193643 -0.1118 -0.0735" rpy="1.0472 -1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_1_support_fl.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Link motor_2 -->
+  <link name="motor_2">
+    <inertial>
+      <origin xyz="-0.0108445 -0.00546873 -0.0435639" rpy="0 0 0"/>
+      <mass value="0.55218"/>
+      <inertia ixx="0.000598229" ixy="-0.000301453" ixz="-0.000180722" iyy="0.00130194" iyz="-9.5755e-05" izz="0.00131947"/>
+    </inertial>
+    <!-- Part motor_12 -->
+    <visual>
+      <origin xyz="8.04912e-16 5.16948e-16 -0.0385" rpy="2.00713 1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/motor.stl"/>
+      </geometry>
+      <material name="motor_12_material">
+        <color rgba="0.498039 0.498039 0.498039 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="8.04912e-16 5.16948e-16 -0.0385" rpy="2.00713 1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/motor.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part lin_2_fl -->
+    <visual>
+      <origin xyz="0.123802 -0.0577297 0.0692" rpy="-1.5708 1.94289e-16 -0.436332"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_2_fl.stl"/>
+      </geometry>
+      <material name="lin_2_fl_material">
+        <color rgba="1 0.756863 0.054902 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.123802 -0.0577297 0.0692" rpy="-1.5708 1.94289e-16 -0.436332"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_2_fl.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part lin_3_bot_l_2 -->
+    <visual>
+      <origin xyz="8.60423e-16 5.0307e-16 0.087" rpy="-1.5708 2.22045e-16 0.349066"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_3_bot_l.stl"/>
+      </geometry>
+      <material name="lin_3_bot_l_2_material">
+        <color rgba="1 0.756863 0.054902 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="8.60423e-16 5.0307e-16 0.087" rpy="-1.5708 2.22045e-16 0.349066"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_3_bot_l.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part lin_3_top_l_2 -->
+    <visual>
+      <origin xyz="-8.32667e-17 1.63064e-16 0.087" rpy="-1.5708 2.498e-16 0.349066"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_3_top_l.stl"/>
+      </geometry>
+      <material name="lin_3_top_l_2_material">
+        <color rgba="1 0.756863 0.054902 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-8.32667e-17 1.63064e-16 0.087" rpy="-1.5708 2.498e-16 0.349066"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_3_top_l.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part shaft_11 -->
+    <visual>
+      <origin xyz="0 0 0.01" rpy="1.5708 1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/shaft.stl"/>
+      </geometry>
+      <material name="shaft_11_material">
+        <color rgba="0.498039 0.498039 0.498039 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.01" rpy="1.5708 1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/shaft.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Link shaft_10 -->
+  <link name="shaft_10">
+    <inertial>
+      <origin xyz="-0.00299792 0.00329395 -0.0125923" rpy="0 0 0"/>
+      <mass value="0.140118"/>
+      <inertia ixx="3.25345e-05" ixy="1.26751e-05" ixz="-5.42205e-06" iyy="3.12408e-05" iyz="5.95745e-06" izz="4.62705e-05"/>
+    </inertial>
+    <!-- Part lin_top_l_2 -->
+    <visual>
+      <origin xyz="5.55112e-17 6.245e-17 0.1545" rpy="-1.5708 1.11022e-16 0.785398"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_top_l.stl"/>
+      </geometry>
+      <material name="lin_top_l_2_material">
+        <color rgba="1 0.756863 0.054902 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="5.55112e-17 6.245e-17 0.1545" rpy="-1.5708 1.11022e-16 0.785398"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_top_l.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part bearing_10 -->
+    <visual>
+      <origin xyz="-0.0353553 0.0353553 -0.0255" rpy="2.77556e-16 -8.10463e-15 -2.35619"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/bearing.stl"/>
+      </geometry>
+      <material name="bearing_10_material">
+        <color rgba="0.615686 0.811765 0.929412 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.0353553 0.0353553 -0.0255" rpy="2.77556e-16 -8.10463e-15 -2.35619"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/bearing.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part shaft_12 -->
+    <visual>
+      <origin xyz="2.77556e-17 1.38778e-17 0.01" rpy="1.5708 1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/shaft.stl"/>
+      </geometry>
+      <material name="shaft_12_material">
+        <color rgba="0.498039 0.498039 0.498039 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="2.77556e-17 1.38778e-17 0.01" rpy="1.5708 1.5708 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/shaft.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Joint from motor_2 to shaft_10 -->
+  <joint name="fl_m3_s3" type="revolute">
+    <origin xyz="6.66134e-16 5.6552e-16 -0.0485" rpy="-3.55271e-15 -1.77636e-15 0.349066"/>
+    <parent link="motor_2"/>
+    <child link="shaft_10"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
+    <joint_properties friction="0.5"/>
+  </joint>
+  <!-- Link lin_4_l_2 -->
+  <link name="lin_4_l_2">
+    <inertial>
+      <origin xyz="-0.000262328 -0.0491558 -0.0035" rpy="0 0 0"/>
+      <mass value="0.0701023"/>
+      <inertia ixx="0.000371839" ixy="2.10381e-06" ixz="2.70636e-13" iyy="6.27154e-06" iyz="2.29312e-12" izz="0.000376266"/>
+    </inertial>
+    <!-- Part feet_4 -->
+    <visual>
+      <origin xyz="-0.2 -1.38778e-17 0.0315" rpy="1.5708 5.55112e-17 3.14159"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/feet.stl"/>
+      </geometry>
+      <material name="feet_4_material">
+        <color rgba="0 0 0 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.2 -1.38778e-17 0.0315" rpy="1.5708 5.55112e-17 3.14159"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/feet.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part bearing_11 -->
+    <visual>
+      <origin xyz="-6.245e-17 -5.20417e-18 -0.0035" rpy="-2.40363e-14 -5.9841e-14 5.55112e-17"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/bearing.stl"/>
+      </geometry>
+      <material name="bearing_11_material">
+        <color rgba="0.615686 0.811765 0.929412 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-6.245e-17 -5.20417e-18 -0.0035" rpy="-2.40363e-14 -5.9841e-14 5.55112e-17"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/bearing.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part bearing_12 -->
+    <visual>
+      <origin xyz="-1.38778e-17 0.05 -0.0035" rpy="2.75335e-14 2.94764e-14 -3.14159"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/bearing.stl"/>
+      </geometry>
+      <material name="bearing_12_material">
+        <color rgba="0.615686 0.811765 0.929412 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-1.38778e-17 0.05 -0.0035" rpy="2.75335e-14 2.94764e-14 -3.14159"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/bearing.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part lin_4_l_2 -->
+    <visual>
+      <origin xyz="0.2 -2.25514e-17 0.1565" rpy="-1.5708 -5.55112e-17 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_4_l.stl"/>
+      </geometry>
+      <material name="lin_4_l_2_material">
+        <color rgba="1 0.756863 0.054902 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.2 -2.25514e-17 0.1565" rpy="-1.5708 -5.55112e-17 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadro)/description/assets/lin_4_l.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Joint from motor_2 to lin_4_l_2 -->
+  <joint name="fl_l4_l3" type="revolute">
+    <origin xyz="-0.187939 -0.068404 -0.0705" rpy="2.04836e-14 4.9627e-14 1.13446"/>
+    <parent link="motor_2"/>
+    <child link="lin_4_l_2"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
+    <joint_properties friction="0.5"/>
+    <mimic joint="fl_m3_s3" multiplier="1.0"/>
+  </joint>
+  <!-- Joint from motor to motor_2 -->
+  <joint name="fl_m2_s2" type="revolute">
+    <origin xyz="0.00606218 -0.0035 -0.0735" rpy="0.523599 1.5708 0"/>
+    <parent link="motor"/>
+    <child link="motor_2"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
+    <joint_properties friction="0.5"/>
+  </joint>
+  <!-- Joint from back_plate to motor -->
+  <joint name="fl_m1_s1" type="revolute">
+    <origin xyz="-0.0840337 -0.102065 -0.023441" rpy="1.5708 -0 -3.14159"/>
+    <parent link="back_plate"/>
+    <child link="motor"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
     <joint_properties friction="0.5"/>
   </joint>
 </robot>

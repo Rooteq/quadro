@@ -1,12 +1,13 @@
 {
     "configuration": "default",
     "documentId": "ed1b080484db78e51ca91539",
-    "documentMicroversion": "3ec1b7782ea1ca0fa844d0bb",
+    "documentMicroversion": "885b4cdad302c9482bedfd7c",
+    "documentVersion": "331658c7250fa60a9206c829",
     "elementId": "6a90a373f21b38227db85484",
     "fullConfiguration": "default",
-    "id": "MfGeJYZEuY0R98fEY",
+    "id": "MhK7DOXwX12Av8UYX",
     "isStandardContent": false,
-    "name": "shaft <3>",
+    "name": "shaft <8>",
     "partId": "JND",
     "suppressed": false,
     "type": "Part"

@@ -17,7 +17,7 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
 )
 
 #-----------------DELETE LATER ------------------
-list(APPEND CMAKE_PREFIX_PATH "/opt/openrobots")
+list(APPEND CMAKE_PREFIX_PATH "/usr/local")
 find_package(pinocchio REQUIRED)
 
 # find dependencies

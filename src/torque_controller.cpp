@@ -24,7 +24,7 @@ public:
         // Load robot model
         try {
             
-            pinocchio::urdf::buildModel(urdf_path, model_);
+            pinocchio::urdf::buildModel(urdf_path, model_, true, true);
             data_ = std::make_unique<pinocchio::Data>(model_);
             RCLCPP_INFO(this->get_logger(), "joints: %d", model_.njoints);
 
@@ -47,11 +47,11 @@ public:
             Kp = Eigen::MatrixXd::Zero(model_.nq,model_.nq);
             Kd = Eigen::MatrixXd::Zero(model_.nv,model_.nv);
 
-            Kp.fill(10.0f);
-            Kd.fill(5.0f);
+            Kp.fill(200.0f);
+            Kd.fill(50.0f);
 
-            Kp(0,1) = 0.0f;
-            Kp(1,1) = 0.0f;
+            // Kp(0,1) = 0.0f;
+            // Kp(1,1) = 0.0f;
 
             // Kd(0,1) = 0.0f;
             
@@ -78,15 +78,19 @@ private:
     {
         double t = this->get_clock()->now().seconds();
 
-        RCLCPP_INFO(this->get_logger(), "time %f", t);
+        // RCLCPP_INFO(this->get_logger(), "time %f", t);
         double coeff = t*0.20;
-        ref_q[0] = std::sin(coeff);
-        ref_q_d[0] = 0.2*std::cos(coeff);
-        ref_q_dd[0] = -0.04*std::sin(coeff);
+        ref_q[0] = 0.5*std::sin(coeff) + 1.0;
+        ref_q_d[0] = 0.5*0.2*std::cos(coeff);
+        ref_q_dd[0] = -0.04*0.5*std::sin(coeff);
 
-        ref_q[1]  = 0.0f;
-        // ref_q_d[1] = 0.0f;
-        // ref_q_dd[1] = 0.0f;
+        ref_q[1] = -0.5*std::sin(coeff) - 1.0;
+        ref_q_d[1] = -0.2*0.5*std::cos(coeff);
+        ref_q_dd[1] = 0.04*0.5*std::sin(coeff);
+
+        ref_q[2] = 0.5*std::sin(coeff) + 1.0;
+        ref_q_d[2] = 0.2*0.5*std::cos(coeff);
+        ref_q_dd[2] = -0.04*0.5*std::sin(coeff);
     }
 
     void jointStateCallback(const sensor_msgs::msg::JointState::SharedPtr msg)
@@ -105,40 +109,48 @@ private:
         // for (size_t i = 0; i < msg->position.size(); ++i) {
         //     q[i] = msg->position[i];
         //     q_d[i] = msg->velocity[i];
+
+        //     RCLCPP_INFO(this->get_logger(), "velocity %ld: %f", i, q_d[i]);
         // }
+        //     RCLCPP_INFO(this->get_logger(), "\n");
+
+
             // Fill position vector (size 2)
 
-        for (size_t i = 0; i < msg->position.size() && i < static_cast<size_t>(model_.nq); ++i) {
-            q[i] = msg->position[i];
-        }
+        // for (size_t i = 0; i < msg->position.size() && i < static_cast<size_t>(model_.nq); ++i) {
+        //     q[i] = msg->position[i];
+        // }
         
-        // Fill velocity vector (size 1) 
-        for (size_t i = 0; i < msg->velocity.size() && i < static_cast<size_t>(model_.nv); ++i) {
-            q_d[i] = msg->velocity[i];
-        }
+        // // Fill velocity vector (size 1) 
+        // for (size_t i = 0; i < msg->velocity.size() && i < static_cast<size_t>(model_.nv); ++i) {
+        //     q_d[i] = msg->velocity[i];
+        // }
 
+        // // get_trajectory_setpoint();
         // get_trajectory_setpoint();
-        get_trajectory_setpoint();
 
-        e = ref_q - q;
-        e_d = ref_q_d - q_d;
+        // e = ref_q - q;
+        // e_d = ref_q_d - q_d;
 
-        Eigen::VectorXd pos_control = Kp * e;  // Size 2
+        // Eigen::VectorXd pos_control = Kp * e;  // Size 2
         
-        // Extract only the velocity-space component (usually the last nv elements)
-        v = ref_q_dd + pos_control.head(model_.nv) + Kd * e_d; 
+        // // Extract only the velocity-space component (usually the last nv elements)
+        // v = ref_q_dd + pos_control.head(3) + Kd * e_d; 
 
-        // v = ref_q_dd + Kp * e + Kd * e_d; 
+        // // v = ref_q_dd + Kp * e + Kd * e_d; 
         
+        // // RCLCPP_INFO(this->get_logger(), "v size: %ld", v.size());
+        // // RCLCPP_INFO(this->get_logger(), "ref_q_dd dim: %ld", ref_q_dd.size());
+        // // RCLCPP_INFO(this->get_logger(), "Kp rows: %ld", ref_q_dd.size());
 
-        tau = pinocchio::rnea(model_, *data_, q, q_d, v);
-        // Publish torque (size 1)
-        auto torque_msg = std_msgs::msg::Float64MultiArray();
-        torque_msg.data.resize(model_.nv);
-        for (int i = 0; i < model_.nv; ++i) {
-            torque_msg.data[i] = tau[i];
-        }
-        torque_pub_->publish(torque_msg);
+        // tau = pinocchio::rnea(model_, *data_, q, q_d, v);
+        // // Publish torque (size 1)
+        // auto torque_msg = std_msgs::msg::Float64MultiArray();
+        // torque_msg.data.resize(3);
+        // for (int i = 0; i < 3; ++i) {
+        //     torque_msg.data[i] = tau[i];
+        // }
+        // torque_pub_->publish(torque_msg);
 
 
     }

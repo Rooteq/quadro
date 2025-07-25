@@ -1,14 +1,13 @@
 {
     "configuration": "default",
     "documentId": "ed1b080484db78e51ca91539",
-    "documentMicroversion": "885b4cdad302c9482bedfd7c",
-    "documentVersion": "331658c7250fa60a9206c829",
+    "documentMicroversion": "993bd301746b07590201143e",
     "elementId": "6a90a373f21b38227db85484",
     "fullConfiguration": "default",
-    "id": "M+ogFKnDv6oyqGs7Y",
+    "id": "MyUWSLa3UpU19+5MW",
     "isStandardContent": false,
-    "name": "motor <8>",
-    "partId": "JFD",
+    "name": "link <1>",
+    "partId": "JRD",
     "suppressed": false,
     "type": "Part"
 }

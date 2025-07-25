@@ -68,7 +68,7 @@ def generate_launch_description():
         ),
         # launch_arguments=[("gz_args", [LaunchConfiguration("world"), ".sdf", " -r"])],
         # launch_arguments=[("gz_args", [LaunchConfiguration("world"), ".sdf", " -r -v 4" " --physics-engine gz-physics-bullet-featherstone-plugin"])],
-        launch_arguments=[("gz_args", ["empty.sdf", " -r -v 4" " --physics-engine gz-physics-bullet-featherstone-plugin"])],
+        launch_arguments=[("gz_args", ["empty.sdf", " -r" " --physics-engine gz-physics-bullet-featherstone-plugin"])],
     )
 
     gz_spawn_entity = Node(
@@ -119,7 +119,7 @@ def generate_launch_description():
             "load_controller",
             "--set-state",
             "active",
-            "effort_controller",
+            "joint_trajectory_controller",
         ],
         output="screen",
     )
@@ -178,15 +178,15 @@ def generate_launch_description():
             rviz,
 
             # Node(
-            # package='quadro',
-            # executable='torque_controller',
-            # name='forward_kinematics_node',
-            # arguments=[
-            #     LaunchConfiguration('urdf_file'),
-            #     LaunchConfiguration('end_effector_frame')
-            # ],
-            # output='screen'
-        # )
+            #     package='quadro',
+            #     executable='torque_controller',
+            #     name='forward_kinematics_node',
+            #     arguments=[
+            #         LaunchConfiguration('urdf_file'),
+            #         LaunchConfiguration('end_effector_frame')
+            #     ],
+            #     output='screen'
+            # )
 
         ]
     )
