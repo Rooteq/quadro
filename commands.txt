@@ -1,0 +1,4 @@
+torque msg:
+ros2 topic pub --once /effort_controller/commands std_msgs/msg/Float64MultiArray "data: [10.0, 0.0, 0.0, 10.0, 0.0, 0.0, 10.0, 0.0, 0.0, 10.0, 0.0, 0.0]"
+
+ros2 topic pub --once /effort_controller/commands std_msgs/msg/Float64MultiArray "data: [-0.0, 0.0, 0.0, -0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]"

@@ -27,7 +27,7 @@ def generate_launch_description():
     sim_mode = LaunchConfiguration("sim_mode", default=True)
     use_sim_time = LaunchConfiguration("use_sim_time", default=True)
 
-    xacro_file = os.path.join(pkg_path, "description", "robot.xacro")
+    xacro_file = os.path.join(pkg_path, "description", "leg.xacro")
     robot_desc = Command(["xacro ", xacro_file, " sim_mode:=", sim_mode])
     robot_state_publisher_params = {
         "robot_description": robot_desc,
@@ -119,7 +119,7 @@ def generate_launch_description():
             "load_controller",
             "--set-state",
             "active",
-            "effort_controller",
+            "joint_trajectory_controller",
         ],
         output="screen",
     )
