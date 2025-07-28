@@ -11,6 +11,9 @@ joint_trajectory_controller:
       - joint_br_1
       - joint_br_2
       - joint_br_3
+      - joint_bl_1
+      - joint_bl_2
+      - joint_bl_3
 
     command_interfaces:
       - position

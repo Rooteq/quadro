@@ -18,6 +18,8 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
 
 #-----------------DELETE LATER ------------------
 list(APPEND CMAKE_PREFIX_PATH "/usr/local")
+list(APPEND CMAKE_PREFIX_PATH "/opt/openrobots")
+
 find_package(pinocchio REQUIRED)
 
 # find dependencies
@@ -98,7 +100,7 @@ install(
   DIRECTORY
     description
     launch
-    rviz
+    #rviz
     hardware
     config
   DESTINATION "share/${PROJECT_NAME}"
