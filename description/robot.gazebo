@@ -10,126 +10,66 @@
       <plugin>gz_ros2_control/GazeboSimSystem</plugin>
     </hardware>
     <joint name="br_m1_s1">
-      <command_interface name="effort">
-        <param name="min">-12</param>
-        <param name="max">12</param>
-      </command_interface>
-      <state_interface name="position">
-        <param name="initial_value">0.0</param>
-      </state_interface>
+      <command_interface name="position"/>
+      <state_interface name="position"/>
       <state_interface name="velocity"/>
     </joint>
     <joint name="br_m2_s2">
-      <command_interface name="effort">
-        <param name="min">-12</param>
-        <param name="max">12</param>
-      </command_interface>
-      <state_interface name="position">
-        <param name="initial_value">0.0</param>
-      </state_interface>
+      <command_interface name="position"/>
+      <state_interface name="position"/>
       <state_interface name="velocity"/>
     </joint>
     <joint name="br_m3_s3">
-      <command_interface name="effort">
-        <param name="min">-12</param>
-        <param name="max">12</param>
-      </command_interface>
-      <state_interface name="position">
-        <param name="initial_value">0.0</param>
-      </state_interface>
+      <command_interface name="position"/>
+      <state_interface name="position"/>
       <state_interface name="velocity"/>
     </joint>
 
     <joint name="fr_m1_s1">
-      <command_interface name="effort">
-        <param name="min">-12</param>
-        <param name="max">12</param>
-      </command_interface>
-      <state_interface name="position">
-        <param name="initial_value">0.0</param>
-      </state_interface>
+      <command_interface name="position"/>
+      <state_interface name="position"/>
       <state_interface name="velocity"/>
     </joint>
     <joint name="fr_m2_s2">
-      <command_interface name="effort">
-        <param name="min">-12</param>
-        <param name="max">12</param>
-      </command_interface>
-      <state_interface name="position">
-        <param name="initial_value">0.0</param>
-      </state_interface>
+      <command_interface name="position"/>
+      <state_interface name="position"/>
       <state_interface name="velocity"/>
     </joint>
     <joint name="fr_m3_s3">
-      <command_interface name="effort">
-        <param name="min">-12</param>
-        <param name="max">12</param>
-      </command_interface>
-      <state_interface name="position">
-        <param name="initial_value">0.0</param>
-      </state_interface>
+      <command_interface name="position"/>
+      <state_interface name="position"/>
       <state_interface name="velocity"/>
     </joint>
 
     <joint name="bl_m1_s1">
-      <command_interface name="effort">
-        <param name="min">-12</param>
-        <param name="max">12</param>
-      </command_interface>
-      <state_interface name="position">
-        <param name="initial_value">0.0</param>
-      </state_interface>
+      <command_interface name="position"/>
+      <state_interface name="position"/>
       <state_interface name="velocity"/>
     </joint>
     <joint name="bl_m2_s2">
-      <command_interface name="effort">
-        <param name="min">-12</param>
-        <param name="max">12</param>
-      </command_interface>
-      <state_interface name="position">
-        <param name="initial_value">0.0</param>
-      </state_interface>
+      <command_interface name="position"/>
+      <state_interface name="position"/>
       <state_interface name="velocity"/>
     </joint>
     <joint name="bl_m3_s3">
-      <command_interface name="effort">
-        <param name="min">-12</param>
-        <param name="max">12</param>
-      </command_interface>
-      <state_interface name="position">
-        <param name="initial_value">0.0</param>
-      </state_interface>
+      <command_interface name="position"/>
+      <state_interface name="position"/>
       <state_interface name="velocity"/>
     </joint>
 
     <joint name="fl_m1_s1">
-      <command_interface name="effort">
-        <param name="min">-12</param>
-        <param name="max">12</param>
-      </command_interface>
-      <state_interface name="position">
-        <param name="initial_value">0.0</param>
-      </state_interface>
+      <command_interface name="position"/>
+      <state_interface name="position"/>
       <state_interface name="velocity"/>
     </joint>
     <joint name="fl_m2_s2">
-      <command_interface name="effort">
-        <param name="min">-12</param>
-        <param name="max">12</param>
-      </command_interface>
-      <state_interface name="position">
-        <param name="initial_value">0.0</param>
-      </state_interface>
+      <command_interface name="position"/>
+      <state_interface name="position"/>
       <state_interface name="velocity"/>
     </joint>
     <joint name="fl_m3_s3">
-      <command_interface name="effort">
-        <param name="min">-12</param>
-        <param name="max">12</param>
-      </command_interface>
-      <state_interface name="position">
-        <param name="initial_value">0.0</param>
-      </state_interface>
+      <command_interface name="position"/>
+      <state_interface name="position"/>
       <state_interface name="velocity"/>
     </joint>
       <!-- <joint name="l4_l3">
@@ -140,7 +80,7 @@
 
   <gazebo>
     <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-      <parameters>$(find quadro)/config/torque_controllers.yaml</parameters>
+      <parameters>$(find quadro)/config/joint_position_controllers.yaml</parameters>
     </plugin>
   </gazebo>
 

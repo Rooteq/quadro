@@ -56,17 +56,39 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
-        lin_2_br:
+        back_plate:
+          Value: true
+        lin_4_l:
+          Value: true
+        lin_4_l_2:
           Value: true
         lin_4_r:
           Value: true
-        lin_top_r:
+        lin_4_r_2:
           Value: true
         motor:
           Value: true
+        motor_2:
+          Value: true
         shaft:
           Value: true
-        world:
+        shaft_10:
+          Value: true
+        shaft_2:
+          Value: true
+        shaft_3:
+          Value: true
+        shaft_4:
+          Value: true
+        shaft_5:
+          Value: true
+        shaft_6:
+          Value: true
+        shaft_7:
+          Value: true
+        shaft_8:
+          Value: true
+        shaft_9:
           Value: true
       Marker Scale: 0.5
       Name: TF
@@ -74,14 +96,31 @@ Visualization Manager:
       Show Axes: true
       Show Names: false
       Tree:
-        world:
+        back_plate:
           motor:
-            shaft:
-              lin_2_br:
-                lin_4_r:
-                  {}
-                lin_top_r:
-                  {}
+            motor_2:
+              lin_4_l_2:
+                {}
+              shaft_10:
+                {}
+          shaft:
+            shaft_2:
+              lin_4_r:
+                {}
+              shaft_3:
+                {}
+          shaft_4:
+            shaft_5:
+              lin_4_l:
+                {}
+              shaft_6:
+                {}
+          shaft_7:
+            shaft_8:
+              lin_4_r_2:
+                {}
+              shaft_9:
+                {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -102,7 +141,17 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
-        lin_2_br:
+        back_plate:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        lin_4_l:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        lin_4_l_2:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -112,7 +161,7 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        lin_top_r:
+        lin_4_r_2:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -122,15 +171,61 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        motor_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         shaft:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        world:
+        shaft_10:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+          Value: true
+        shaft_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shaft_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shaft_4:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shaft_5:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shaft_6:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shaft_7:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shaft_8:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shaft_9:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
       Mass Properties:
         Inertia: false
         Mass: false
@@ -142,7 +237,7 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: world
+    Fixed Frame: back_plate
     Frame Rate: 30
   Name: root
   Tools:
@@ -185,7 +280,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 0.7827297449111938
+      Distance: 1.3794372081756592
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -200,10 +295,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.1397967338562012
+      Pitch: 0.5097973346710205
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz_default_plugins)
-      Yaw: 0.5923597812652588
+      Yaw: 5.845548629760742
     Saved: ~
 Window Geometry:
   Displays:
