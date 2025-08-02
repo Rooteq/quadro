@@ -44,7 +44,7 @@ private:
     double AG = std::sqrt(y*y + z*z - l1*l1);
     double OA = l1;
     
-    q1 = std::atan2(AG,OA) - std::atan2(-y,-z);
+    q1 = std::atan2(AG,OA) - std::atan2(-y,z);
 
     double GC = x;
     // double GC = x;
@@ -165,7 +165,7 @@ private:
     double pitch = 0.0f;
     double yaw = 0.2f;
 
-    Eigen::Vector3d default_leg_pos(0.0, -0.25, -l1);
+    Eigen::Vector3d default_leg_pos(0.0, -0.25, l1);
 
     // Leg origins relative to the robot's 0 pos (Z axis might be reversed)
     Eigen::Vector3d br_leg_origin(-0.185, 0.0, 0.0628);
@@ -200,11 +200,11 @@ private:
       double point_time = i * time_increment;
 
       // ik_get_leg_joints(0.0, origin_y + radius * std::cos(angle), origin_z + radius*std::sin(angle));
-      // ik_fr_leg_joints(0.0, -0.25, -l1);
-      // ik_fl_leg_joints(0.0, -0.25, -l1);
+      // ik_fr_leg_joints(0.0, -0.25, l1);
+      // ik_fl_leg_joints(0.0, -0.25, l1);
 
-      // ik_br_leg_joints(0.0, -0.25, -l1);
-      // ik_bl_leg_joints(0.0, -0.25, -l1);
+      // ik_br_leg_joints(0.0, -0.25, l1);
+      // ik_bl_leg_joints(0.0, -0.25, l1);
       // ik_get_3dof_joints_pos(origin_x + radius * std::cos(angle), origin_y + radius*std::sin(angle), 0.0);
       ik_fr_leg_joints(fr_xyz_bis.x(), fr_xyz_bis.y(), fr_xyz_bis.z());
       ik_fl_leg_joints(fl_xyz_bis.x(), fl_xyz_bis.y(), fl_xyz_bis.z());
