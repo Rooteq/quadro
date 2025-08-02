@@ -4,6 +4,8 @@
 #include <trajectory_msgs/msg/joint_trajectory.hpp>
 #include <trajectory_msgs/msg/joint_trajectory_point.hpp>
 
+#include <eigen3/Eigen/Dense>
+
 using namespace std::chrono_literals;
 
 class TrajectoryPublisher : public rclcpp::Node
@@ -159,6 +161,37 @@ private:
     double angle_increment = 2.0 * M_PI / num_of_points;
     double time_increment = total_duration / num_of_points;
 
+    double roll = 0.0f;
+    double pitch = 0.0f;
+    double yaw = 0.2f;
+
+    Eigen::Vector3d default_leg_pos(0.0, -0.25, -l1);
+
+    // Leg origins relative to the robot's 0 pos (Z axis might be reversed)
+    Eigen::Vector3d br_leg_origin(-0.185, 0.0, 0.0628);
+    Eigen::Vector3d fr_leg_origin(0.185, 0.0, 0.0628);
+    Eigen::Vector3d bl_leg_origin(-0.185, 0.0, -0.0628);
+    Eigen::Vector3d fl_leg_origin(0.185, 0.0, -0.0628);
+
+    // Rotation matrix
+    Eigen::AngleAxisd rollAngle(roll, Eigen::Vector3d::UnitX());
+    Eigen::AngleAxisd pitchAngle(pitch, Eigen::Vector3d::UnitZ());
+    Eigen::AngleAxisd yawAngle(yaw, Eigen::Vector3d::UnitY());
+
+    Eigen::Quaternion<double> q = rollAngle * pitchAngle * yawAngle;
+
+    Eigen::Matrix3d rotationMatrix = q.matrix();
+
+    Eigen::Vector3d br_xyz = rotationMatrix.inverse() * (default_leg_pos + br_leg_origin);
+    Eigen::Vector3d fr_xyz = rotationMatrix.inverse() * (default_leg_pos + fr_leg_origin);
+    Eigen::Vector3d bl_xyz = rotationMatrix.inverse() * (default_leg_pos + bl_leg_origin);
+    Eigen::Vector3d fl_xyz = rotationMatrix.inverse() * (default_leg_pos + fl_leg_origin);
+
+    Eigen::Vector3d br_xyz_bis = br_xyz - br_leg_origin;
+    Eigen::Vector3d bl_xyz_bis = bl_xyz - bl_leg_origin;
+    Eigen::Vector3d fr_xyz_bis = fr_xyz - fr_leg_origin;
+    Eigen::Vector3d fl_xyz_bis = fl_xyz - fl_leg_origin;
+
     for(int i = 0; i < num_of_points; ++i)
     {
       auto point = trajectory_msgs::msg::JointTrajectoryPoint();
@@ -167,12 +200,16 @@ private:
       double point_time = i * time_increment;
 
       // ik_get_leg_joints(0.0, origin_y + radius * std::cos(angle), origin_z + radius*std::sin(angle));
-      ik_fr_leg_joints(0.0, -0.25, -l1);
-      ik_fl_leg_joints(0.0, -0.25, -l1);
+      // ik_fr_leg_joints(0.0, -0.25, -l1);
+      // ik_fl_leg_joints(0.0, -0.25, -l1);
 
-      ik_br_leg_joints(0.0, -0.25, -l1);
-      ik_bl_leg_joints(0.0, -0.25, -l1);
+      // ik_br_leg_joints(0.0, -0.25, -l1);
+      // ik_bl_leg_joints(0.0, -0.25, -l1);
       // ik_get_3dof_joints_pos(origin_x + radius * std::cos(angle), origin_y + radius*std::sin(angle), 0.0);
+      ik_fr_leg_joints(fr_xyz_bis.x(), fr_xyz_bis.y(), fr_xyz_bis.z());
+      ik_fl_leg_joints(fl_xyz_bis.x(), fl_xyz_bis.y(), fl_xyz_bis.z());
+      ik_br_leg_joints(br_xyz_bis.x(), br_xyz_bis.y(), br_xyz_bis.z());
+      ik_bl_leg_joints(bl_xyz_bis.x(), bl_xyz_bis.y(), bl_xyz_bis.z());
 
       point.positions = positions;
       point.time_from_start.sec = static_cast<int>(point_time);
