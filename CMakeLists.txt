@@ -36,6 +36,13 @@ ament_target_dependencies(trajectory_publisher
   trajectory_msgs
 )
 
+#--------------------CUSTOM NODE--------------------------#
+add_executable(leg_ik src/back_legs_trajectory.cpp)
+ament_target_dependencies(leg_ik
+  rclcpp
+  trajectory_msgs
+)
+
 #-------------------TORQUE WITH PINOCCHIO--------------------
 add_executable(torque_controller src/torque_controller.cpp)
 ament_target_dependencies(torque_controller
@@ -92,6 +99,7 @@ install(TARGETS ${PROJECT_NAME}
 
 #--------------------CUSTOM NODE--------------------------#
 install(TARGETS
+  leg_ik
   trajectory_publisher
   torque_controller
   DESTINATION lib/${PROJECT_NAME})
