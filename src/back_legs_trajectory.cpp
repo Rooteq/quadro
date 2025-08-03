@@ -122,7 +122,7 @@ private:
       return;
     }
 
-    double robot_q1 = q1 + M_PI/2;
+    double robot_q1 = q1 - joint_offset_1 + M_PI/2;
     double robot_q2 = q2 - joint_offset_2 + M_PI/2;
     double robot_q3 = q3 - joint_offset_3 - M_PI/2;
 
@@ -172,7 +172,7 @@ private:
       RCLCPP_INFO(get_logger(), "BR: q3 is NAN");
       return;
     }
-    double robot_q1 = q1 - M_PI/2;// + 1.048; //30 deg :*
+    double robot_q1 = q1 + joint_offset_1 - M_PI/2;// + 1.048; //30 deg :*
     double robot_q2 = q2 - joint_offset_2 + M_PI/2;
     double robot_q3 = q3 - joint_offset_3 - M_PI/2;
 
@@ -234,8 +234,8 @@ private:
       double point_time = i * time_increment;
 
       // ik_get_leg_joints(0.0, origin_y + radius * std::cos(angle), origin_z + radius*std::sin(angle));
-      ik_br_leg_joints(0.0, l1, -0.25);
-      ik_bl_leg_joints(0.0, l1, -0.25);
+      ik_br_leg_joints(0.0, 0.0, -0.25);
+      ik_bl_leg_joints(0.0, 0.0, -0.25);
       // ik_bl_leg_joints(0.0, -0.25, l1);
       // ik_get_3dof_joints_pos(origin_x + radius * std::cos(angle), origin_y + radius*std::sin(angle), 0.0);
       // ik_br_leg_joints(br_xyz_bis.x(), br_xyz_bis.y(), br_xyz_bis.z());
