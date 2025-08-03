@@ -3,6 +3,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <trajectory_msgs/msg/joint_trajectory.hpp>
 #include <trajectory_msgs/msg/joint_trajectory_point.hpp>
+#include <sensor_msgs/msg/joy.hpp>
 
 #include <eigen3/Eigen/Dense>
 
@@ -12,23 +13,54 @@ class TrajectoryPublisher : public rclcpp::Node
 {
 public:
   TrajectoryPublisher()
-  : Node("trajectory_publisher"), position_(0.0), total_duration(3.0)
+  : Node("trajectory_publisher"), position_(0.0), total_duration(3.0), 
+    current_roll_(0.0), current_pitch_(0.0), current_yaw_(0.0), rotation_enabled_(false)
   {
     // Create publisher with reliable QoS
     auto qos = rclcpp::QoS(1).reliable();
     trajectory_publisher_ = this->create_publisher<trajectory_msgs::msg::JointTrajectory>(
       "/joint_trajectory_controller/joint_trajectory", qos);
 
+    // Create joystick subscriber
+    joy_subscriber_ = this->create_subscription<sensor_msgs::msg::Joy>(
+      "/joy", 10, std::bind(&TrajectoryPublisher::joy_callback, this, std::placeholders::_1));
 
     num_of_points = 60;
     positions.resize(12);
 
-    // Create timer for periodic publishing
+    // timer_ = this->create_wall_timer(
+    // std::chrono::milliseconds(static_cast<int>(total_duration*1000) + 10), std::bind(&TrajectoryPublisher::timer_callback, this));
     timer_ = this->create_wall_timer(
-    std::chrono::milliseconds(static_cast<int>(total_duration*1000) + 10), std::bind(&TrajectoryPublisher::timer_callback, this));
+    std::chrono::milliseconds(50), std::bind(&TrajectoryPublisher::timer_callback, this));
   }
 
 private:
+  void joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg)
+  {
+    // Button 5 (index 4) to enable/disable rotation
+    if (msg->buttons.size() > 10) {
+      rotation_enabled_ = msg->buttons[9] > 0;
+    }
+
+    // Only update rotation if button 5 is pressed
+    if (rotation_enabled_) {
+      // Left stick for yaw (axis 0) and pitch (axis 1)
+      if (msg->axes.size() > 1) {
+        current_yaw_ = msg->axes[0] * 0.3;    // Scale to reasonable rotation range
+        current_pitch_ = msg->axes[1] * 0.3;
+      }
+      
+      // Right stick for roll (axis 3)
+      if (msg->axes.size() > 3) {
+        current_roll_ = msg->axes[3] * 0.3;
+      }
+    } else {
+      // Reset rotations when button is not pressed
+      current_roll_ = 0.0;
+      current_pitch_ = 0.0;
+      current_yaw_ = 0.0;
+    }
+  }
   void apply_left_ik(const double x, double y, const double z, double& q1, double& q2, double&q3)
   {
     y = y+l1;
@@ -181,6 +213,9 @@ private:
     double robot_q1 = q1 + joint_offset_1 - M_PI/2;// + 1.048; //30 deg :*
     double robot_q2 = q2 - joint_offset_2 + M_PI/2;
     double robot_q3 = q3 - joint_offset_3 - M_PI/2;
+
+    RCLCPP_INFO(get_logger(), "FL_Q1: %f", q1);
+
     // if(q1 < -1.57 || q1 > 1.57)
     // {
     //   RCLCPP_INFO(get_logger(), "Wrong joint 1 setting");
@@ -216,9 +251,9 @@ private:
     double angle_increment = 2.0 * M_PI / num_of_points;
     double time_increment = total_duration / num_of_points;
 
-    double roll = 0.0f;
-    double pitch = 0.2f;
-    double yaw = 0.0f;
+    double roll = current_roll_;
+    double pitch = current_pitch_;
+    double yaw = current_yaw_;
 
     Eigen::Vector3d default_leg_pos(0.0, 0.0, -0.25);
 
@@ -247,38 +282,59 @@ private:
     Eigen::Vector3d fr_xyz_bis = fr_xyz - fr_leg_origin;
     Eigen::Vector3d fl_xyz_bis = fl_xyz - fl_leg_origin;
 
-    for(int i = 0; i < num_of_points; ++i)
-    {
-      auto point = trajectory_msgs::msg::JointTrajectoryPoint();
+    auto point = trajectory_msgs::msg::JointTrajectoryPoint();
+    ik_fr_leg_joints(fr_xyz_bis.x(), fr_xyz_bis.y(), fr_xyz_bis.z());
+    ik_fl_leg_joints(fl_xyz_bis.x(), fl_xyz_bis.y(), fl_xyz_bis.z());
+    ik_br_leg_joints(br_xyz_bis.x(), br_xyz_bis.y(), br_xyz_bis.z());
+    ik_bl_leg_joints(bl_xyz_bis.x(), bl_xyz_bis.y(), bl_xyz_bis.z());
 
-      double angle = i * angle_increment;
-      double point_time = i * time_increment;
+    point.positions = positions;
+    double point_time = 0.1; // Small delay for trajectory execution
+    point.time_from_start.sec = static_cast<int>(point_time);
+    point.time_from_start.nanosec = static_cast<uint32_t>((point_time - static_cast<int>(point_time)) * 1e9);
 
-      // ik_get_leg_joints(0.0, origin_y + radius * std::cos(angle), origin_z + radius*std::sin(angle));
-      // ik_fr_leg_joints(0.0, 0.0, -0.25);
-      // ik_fl_leg_joints(0.0, 0.0, -0.25);
-
-      // ik_br_leg_joints(0.0, 0.0, -0.25);
-      // ik_bl_leg_joints(0.0, 0.0, -0.25);
-      // ik_get_3dof_joints_pos(origin_x + radius * std::cos(angle), origin_y + radius*std::sin(angle), 0.0);
-      ik_fr_leg_joints(fr_xyz_bis.x(), fr_xyz_bis.y(), fr_xyz_bis.z());
-      ik_fl_leg_joints(fl_xyz_bis.x(), fl_xyz_bis.y(), fl_xyz_bis.z());
-      ik_br_leg_joints(br_xyz_bis.x(), br_xyz_bis.y(), br_xyz_bis.z());
-      ik_bl_leg_joints(bl_xyz_bis.x(), bl_xyz_bis.y(), bl_xyz_bis.z());
-
-      point.positions = positions;
-      point.time_from_start.sec = static_cast<int>(point_time);
-      point.time_from_start.nanosec = static_cast<uint32_t>((point_time - static_cast<int>(point_time)) * 1e9);
-
-      trajectory_msg.points.push_back(point);
-    }
-
+    trajectory_msg.points.push_back(point);
     trajectory_publisher_->publish(trajectory_msg);
   }
+  //   for(int i = 0; i < num_of_points; ++i)
+  //   {
+  //     auto point = trajectory_msgs::msg::JointTrajectoryPoint();
+
+  //     double angle = i * angle_increment;
+  //     double point_time = i * time_increment;
+
+  //     // ik_get_leg_joints(0.0, origin_y + radius * std::cos(angle), origin_z + radius*std::sin(angle));
+  //     // ik_fr_leg_joints(0.0, 0.0, -0.25);
+  //     // ik_fl_leg_joints(0.0, 0.0, -0.25);
+
+  //     // ik_br_leg_joints(0.0, 0.0, -0.25);
+  //     // ik_bl_leg_joints(0.0, 0.0, -0.25);
+  //     // ik_get_3dof_joints_pos(origin_x + radius * std::cos(angle), origin_y + radius*std::sin(angle), 0.0);
+  //     ik_fr_leg_joints(fr_xyz_bis.x(), fr_xyz_bis.y(), fr_xyz_bis.z());
+  //     ik_fl_leg_joints(fl_xyz_bis.x(), fl_xyz_bis.y(), fl_xyz_bis.z());
+  //     ik_br_leg_joints(br_xyz_bis.x(), br_xyz_bis.y(), br_xyz_bis.z());
+  //     ik_bl_leg_joints(bl_xyz_bis.x(), bl_xyz_bis.y(), bl_xyz_bis.z());
+
+  //     point.positions = positions;
+  //     point.time_from_start.sec = static_cast<int>(point_time);
+  //     point.time_from_start.nanosec = static_cast<uint32_t>((point_time - static_cast<int>(point_time)) * 1e9);
+
+  //     trajectory_msg.points.push_back(point);
+  //   }
+
+  //   trajectory_publisher_->publish(trajectory_msg);
+  // }
 
   rclcpp::Publisher<trajectory_msgs::msg::JointTrajectory>::SharedPtr trajectory_publisher_;
+  rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr joy_subscriber_;
   rclcpp::TimerBase::SharedPtr timer_;
   double position_;
+  
+  // Joystick control variables
+  double current_roll_;
+  double current_pitch_;
+  double current_yaw_;
+  bool rotation_enabled_;
 
   std::vector<double> positions;
   int num_of_points;

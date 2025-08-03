@@ -34,6 +34,7 @@ add_executable(trajectory_publisher src/simple_trajectory_publisher.cpp)
 ament_target_dependencies(trajectory_publisher
   rclcpp
   trajectory_msgs
+  sensor_msgs
 )
 
 #--------------------CUSTOM NODE--------------------------#
