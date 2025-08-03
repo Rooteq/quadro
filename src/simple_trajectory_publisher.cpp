@@ -47,12 +47,12 @@ private:
       // Left stick for yaw (axis 0) and pitch (axis 1)
       if (msg->axes.size() > 1) {
         current_yaw_ = msg->axes[0] * 0.3;    // Scale to reasonable rotation range
-        current_pitch_ = msg->axes[1] * 0.3;
+        current_roll_ = msg->axes[1] * 0.3;
       }
       
       // Right stick for roll (axis 3)
       if (msg->axes.size() > 3) {
-        current_roll_ = msg->axes[3] * 0.3;
+        current_pitch_ = msg->axes[3] * 0.3;
       }
     } else {
       // Reset rotations when button is not pressed
@@ -61,6 +61,12 @@ private:
       current_yaw_ = 0.0;
     }
   }
+  double normalize_angle(double angle) {
+    while (angle > M_PI) angle -= 2.0 * M_PI;
+    while (angle < -M_PI) angle += 2.0 * M_PI;
+    return angle;
+  }
+
   void apply_left_ik(const double x, double y, const double z, double& q1, double& q2, double&q3)
   {
     y = y+l1;
@@ -70,7 +76,9 @@ private:
     double AG = std::sqrt(y*y + z*z - l1*l1);
     double OA = l1;
     
-    q1 = -(std::atan2(AG,OA) - std::atan2(y,z));
+    double angle1 = std::atan2(AG,OA);
+    double angle2 = std::atan2(y,z);
+    q1 = normalize_angle(-(angle1 - angle2));
 
     double GC = x;
     // double GC = x;
@@ -116,7 +124,9 @@ private:
     double AG = std::sqrt(y*y + z*z - l1*l1);
     double OA = l1;
     
-    q1 = std::atan2(AG,OA) - std::atan2(y,z);
+    double angle1 = std::atan2(AG,OA);
+    double angle2 = std::atan2(y,z);
+    q1 = normalize_angle(angle1 - angle2);
 
     double GC = x;
     // double GC = x;
@@ -214,7 +224,7 @@ private:
     double robot_q2 = q2 - joint_offset_2 + M_PI/2;
     double robot_q3 = q3 - joint_offset_3 - M_PI/2;
 
-    RCLCPP_INFO(get_logger(), "FL_Q1: %f", q1);
+    // RCLCPP_INFO(get_logger(), "FL_Q1: %f", q1);
 
     // if(q1 < -1.57 || q1 > 1.57)
     // {
