@@ -1,8 +1,7 @@
 // #include "../include/inverse_kinematics.hpp"
 #include <rclcpp/rclcpp.hpp>
-#include <trajectory_msgs/msg/joint_trajectory.hpp>
-#include <trajectory_msgs/msg/joint_trajectory_point.hpp>
 #include <sensor_msgs/msg/joy.hpp>
+#include <std_msgs/msg/float64_multi_array.hpp>
 
 #include "inverse_kinematics.hpp"
 
@@ -19,15 +18,16 @@ public:
   {
     // Create publisher with reliable QoS
     auto qos = rclcpp::QoS(1).reliable();
-    trajectory_publisher_ = this->create_publisher<trajectory_msgs::msg::JointTrajectory>(
-      "/joint_trajectory_controller/joint_trajectory", qos);
+    position_pubilsher_ = this->create_publisher<std_msgs::msg::Float64MultiArray>(
+      "/forward_position_controller/commands", qos);
 
     // Create joystick subscriber
     joy_subscriber_ = this->create_subscription<sensor_msgs::msg::Joy>(
       "/joy", 10, std::bind(&TrajectoryPublisher::joy_callback, this, std::placeholders::_1));
 
-    num_of_points = 60;
-    positions.resize(12);
+    // num_of_points = 60;
+    // positions.resize(12);
+    positions.data.resize(12);
 
     // timer_ = this->create_wall_timer(
     // std::chrono::milliseconds(static_cast<int>(total_duration*1000) + 10), std::bind(&TrajectoryPublisher::timer_callback, this));
@@ -48,12 +48,12 @@ private:
       // Left stick for yaw (axis 0) and pitch (axis 1)
       if (msg->axes.size() > 1) {
         current_yaw_ = msg->axes[0] * 0.3;    // Scale to reasonable rotation range
-        current_roll_ = msg->axes[1] * 0.3;
+        current_pitch_ = msg->axes[1] * 0.3;
       }
       
       // Right stick for roll (axis 3)
       if (msg->axes.size() > 3) {
-        current_pitch_ = msg->axes[3] * 0.3;
+        current_roll_ = msg->axes[2] * 0.2;
       }
     } else {
       // Reset rotations when button is not pressed
@@ -65,10 +65,6 @@ private:
 
   void timer_callback()
   {
-    auto trajectory_msg = trajectory_msgs::msg::JointTrajectory();
-    // trajectory_msg.joint_names = {"joint_br_1", "joint_br_2", "joint_br_3", "joint_bl_1", "joint_bl_2", "joint_bl_3"}; // Replace with your joint name
-
-    trajectory_msg.joint_names = {"fl_m1_s1","fl_m2_s2","fl_m3_s3","fr_m1_s1","fr_m2_s2","fr_m3_s3","bl_m1_s1","bl_m2_s2","bl_m3_s3","br_m1_s1","br_m2_s2","br_m3_s3"};
 
     double angle_increment = 2.0 * M_PI / num_of_points;
     double time_increment = total_duration / num_of_points;
@@ -104,21 +100,13 @@ private:
     Eigen::Vector3d fr_xyz_bis = fr_xyz - fr_leg_origin;
     Eigen::Vector3d fl_xyz_bis = fl_xyz - fl_leg_origin;
 
-    auto point = trajectory_msgs::msg::JointTrajectoryPoint();
-
     ik.calcJointPositions(Leg::FR, fr_xyz_bis.x(), fr_xyz_bis.y(), fr_xyz_bis.z());
     ik.calcJointPositions(Leg::FL, fl_xyz_bis.x(), fl_xyz_bis.y(), fl_xyz_bis.z());
     ik.calcJointPositions(Leg::BR, br_xyz_bis.x(), br_xyz_bis.y(), br_xyz_bis.z());
     ik.calcJointPositions(Leg::BL, bl_xyz_bis.x(), bl_xyz_bis.y(), bl_xyz_bis.z());
     set_joints();
 
-    point.positions = positions;
-    double point_time = 0.1; // Small delay for trajectory execution
-    point.time_from_start.sec = static_cast<int>(point_time);
-    point.time_from_start.nanosec = static_cast<uint32_t>((point_time - static_cast<int>(point_time)) * 1e9);
-
-    trajectory_msg.points.push_back(point);
-    trajectory_publisher_->publish(trajectory_msg);
+    position_pubilsher_->publish(positions);
   }
 
   void set_joints() // Make it more streamlined xd
@@ -126,9 +114,9 @@ private:
     unsigned int i = 0;
     for(Leg leg_enum : legIterator())
     {
-      positions[i++] = ik.legs[leg_enum].q1;
-      positions[i++] = ik.legs[leg_enum].q2;
-      positions[i++] = ik.legs[leg_enum].q3;
+      positions.data[i++] = ik.legs[leg_enum].q1;
+      positions.data[i++] = ik.legs[leg_enum].q2;
+      positions.data[i++] = ik.legs[leg_enum].q3;
     }
   }
   //   for(int i = 0; i < num_of_points; ++i)
@@ -160,7 +148,7 @@ private:
   //   trajectory_publisher_->publish(trajectory_msg);
   // }
 
-  rclcpp::Publisher<trajectory_msgs::msg::JointTrajectory>::SharedPtr trajectory_publisher_;
+  rclcpp::Publisher<std_msgs::msg::Float64MultiArray>::SharedPtr position_pubilsher_;
   rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr joy_subscriber_;
   rclcpp::TimerBase::SharedPtr timer_;
   double position_;
@@ -171,7 +159,8 @@ private:
   double current_yaw_;
   bool rotation_enabled_;
 
-  std::vector<double> positions;
+  std_msgs::msg::Float64MultiArray positions = std_msgs::msg::Float64MultiArray();
+  // std::array<double> positions;
   int num_of_points;
   const double total_duration;
 

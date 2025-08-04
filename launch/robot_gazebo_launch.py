@@ -119,7 +119,7 @@ def generate_launch_description():
             "load_controller",
             "--set-state",
             "active",
-            "joint_trajectory_controller",
+            "forward_position_controller",
         ],
         output="screen",
     )

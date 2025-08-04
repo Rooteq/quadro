@@ -5,39 +5,40 @@ controller_manager:
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
     
-    joint_trajectory_controller:
-      type: "joint_trajectory_controller/JointTrajectoryController"
+    forward_position_controller:
+      type: forward_command_controller/ForwardCommandController
 
-joint_trajectory_controller:
+forward_position_controller:
   ros__parameters:
     joints:
-      - br_m1_s1
-      - br_m2_s2
-      - br_m3_s3
+      - fl_m1_s1
+      - fl_m2_s2
+      - fl_m3_s3
       - fr_m1_s1
       - fr_m2_s2
       - fr_m3_s3
       - bl_m1_s1
       - bl_m2_s2
       - bl_m3_s3
-      - fl_m1_s1
-      - fl_m2_s2
-      - fl_m3_s3
+      - br_m1_s1
+      - br_m2_s2
+      - br_m3_s3
 
-    command_interfaces:
-      - position
+    interface_name: position
+    # command_interfaces:
+    #   - position
 
-    state_interfaces:
-      - position
-      - velocity
+    # state_interfaces:
+    #   - position
+    #   - velocity
 
-    action_monitor_rate: 30.0
+    # action_monitor_rate: 30.0
 
-    allow_partial_joints_goal: false
-    open_loop_control: true
-    constraints:
-      stopped_velocity_tolerance: 0.01
-      goal_time: 0.0
-      joint1:
-        trajectory: 0.05
-        goal: 0.03
+    # allow_partial_joints_goal: false
+    # open_loop_control: true
+    # constraints:
+    #   stopped_velocity_tolerance: 0.01
+    #   goal_time: 0.0
+    #   joint1:
+    #     trajectory: 0.05
+    #     goal: 0.03
