@@ -3,7 +3,7 @@
 #include <sensor_msgs/msg/joy.hpp>
 #include <std_msgs/msg/float64_multi_array.hpp>
 
-#include "inverse_kinematics.hpp"
+#include "position_controller.hpp"
 
 using namespace std::chrono_literals;
 using namespace IK;
@@ -77,6 +77,8 @@ private:
 
     Eigen::Vector3d default_leg_pos(0.0, 0.0, -0.25);
 
+    Eigen::Vector3d leg_pos(0.0, 0.0, 0.0);
+
     // Leg origins relative to the robot's 0 pos (Z axis might be reversed)
     Eigen::Vector3d br_leg_origin(-0.185, 0.0, 0.0628);
     Eigen::Vector3d fr_leg_origin(0.185, 0.0, 0.0628);
@@ -102,10 +104,10 @@ private:
     Eigen::Vector3d fr_xyz_bis = fr_xyz - fr_leg_origin;
     Eigen::Vector3d fl_xyz_bis = fl_xyz - fl_leg_origin;
 
-    ik.calcJointPositions(Leg::FR, fr_xyz_bis.x(), fr_xyz_bis.y(), fr_xyz_bis.z());
-    ik.calcJointPositions(Leg::FL, fl_xyz_bis.x(), fl_xyz_bis.y(), fl_xyz_bis.z());
-    ik.calcJointPositions(Leg::BR, br_xyz_bis.x(), br_xyz_bis.y(), br_xyz_bis.z());
-    ik.calcJointPositions(Leg::BL, bl_xyz_bis.x(), bl_xyz_bis.y(), bl_xyz_bis.z());
+    pos_controller.legs_ik.calcJointPositions(Leg::FR, fr_xyz_bis.x(), fr_xyz_bis.y(), fr_xyz_bis.z());
+    pos_controller.legs_ik.calcJointPositions(Leg::FL, fl_xyz_bis.x(), fl_xyz_bis.y(), fl_xyz_bis.z());
+    pos_controller.legs_ik.calcJointPositions(Leg::BR, br_xyz_bis.x(), br_xyz_bis.y(), br_xyz_bis.z());
+    pos_controller.legs_ik.calcJointPositions(Leg::BL, bl_xyz_bis.x(), bl_xyz_bis.y(), bl_xyz_bis.z());
     set_joints();
     
     // Apply velocity limiting
@@ -119,9 +121,9 @@ private:
     unsigned int i = 0;
     for(Leg leg_enum : legIterator())
     {
-      positions.data[i++] = ik.legs[leg_enum].q1;
-      positions.data[i++] = ik.legs[leg_enum].q2;
-      positions.data[i++] = ik.legs[leg_enum].q3;
+      positions.data[i++] = pos_controller.get_leg_joint_positions(leg_enum).q1;
+      positions.data[i++] = pos_controller.get_leg_joint_positions(leg_enum).q2;
+      positions.data[i++] = pos_controller.get_leg_joint_positions(leg_enum).q3;
     }
   }
 
@@ -196,7 +198,9 @@ private:
   const double max_joint_velocity_;
   std::vector<double> previous_positions_;
 
-  InverseKinematics ik;
+  // InverseKinematics ik;
+  PositionController pos_controller;
+
 };
 
 int main(int argc, char* argv[])

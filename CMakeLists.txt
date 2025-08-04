@@ -37,9 +37,9 @@ ament_target_dependencies(trajectory_publisher
   sensor_msgs
 )
 
-add_library(ik src/inverse_kinematics.cpp include/inverse_kinematics.hpp)
+add_library(pos_controller src/inverse_kinematics.cpp src/position_controller.cpp include/inverse_kinematics.hpp include/position_controller.hpp)
 target_include_directories(trajectory_publisher PUBLIC include)
-target_link_libraries(trajectory_publisher ik)
+target_link_libraries(trajectory_publisher pos_controller)
 
 #--------------------CUSTOM NODE--------------------------#
 add_executable(leg_ik src/back_legs_trajectory.cpp)
