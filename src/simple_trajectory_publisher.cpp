@@ -14,7 +14,8 @@ class TrajectoryPublisher : public rclcpp::Node
 public:
   TrajectoryPublisher()
   : Node("trajectory_publisher"), position_(0.0), total_duration(3.0), 
-    current_roll_(0.0), current_pitch_(0.0), current_yaw_(0.0), rotation_enabled_(false)
+    current_roll_(0.0), current_pitch_(0.0), current_yaw_(0.0), rotation_enabled_(false),
+    max_joint_velocity_(2.0)
   {
     // Create publisher with reliable QoS
     auto qos = rclcpp::QoS(1).reliable();
@@ -28,6 +29,7 @@ public:
     // num_of_points = 60;
     // positions.resize(12);
     positions.data.resize(12);
+    previous_positions_.resize(12, 0.0);
 
     // timer_ = this->create_wall_timer(
     // std::chrono::milliseconds(static_cast<int>(total_duration*1000) + 10), std::bind(&TrajectoryPublisher::timer_callback, this));
@@ -105,6 +107,9 @@ private:
     ik.calcJointPositions(Leg::BR, br_xyz_bis.x(), br_xyz_bis.y(), br_xyz_bis.z());
     ik.calcJointPositions(Leg::BL, bl_xyz_bis.x(), bl_xyz_bis.y(), bl_xyz_bis.z());
     set_joints();
+    
+    // Apply velocity limiting
+    apply_velocity_limiting();
 
     position_pubilsher_->publish(positions);
   }
@@ -117,6 +122,31 @@ private:
       positions.data[i++] = ik.legs[leg_enum].q1;
       positions.data[i++] = ik.legs[leg_enum].q2;
       positions.data[i++] = ik.legs[leg_enum].q3;
+    }
+  }
+
+  void apply_velocity_limiting()
+  {
+    const double dt = 0.05; // 50ms timer period
+    
+    for (size_t i = 0; i < positions.data.size(); ++i)
+    {
+      double target_position = positions.data[i];
+      double current_position = previous_positions_[i];
+      double position_diff = target_position - current_position;
+      double max_position_change = max_joint_velocity_ * dt;
+      
+      // Limit the position change based on max velocity
+      if (std::abs(position_diff) > max_position_change)
+      {
+        if (position_diff > 0)
+          positions.data[i] = current_position + max_position_change;
+        else
+          positions.data[i] = current_position - max_position_change;
+      }
+      
+      // Update previous position for next iteration
+      previous_positions_[i] = positions.data[i];
     }
   }
   //   for(int i = 0; i < num_of_points; ++i)
@@ -163,6 +193,8 @@ private:
   // std::array<double> positions;
   int num_of_points;
   const double total_duration;
+  const double max_joint_velocity_;
+  std::vector<double> previous_positions_;
 
   InverseKinematics ik;
 };
