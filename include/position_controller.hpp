@@ -2,7 +2,8 @@
 #include "inverse_kinematics.hpp"
 #include "array"
 
-#define TRAJECTORY_POINTS 21
+#define TRAJECTORY_POINTS 12
+#define DOWN_PHASES 3 //number of times an individual leg touches the ground during the whole phase
 
 namespace IK
 {
@@ -10,32 +11,51 @@ namespace IK
 using vec3 = Eigen::Vector3d;
 
 // Again starting from FL
-typedef Eigen::Matrix<unsigned int, 4, 8> CrawlMatrix;
+typedef Eigen::Matrix<unsigned int, 4, 4> CrawlMatrix;
 
 struct LegTrajectory
 {
-    std::array<vec3, TRAJECTORY_POINTS> shape{};
+    std::array<vec3, TRAJECTORY_POINTS> up{};
+    std::array<vec3, TRAJECTORY_POINTS*DOWN_PHASES> down{};
+    vec3 leg_offset_before_step;
     bool started = false;
     bool finished = false;
     int i = 0;
+    int k = 0;
 
     void calculate_shape(const double base, const double height) // add params here
     {
-        const double x_step = base/(TRAJECTORY_POINTS/3);
+        const double x_step = base/(TRAJECTORY_POINTS/2);
 
-        shape[0] << 0.0, 0.0, 0.0;
+        up[0] << 0.0, 0.0, 0.0;
         for(int i = 1; i < TRAJECTORY_POINTS; ++i)
         {
-            if(i < TRAJECTORY_POINTS/3)
-                shape[i] << (shape[i-1].x() - x_step) , 0.0 , 0.0;
-            else if(i >= int(TRAJECTORY_POINTS/3) && i < 2*(int(TRAJECTORY_POINTS/3)))
-                shape[i] << (shape[i-1].x() + x_step/2) , 0.0 , (shape[i-1].z() + 2.4*x_step/2);
+            if(i < TRAJECTORY_POINTS/2)
+                up[i] << (up[i-1].x() + x_step/2) , 0.0 , (up[i-1].z() + 2.4*x_step/2);
             else
-                shape[i] << (shape[i-1].x() + x_step/2) , 0.0 , (shape[i-1].z() - 2.4*x_step/2);
+                up[i] << (up[i-1].x() + x_step/2) , 0.0 , (up[i-1].z() - 2.4*x_step/2);
+
+            // if(i < TRAJECTORY_POINTS/3)
+            //     shape[i] << (shape[i-1].x() - x_step) , 0.0 , 0.0;
+            // else if(i >= int(TRAJECTORY_POINTS/3) && i < 2*(int(TRAJECTORY_POINTS/3)))
+            //     shape[i] << (shape[i-1].x() + x_step/2) , 0.0 , (shape[i-1].z() + 2.4*x_step/2);
+            // else
+            //     shape[i] << (shape[i-1].x() + x_step/2) , 0.0 , (shape[i-1].z() - 2.4*x_step/2);
         }
+
+        const double x_step_down = base/(TRAJECTORY_POINTS*DOWN_PHASES); 
+
+        down[0] << 0.0, 0.0, 0.0;
+        for(int i = 1; i < TRAJECTORY_POINTS*DOWN_PHASES; ++i)
+        {
+            down[i] << (down[i-1].x() - x_step_down), 0.0, 0.0;
+        }
+
+        leg_offset_before_step = down[TRAJECTORY_POINTS*DOWN_PHASES-1];
+
     }
 
-    const vec3& get_next_pos()
+    const vec3& get_next_up_pos()
     {
         int j = i;
         i++;
@@ -46,7 +66,21 @@ struct LegTrajectory
             finished = true;
         }
 
-        return shape[j];
+        return up[j];
+    }
+
+    const vec3& get_next_down_pos()
+    {
+        int j = k;
+        k++;
+
+        if(k == TRAJECTORY_POINTS * DOWN_PHASES)
+        {
+            k = 0;
+            finished = true;
+        }
+
+        return down[j];
     }
 };
 
@@ -156,7 +190,7 @@ private:
         if(all_started_and_finished())
         {
             current_gait_phase++;
-            if(current_gait_phase > 7) current_gait_phase = 0; // CHECK FOR SIZE
+            if(current_gait_phase > 3) current_gait_phase = 0; // CHECK FOR SIZE
             Eigen::Vector<unsigned int, 4> leg_config = crawl_matrix.col(current_gait_phase);
 
             // reset legs - necessary?
@@ -186,7 +220,10 @@ private:
         for(Leg leg : legIterator())
         {
             if(legs_trajectory[leg].started && !legs_trajectory[leg].finished)
-                legs_pos[leg] = legs_trajectory[leg].get_next_pos() + default_leg_pos;
+                legs_pos[leg] = legs_trajectory[leg].get_next_up_pos() + default_leg_pos + legs_trajectory[leg].leg_offset_before_step;
+            else
+                legs_pos[leg] = legs_trajectory[leg].get_next_down_pos() + default_leg_pos;
+             
         }       
     }
 
@@ -224,10 +261,10 @@ private:
     LegTrajectory legs_trajectory[sizeof(Leg)];
 
     const CrawlMatrix crawl_matrix{
-        {1, 1, 1, 0, 1, 1, 1, 1},
-        {1, 1, 1, 1, 1, 1, 1, 0},
-        {1, 0, 1, 1, 1, 1, 1, 1},
-        {1, 1, 1, 1, 1, 0, 1, 1}
+        { 0,  1,  1,  1},
+        { 1,  1,  0,  1},
+        { 1,  1,  1,  0},
+        { 1,  0,  1,  1}
     };
 
     unsigned int current_gait_phase = 0;
