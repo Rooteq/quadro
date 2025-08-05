@@ -79,7 +79,7 @@ def generate_launch_description():
             "-string",robot_desc,
             "-x","0.5",
             "-y","0.5",
-            "-z","0.07",
+            "-z","0.1",
             "-R","0.0",
             "-P","0.0",
             "-Y","0.0",

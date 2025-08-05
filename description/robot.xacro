@@ -16,7 +16,7 @@
 
   <joint name="fixed" type="fixed">
     <parent link="world"/>
-    <child link="motor"/>
+    <child link="back_plate"/>
   </joint> -->
 
   <link name="back_plate">
@@ -440,7 +440,7 @@
     <parent link="shaft_2"/>
     <child link="shaft_3"/>
     <axis xyz="0 0 -1"/>
-    <limit effort="10" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
+    <limit effort="20" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
     <joint_properties friction="0.5"/>
   </joint>
   <!-- Link lin_4_r -->
@@ -521,7 +521,7 @@
     <parent link="shaft_2"/>
     <child link="lin_4_r"/>
     <axis xyz="0 0 -1"/>
-    <limit effort="10" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
+    <limit effort="20" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
     <joint_properties friction="0.5"/>
     <mimic joint="br_m3_s3" multiplier="1.0"/>
   </joint>
@@ -531,7 +531,7 @@
     <parent link="shaft"/>
     <child link="shaft_2"/>
     <axis xyz="0 0 -1"/>
-    <limit effort="10" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
+    <limit effort="20" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
     <joint_properties friction="0.5"/>
   </joint>
   <!-- Joint from back_plate to shaft -->
@@ -540,7 +540,7 @@
     <parent link="back_plate"/>
     <child link="shaft"/>
     <axis xyz="0 0 -1"/>
-    <limit effort="10" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
+    <limit effort="20" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
     <joint_properties friction="0.5"/>
   </joint>
   <!-- Link shaft_4 -->
@@ -749,7 +749,7 @@
     <parent link="shaft_5"/>
     <child link="shaft_6"/>
     <axis xyz="0 0 1"/>
-    <limit effort="10" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
+    <limit effort="20" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
     <joint_properties friction="0.5"/>
   </joint>
   <!-- Link lin_4_l -->
@@ -830,7 +830,7 @@
     <parent link="shaft_5"/>
     <child link="lin_4_l"/>
     <axis xyz="0 0 1"/>
-    <limit effort="10" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
+    <limit effort="20" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
     <joint_properties friction="0.5"/>
     <mimic joint="bl_m3_s3" multiplier="1.0"/>
   </joint>
@@ -840,7 +840,7 @@
     <parent link="shaft_4"/>
     <child link="shaft_5"/>
     <axis xyz="0 0 1"/>
-    <limit effort="10" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
+    <limit effort="20" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
     <joint_properties friction="0.5"/>
   </joint>
   <!-- Joint from back_plate to shaft_4 -->
@@ -849,7 +849,7 @@
     <parent link="back_plate"/>
     <child link="shaft_4"/>
     <axis xyz="0 0 -1"/>
-    <limit effort="10" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
+    <limit effort="20" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
     <joint_properties friction="0.5"/>
   </joint>
   <!-- Link shaft_7 -->
@@ -1058,7 +1058,7 @@
     <parent link="shaft_8"/>
     <child link="shaft_9"/>
     <axis xyz="0 0 -1"/>
-    <limit effort="10" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
+    <limit effort="20" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
     <joint_properties friction="0.5"/>
   </joint>
   <!-- Link lin_4_r_2 -->
@@ -1139,7 +1139,7 @@
     <parent link="shaft_8"/>
     <child link="lin_4_r_2"/>
     <axis xyz="0 0 -1"/>
-    <limit effort="10" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
+    <limit effort="20" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
     <joint_properties friction="0.5"/>
     <mimic joint="fr_m3_s3" multiplier="1.0"/>
   </joint>
@@ -1149,7 +1149,7 @@
     <parent link="shaft_7"/>
     <child link="shaft_8"/>
     <axis xyz="0 0 -1"/>
-    <limit effort="10" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
+    <limit effort="20" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
     <joint_properties friction="0.5"/>
   </joint>
   <!-- Joint from back_plate to shaft_7 -->
@@ -1158,7 +1158,7 @@
     <parent link="back_plate"/>
     <child link="shaft_7"/>
     <axis xyz="0 0 1"/>
-    <limit effort="10" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
+    <limit effort="20" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
     <joint_properties friction="0.5"/>
   </joint>
   <!-- Link motor -->
@@ -1367,7 +1367,7 @@
     <parent link="motor_2"/>
     <child link="shaft_10"/>
     <axis xyz="0 0 1"/>
-    <limit effort="10" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
+    <limit effort="20" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
     <joint_properties friction="0.5"/>
   </joint>
   <!-- Link lin_4_l_2 -->
@@ -1448,7 +1448,7 @@
     <parent link="motor_2"/>
     <child link="lin_4_l_2"/>
     <axis xyz="0 0 1"/>
-    <limit effort="10" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
+    <limit effort="20" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
     <joint_properties friction="0.5"/>
     <mimic joint="fl_m3_s3" multiplier="1.0"/>
   </joint>
@@ -1458,7 +1458,7 @@
     <parent link="motor"/>
     <child link="motor_2"/>
     <axis xyz="0 0 1"/>
-    <limit effort="10" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
+    <limit effort="20" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
     <joint_properties friction="0.5"/>
   </joint>
   <!-- Joint from back_plate to motor -->
@@ -1467,7 +1467,7 @@
     <parent link="back_plate"/>
     <child link="motor"/>
     <axis xyz="0 0 1"/>
-    <limit effort="10" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
+    <limit effort="20" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
     <joint_properties friction="0.5"/>
   </joint>
 </robot>
