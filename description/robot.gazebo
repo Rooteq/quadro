@@ -84,6 +84,26 @@
     </plugin>
   </gazebo>
 
+
+  <gazebo reference="lin_4_l">
+    <mu1 value="0.5"/>
+    <mu2 value="0.5"/>
+  </gazebo>
+
+  <gazebo reference="lin_4_l_2">
+    <mu1 value="0.5"/>
+    <mu2 value="0.5"/>
+  </gazebo>
+
+  <gazebo reference="lin_4_r">
+    <mu1 value="0.5"/>
+    <mu2 value="0.5"/>
+  </gazebo>
+
+  <gazebo reference="lin_4_r_2">
+    <mu1 value="0.5"/>
+    <mu2 value="0.5"/>
+  </gazebo>
   <!-- <gazebo reference="motor">
     <material>${body_color}</material>
     <self_collide>true</self_collide>

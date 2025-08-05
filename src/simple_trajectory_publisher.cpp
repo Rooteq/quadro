@@ -7,7 +7,6 @@
 
 using namespace std::chrono_literals;
 using namespace IK;
-typedef Iterator<Leg, Leg::FL, Leg::BR> legIterator;
 
 class TrajectoryPublisher : public rclcpp::Node
 {
@@ -15,7 +14,7 @@ public:
   TrajectoryPublisher()
   : Node("trajectory_publisher"), position_(0.0), total_duration(3.0), 
     current_roll_(0.0), current_pitch_(0.0), current_yaw_(0.0), rotation_enabled_(false),
-    max_joint_velocity_(2.0)
+    max_joint_velocity_(2.0), control_period(0.05)
   {
     // Create publisher with reliable QoS
     auto qos = rclcpp::QoS(1).reliable();
@@ -34,7 +33,9 @@ public:
     // timer_ = this->create_wall_timer(
     // std::chrono::milliseconds(static_cast<int>(total_duration*1000) + 10), std::bind(&TrajectoryPublisher::timer_callback, this));
     timer_ = this->create_wall_timer(
-    std::chrono::milliseconds(50), std::bind(&TrajectoryPublisher::timer_callback, this));
+    std::chrono::milliseconds(static_cast<const int>(control_period * 1000)), std::bind(&TrajectoryPublisher::timer_callback, this));
+
+    time = this->get_clock()->now();
   }
 
 private:
@@ -67,52 +68,21 @@ private:
 
   void timer_callback()
   {
+    if(this->get_clock()->now().seconds() - time.seconds() < 2)
+    {
+      RCLCPP_INFO(this->get_logger(), "STARTUP");
+      pos_controller.startup(0.0, 0.0 ,-0.25);
+    }
+    else
+    {
+      pos_controller.set_rotation(current_roll_, current_pitch_, current_yaw_);
+      pos_controller.apply_control();
+    }
+    // double angle_increment = 2.0 * M_PI / num_of_points;
+    // double time_increment = total_duration / num_of_points;
 
-    double angle_increment = 2.0 * M_PI / num_of_points;
-    double time_increment = total_duration / num_of_points;
-
-    double roll = current_roll_;
-    double pitch = current_pitch_;
-    double yaw = current_yaw_;
-
-    Eigen::Vector3d default_leg_pos(0.0, 0.0, -0.25);
-
-    Eigen::Vector3d leg_pos(0.0, 0.0, 0.0);
-
-    // Leg origins relative to the robot's 0 pos (Z axis might be reversed)
-    Eigen::Vector3d br_leg_origin(-0.185, 0.0, 0.0628);
-    Eigen::Vector3d fr_leg_origin(0.185, 0.0, 0.0628);
-    Eigen::Vector3d bl_leg_origin(-0.185, 0.0, -0.0628);
-    Eigen::Vector3d fl_leg_origin(0.185, 0.0, -0.0628);
-
-    // Rotation matrix
-    Eigen::AngleAxisd rollAngle(roll, Eigen::Vector3d::UnitX());
-    Eigen::AngleAxisd pitchAngle(pitch, Eigen::Vector3d::UnitY());
-    Eigen::AngleAxisd yawAngle(yaw, Eigen::Vector3d::UnitZ());
-
-    Eigen::Quaternion<double> q = rollAngle * pitchAngle * yawAngle;
-
-    Eigen::Matrix3d rotationMatrix = q.matrix();
-
-    Eigen::Vector3d br_xyz = rotationMatrix.inverse() * (default_leg_pos + br_leg_origin);
-    Eigen::Vector3d fr_xyz = rotationMatrix.inverse() * (default_leg_pos + fr_leg_origin);
-    Eigen::Vector3d bl_xyz = rotationMatrix.inverse() * (default_leg_pos + bl_leg_origin);
-    Eigen::Vector3d fl_xyz = rotationMatrix.inverse() * (default_leg_pos + fl_leg_origin);
-
-    Eigen::Vector3d br_xyz_bis = br_xyz - br_leg_origin;
-    Eigen::Vector3d bl_xyz_bis = bl_xyz - bl_leg_origin;
-    Eigen::Vector3d fr_xyz_bis = fr_xyz - fr_leg_origin;
-    Eigen::Vector3d fl_xyz_bis = fl_xyz - fl_leg_origin;
-
-    pos_controller.legs_ik.calcJointPositions(Leg::FR, fr_xyz_bis.x(), fr_xyz_bis.y(), fr_xyz_bis.z());
-    pos_controller.legs_ik.calcJointPositions(Leg::FL, fl_xyz_bis.x(), fl_xyz_bis.y(), fl_xyz_bis.z());
-    pos_controller.legs_ik.calcJointPositions(Leg::BR, br_xyz_bis.x(), br_xyz_bis.y(), br_xyz_bis.z());
-    pos_controller.legs_ik.calcJointPositions(Leg::BL, bl_xyz_bis.x(), bl_xyz_bis.y(), bl_xyz_bis.z());
     set_joints();
-    
-    // Apply velocity limiting
     apply_velocity_limiting();
-
     position_pubilsher_->publish(positions);
   }
 
@@ -129,7 +99,7 @@ private:
 
   void apply_velocity_limiting()
   {
-    const double dt = 0.05; // 50ms timer period
+    const double dt = control_period; // 50ms timer period
     
     for (size_t i = 0; i < positions.data.size(); ++i)
     {
@@ -200,6 +170,10 @@ private:
 
   // InverseKinematics ik;
   PositionController pos_controller;
+
+  const double control_period;
+
+  rclcpp::Time time;
 
 };
 

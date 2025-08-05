@@ -29,10 +29,15 @@ public:
 
 namespace IK
 {
-/*LEG ENUMERATION:
+
+  
+  /*LEG ENUMERATION:
   1 2
   3 4*/
 enum Leg {FL,FR,BL,BR};
+
+
+typedef Iterator<Leg, Leg::FL, Leg::BR> legIterator;
 
 struct LegJointPositions
 {
