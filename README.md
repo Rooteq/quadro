@@ -9,3 +9,4 @@ Add this to robot.urdf
     <parent link="world"/>
     <child link="motor"/>
 </joint>
+

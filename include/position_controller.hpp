@@ -2,7 +2,7 @@
 #include "inverse_kinematics.hpp"
 #include "array"
 
-#define TRAJECTORY_POINTS 9
+#define TRAJECTORY_POINTS 6
 #define DOWN_PHASES 3 //number of times an individual leg touches the ground during the whole phase
 
 namespace IK
@@ -16,7 +16,9 @@ typedef Eigen::Matrix<unsigned int, 4, 4> CrawlMatrix;
 struct LegTrajectory
 {
     std::array<vec3, TRAJECTORY_POINTS> up{};
-    std::array<vec3, TRAJECTORY_POINTS*DOWN_PHASES> down{};
+
+    vec3 leg_down_offset{0.0,0.0,0.0};
+
     vec3 leg_offset_before_step;
     vec3 current_leg_pos;
     bool up_movement = false;
@@ -30,34 +32,36 @@ struct LegTrajectory
         step_base = base;
         step_height = height;
 
-        const double x_step = base/(TRAJECTORY_POINTS/2);
+        const double x_step = step_base/(TRAJECTORY_POINTS/2);
 
-        up[0] << 0.0, 0.0, 0.0;
+        // SET POINT, WHERE THE LEG WILL RAISE FROM
+        up[0] << -step_base/2, 0.0, 0.0;
+
         for(int i = 1; i < TRAJECTORY_POINTS; ++i)
         {
             if(i < TRAJECTORY_POINTS/2)
                 up[i] << (up[i-1].x() + x_step/2) , 0.0 , (up[i-1].z() + 2.4*x_step/2);
             else
                 up[i] << (up[i-1].x() + x_step/2) , 0.0 , (up[i-1].z() - 2.4*x_step/2);
-
-            // if(i < TRAJECTORY_POINTS/3)
-            //     shape[i] << (shape[i-1].x() - x_step) , 0.0 , 0.0;
-            // else if(i >= int(TRAJECTORY_POINTS/3) && i < 2*(int(TRAJECTORY_POINTS/3)))
-            //     shape[i] << (shape[i-1].x() + x_step/2) , 0.0 , (shape[i-1].z() + 2.4*x_step/2);
-            // else
-            //     shape[i] << (shape[i-1].x() + x_step/2) , 0.0 , (shape[i-1].z() - 2.4*x_step/2);
         }
 
-        const double x_step_down = base/(TRAJECTORY_POINTS*DOWN_PHASES); 
+        const double x_step_down = step_base/(TRAJECTORY_POINTS*DOWN_PHASES); 
+        leg_down_offset = {x_step_down, 0.0, 0.0};
 
-        down[0] << 0.0, 0.0, 0.0;
-        for(int i = 1; i < TRAJECTORY_POINTS*DOWN_PHASES; ++i)
-        {
-            down[i] << (down[i-1].x() - x_step_down), 0.0, 0.0;
+        // Apply rotation if needed
+        double rotation_angle = 0.0;
+        if (rotation_angle != 0.0) {
+            Eigen::Matrix3d rotation;
+            rotation = Eigen::AngleAxisd(rotation_angle, Eigen::Vector3d::UnitZ());
+            
+            for(auto& point : up) {
+                point = rotation * point;
+            }
+
+            leg_down_offset = rotation * leg_down_offset;
         }
-
-        leg_offset_before_step = down[TRAJECTORY_POINTS*DOWN_PHASES-1];
-
+        
+        leg_offset_before_step = leg_down_offset * TRAJECTORY_POINTS * DOWN_PHASES;
     }
 
     const vec3& get_next_up_pos()
@@ -75,23 +79,11 @@ struct LegTrajectory
         return current_leg_pos;
     }
 
-    const vec3& get_next_down_step()
+    const vec3& get_next_down_step() // can add PID controler here?
     {
-        const double x_step_down = step_base/(TRAJECTORY_POINTS*DOWN_PHASES); 
-
-        current_leg_pos.x() -=x_step_down;
+        current_leg_pos -= leg_down_offset;
 
         return current_leg_pos;
-        // int j = k;
-        // k++;
-
-        // if(k == TRAJECTORY_POINTS * DOWN_PHASES)
-        // {
-        //     k = 0;
-        //     // finished = true;
-        // }
-
-        // return down[j];
     }
 };
 
@@ -103,7 +95,7 @@ public:
     {
         for(Leg leg : legIterator())
         {
-            legs_trajectory[leg].calculate_shape(0.05, 0.04);
+            legs_trajectory[leg].calculate_shape(crawl_reach, crawl_height);
         }
     }
 
@@ -199,7 +191,7 @@ private:
         // Make movement
         for(Leg leg : legIterator())
         {
-            robot_rot.y() = 0.05;
+            // robot_rot.y() = 0.05;
             if(legs_trajectory[leg].up_movement)
             {
                 if(leg == Leg::FL || leg == Leg::BL)
@@ -225,9 +217,12 @@ private:
         return true;
     }
 
+    const double crawl_reach = 0.05;
+    const double crawl_height = 0.04;
+
     vec3 legs_pos[sizeof(Leg)] = {{0.0, 0.0, 0.0}};
     
-    const vec3 default_leg_pos{0.0, 0.0, -0.30};
+    const vec3 default_leg_pos{-crawl_reach/2, 0.0, -0.30};
 
     vec3 legs_pos_before_rotation[sizeof(Leg)] = {this->default_leg_pos, this->default_leg_pos, this->default_leg_pos, this->default_leg_pos};
 
