@@ -14,7 +14,7 @@ public:
   TrajectoryPublisher()
   : Node("trajectory_publisher"), position_(0.0), total_duration(3.0), 
     current_roll_(0.0), current_pitch_(0.0), current_yaw_(0.0), rotation_enabled_(false),
-    max_joint_velocity_(2.0), control_period(0.05)
+    max_joint_velocity_(0.5), control_period(0.03)
   {
     // Create publisher with reliable QoS
     auto qos = rclcpp::QoS(1).reliable();
@@ -71,7 +71,11 @@ private:
     if(this->get_clock()->now().seconds() - time.seconds() < 2)
     {
       RCLCPP_INFO(this->get_logger(), "STARTUP");
-      pos_controller.startup(0.0, 0.0 ,-0.25);
+      pos_controller.startup();
+      set_joints();
+      apply_velocity_limiting();
+      position_pubilsher_->publish(positions);
+      return;
     }
     else
     {
@@ -82,7 +86,7 @@ private:
     // double time_increment = total_duration / num_of_points;
 
     set_joints();
-    apply_velocity_limiting();
+    // apply_velocity_limiting();
     position_pubilsher_->publish(positions);
   }
 
@@ -121,35 +125,6 @@ private:
       previous_positions_[i] = positions.data[i];
     }
   }
-  //   for(int i = 0; i < num_of_points; ++i)
-  //   {
-  //     auto point = trajectory_msgs::msg::JointTrajectoryPoint();
-
-  //     double angle = i * angle_increment;
-  //     double point_time = i * time_increment;
-
-  //     // ik_get_leg_joints(0.0, origin_y + radius * std::cos(angle), origin_z + radius*std::sin(angle));
-  //     // ik_fr_leg_joints(0.0, 0.0, -0.25);
-  //     // ik_fl_leg_joints(0.0, 0.0, -0.25);
-
-  //     // ik_br_leg_joints(0.0, 0.0, -0.25);
-  //     // ik_bl_leg_joints(0.0, 0.0, -0.25);
-  //     // ik_get_3dof_joints_pos(origin_x + radius * std::cos(angle), origin_y + radius*std::sin(angle), 0.0);
-  //     ik_fr_leg_joints(fr_xyz_bis.x(), fr_xyz_bis.y(), fr_xyz_bis.z());
-  //     ik_fl_leg_joints(fl_xyz_bis.x(), fl_xyz_bis.y(), fl_xyz_bis.z());
-  //     ik_br_leg_joints(br_xyz_bis.x(), br_xyz_bis.y(), br_xyz_bis.z());
-  //     ik_bl_leg_joints(bl_xyz_bis.x(), bl_xyz_bis.y(), bl_xyz_bis.z());
-
-  //     point.positions = positions;
-  //     point.time_from_start.sec = static_cast<int>(point_time);
-  //     point.time_from_start.nanosec = static_cast<uint32_t>((point_time - static_cast<int>(point_time)) * 1e9);
-
-  //     trajectory_msg.points.push_back(point);
-  //   }
-
-  //   trajectory_publisher_->publish(trajectory_msg);
-  // }
-
   rclcpp::Publisher<std_msgs::msg::Float64MultiArray>::SharedPtr position_pubilsher_;
   rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr joy_subscriber_;
   rclcpp::TimerBase::SharedPtr timer_;

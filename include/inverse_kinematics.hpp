@@ -65,7 +65,7 @@ private:
 
   double l1 = 0.065;
   double l2 = 0.2;
-  double l3 = 0.15;
+  double l3 = 0.2;
 
   double joint_offset_1 = 0.524;
   double joint_offset_2 = 0.349;

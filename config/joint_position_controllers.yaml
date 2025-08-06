@@ -42,3 +42,7 @@ forward_position_controller:
     #   joint1:
     #     trajectory: 0.05
     #     goal: 0.03
+gz_ros_control:
+  ros__parameters:
+    hold_joints: false
+    position_proportional_gain: 0.22

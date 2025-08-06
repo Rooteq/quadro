@@ -12,18 +12,18 @@
   <xacro:include filename="$(find quadro)/description/ros2_control.xacro" />
 </xacro:unless>
   <!-- Link motor -->
-  <!-- <link name="world"/>
+  <link name="world"/>
 
   <joint name="fixed" type="fixed">
     <parent link="world"/>
     <child link="back_plate"/>
-  </joint> -->
+  </joint>
 
   <link name="back_plate">
     <inertial>
       <origin xyz="-0.139034 0.00943483 -0.0243213" rpy="0 0 0"/>
       <mass value="2.38325"/>
-      <inertia ixx="0.0204343" ixy="-3.21203e-05" ixz="6.9264e-20" iyy="0.00715196" iyz="-4.17004e-19" izz="0.0254162"/>
+      <inertia ixx="0.0204343" ixy="-3.21203e-05" ixz="7.46306e-20" iyy="0.00715196" iyz="-4.17004e-19" izz="0.0254162"/>
     </inertial>
     <!-- Part back_stop -->
     <visual>
@@ -440,15 +440,14 @@
     <parent link="shaft_2"/>
     <child link="shaft_3"/>
     <axis xyz="0 0 -1"/>
-    <limit effort="40" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
-    <joint_properties friction="0.5"/>
+    <limit effort="20" velocity="10" lower="-3.141592653589793" upper="3.141592653589793"/>
   </joint>
   <!-- Link lin_4_r -->
   <link name="lin_4_r">
     <inertial>
-      <origin xyz="-0.000262324 0.0491557 -0.0035" rpy="0 0 0"/>
-      <mass value="0.0701023"/>
-      <inertia ixx="0.000371839" ixy="-2.10379e-06" ixz="-2.70636e-13" iyy="6.27155e-06" iyz="2.29312e-12" izz="0.000376266"/>
+      <origin xyz="-0.000162389 0.0733841 -0.0035" rpy="0 0 0"/>
+      <mass value="0.0813924"/>
+      <inertia ixx="0.000647132" ixy="-2.74301e-06" ixz="-2.68991e-13" iyy="7.272e-06" iyz="2.78217e-12" izz="0.000652467"/>
     </inertial>
     <!-- Part lin_4_r -->
     <visual>
@@ -521,8 +520,7 @@
     <parent link="shaft_2"/>
     <child link="lin_4_r"/>
     <axis xyz="0 0 -1"/>
-    <limit effort="40" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
-    <joint_properties friction="0.5"/>
+    <limit effort="20" velocity="10" lower="-3.141592653589793" upper="3.141592653589793"/>
     <mimic joint="br_m3_s3" multiplier="1.0"/>
   </joint>
   <!-- Joint from shaft to shaft_2 -->
@@ -531,8 +529,7 @@
     <parent link="shaft"/>
     <child link="shaft_2"/>
     <axis xyz="0 0 -1"/>
-    <limit effort="40" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
-    <joint_properties friction="0.5"/>
+    <limit effort="20" velocity="10" lower="-3.141592653589793" upper="3.141592653589793"/>
   </joint>
   <!-- Joint from back_plate to shaft -->
   <joint name="br_m1_s1" type="revolute">
@@ -540,8 +537,7 @@
     <parent link="back_plate"/>
     <child link="shaft"/>
     <axis xyz="0 0 -1"/>
-    <limit effort="40" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
-    <joint_properties friction="0.5"/>
+    <limit effort="20" velocity="10" lower="-3.141592653589793" upper="3.141592653589793"/>
   </joint>
   <!-- Link shaft_4 -->
   <link name="shaft_4">
@@ -749,15 +745,14 @@
     <parent link="shaft_5"/>
     <child link="shaft_6"/>
     <axis xyz="0 0 1"/>
-    <limit effort="40" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
-    <joint_properties friction="0.5"/>
+    <limit effort="20" velocity="10" lower="-3.141592653589793" upper="3.141592653589793"/>
   </joint>
   <!-- Link lin_4_l -->
   <link name="lin_4_l">
     <inertial>
-      <origin xyz="-0.000262328 -0.0491558 -0.0035" rpy="0 0 0"/>
-      <mass value="0.0701023"/>
-      <inertia ixx="0.000371839" ixy="2.10381e-06" ixz="2.70636e-13" iyy="6.27154e-06" iyz="2.29312e-12" izz="0.000376266"/>
+      <origin xyz="-0.000162393 -0.0733841 -0.0035" rpy="0 0 0"/>
+      <mass value="0.0813924"/>
+      <inertia ixx="0.000647132" ixy="2.74304e-06" ixz="2.68991e-13" iyy="7.272e-06" iyz="2.78217e-12" izz="0.000652466"/>
     </inertial>
     <!-- Part bearing_5 -->
     <visual>
@@ -830,8 +825,7 @@
     <parent link="shaft_5"/>
     <child link="lin_4_l"/>
     <axis xyz="0 0 1"/>
-    <limit effort="40" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
-    <joint_properties friction="0.5"/>
+    <limit effort="20" velocity="10" lower="-3.141592653589793" upper="3.141592653589793"/>
     <mimic joint="bl_m3_s3" multiplier="1.0"/>
   </joint>
   <!-- Joint from shaft_4 to shaft_5 -->
@@ -840,8 +834,7 @@
     <parent link="shaft_4"/>
     <child link="shaft_5"/>
     <axis xyz="0 0 1"/>
-    <limit effort="40" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
-    <joint_properties friction="0.5"/>
+    <limit effort="20" velocity="10" lower="-3.141592653589793" upper="3.141592653589793"/>
   </joint>
   <!-- Joint from back_plate to shaft_4 -->
   <joint name="bl_m1_s1" type="revolute">
@@ -849,8 +842,7 @@
     <parent link="back_plate"/>
     <child link="shaft_4"/>
     <axis xyz="0 0 -1"/>
-    <limit effort="40" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
-    <joint_properties friction="0.5"/>
+    <limit effort="20" velocity="10" lower="-3.141592653589793" upper="3.141592653589793"/>
   </joint>
   <!-- Link shaft_7 -->
   <link name="shaft_7">
@@ -1058,15 +1050,14 @@
     <parent link="shaft_8"/>
     <child link="shaft_9"/>
     <axis xyz="0 0 -1"/>
-    <limit effort="40" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
-    <joint_properties friction="0.5"/>
+    <limit effort="20" velocity="10" lower="-3.141592653589793" upper="3.141592653589793"/>
   </joint>
   <!-- Link lin_4_r_2 -->
   <link name="lin_4_r_2">
     <inertial>
-      <origin xyz="-0.000262324 0.0491557 -0.0035" rpy="0 0 0"/>
-      <mass value="0.0701023"/>
-      <inertia ixx="0.000371839" ixy="-2.10379e-06" ixz="-2.70636e-13" iyy="6.27155e-06" iyz="2.29312e-12" izz="0.000376266"/>
+      <origin xyz="-0.000162389 0.0733841 -0.0035" rpy="0 0 0"/>
+      <mass value="0.0813924"/>
+      <inertia ixx="0.000647132" ixy="-2.74301e-06" ixz="-2.68991e-13" iyy="7.272e-06" iyz="2.78217e-12" izz="0.000652467"/>
     </inertial>
     <!-- Part bearing_8 -->
     <visual>
@@ -1139,8 +1130,7 @@
     <parent link="shaft_8"/>
     <child link="lin_4_r_2"/>
     <axis xyz="0 0 -1"/>
-    <limit effort="40" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
-    <joint_properties friction="0.5"/>
+    <limit effort="20" velocity="10" lower="-3.141592653589793" upper="3.141592653589793"/>
     <mimic joint="fr_m3_s3" multiplier="1.0"/>
   </joint>
   <!-- Joint from shaft_7 to shaft_8 -->
@@ -1149,8 +1139,7 @@
     <parent link="shaft_7"/>
     <child link="shaft_8"/>
     <axis xyz="0 0 -1"/>
-    <limit effort="40" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
-    <joint_properties friction="0.5"/>
+    <limit effort="20" velocity="10" lower="-3.141592653589793" upper="3.141592653589793"/>
   </joint>
   <!-- Joint from back_plate to shaft_7 -->
   <joint name="fr_m1_s1" type="revolute">
@@ -1158,8 +1147,7 @@
     <parent link="back_plate"/>
     <child link="shaft_7"/>
     <axis xyz="0 0 1"/>
-    <limit effort="40" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
-    <joint_properties friction="0.5"/>
+    <limit effort="20" velocity="10" lower="-3.141592653589793" upper="3.141592653589793"/>
   </joint>
   <!-- Link motor -->
   <link name="motor">
@@ -1367,15 +1355,14 @@
     <parent link="motor_2"/>
     <child link="shaft_10"/>
     <axis xyz="0 0 1"/>
-    <limit effort="40" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
-    <joint_properties friction="0.5"/>
+    <limit effort="20" velocity="10" lower="-3.141592653589793" upper="3.141592653589793"/>
   </joint>
   <!-- Link lin_4_l_2 -->
   <link name="lin_4_l_2">
     <inertial>
-      <origin xyz="-0.000262328 -0.0491558 -0.0035" rpy="0 0 0"/>
-      <mass value="0.0701023"/>
-      <inertia ixx="0.000371839" ixy="2.10381e-06" ixz="2.70636e-13" iyy="6.27154e-06" iyz="2.29312e-12" izz="0.000376266"/>
+      <origin xyz="-0.000162393 -0.0733841 -0.0035" rpy="0 0 0"/>
+      <mass value="0.0813924"/>
+      <inertia ixx="0.000647132" ixy="2.74304e-06" ixz="2.68991e-13" iyy="7.272e-06" iyz="2.78217e-12" izz="0.000652466"/>
     </inertial>
     <!-- Part feet_4 -->
     <visual>
@@ -1448,8 +1435,7 @@
     <parent link="motor_2"/>
     <child link="lin_4_l_2"/>
     <axis xyz="0 0 1"/>
-    <limit effort="40" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
-    <joint_properties friction="0.5"/>
+    <limit effort="20" velocity="10" lower="-3.141592653589793" upper="3.141592653589793"/>
     <mimic joint="fl_m3_s3" multiplier="1.0"/>
   </joint>
   <!-- Joint from motor to motor_2 -->
@@ -1458,8 +1444,7 @@
     <parent link="motor"/>
     <child link="motor_2"/>
     <axis xyz="0 0 1"/>
-    <limit effort="40" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
-    <joint_properties friction="0.5"/>
+    <limit effort="20" velocity="10" lower="-3.141592653589793" upper="3.141592653589793"/>
   </joint>
   <!-- Joint from back_plate to motor -->
   <joint name="fl_m1_s1" type="revolute">
@@ -1467,7 +1452,6 @@
     <parent link="back_plate"/>
     <child link="motor"/>
     <axis xyz="0 0 1"/>
-    <limit effort="40" velocity="12" lower="-3.141592653589793" upper="3.141592653589793"/>
-    <joint_properties friction="0.5"/>
+    <limit effort="20" velocity="10" lower="-3.141592653589793" upper="3.141592653589793"/>
   </joint>
 </robot>

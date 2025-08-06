@@ -2,7 +2,7 @@
 #include "inverse_kinematics.hpp"
 #include "array"
 
-#define TRAJECTORY_POINTS 6
+#define TRAJECTORY_POINTS 9
 #define DOWN_PHASES 3 //number of times an individual leg touches the ground during the whole phase
 
 namespace IK
@@ -23,8 +23,13 @@ struct LegTrajectory
     int i = 0;
     int k = 0;
 
+    double step_base, step_height;
+
     void calculate_shape(const double base, const double height) // add params here
     {
+        step_base = base;
+        step_height = height;
+
         const double x_step = base/(TRAJECTORY_POINTS/2);
 
         up[0] << 0.0, 0.0, 0.0;
@@ -72,7 +77,7 @@ struct LegTrajectory
 
     const vec3& get_next_down_step()
     {
-        const double x_step_down = 0.07/(TRAJECTORY_POINTS*DOWN_PHASES); 
+        const double x_step_down = step_base/(TRAJECTORY_POINTS*DOWN_PHASES); 
 
         current_leg_pos.x() -=x_step_down;
 
@@ -98,18 +103,16 @@ public:
     {
         for(Leg leg : legIterator())
         {
-            legs_trajectory[leg].calculate_shape(0.07, 0.08);
+            legs_trajectory[leg].calculate_shape(0.05, 0.04);
         }
     }
 
-    void startup(double x, double y, double z)
+    void startup()
     {
         for(Leg leg : legIterator())
         {
-            legs_ik.calcJointPositions(leg, x, y, z);
-            legs_pos[leg].x() = x;
-            legs_pos[leg].y() = y;
-            legs_pos[leg].z() = z;
+            legs_ik.calcJointPositions(leg, default_leg_pos.x(), default_leg_pos.y(), default_leg_pos.z());
+            legs_pos[leg] = default_leg_pos;
         }
     }
 
@@ -173,36 +176,11 @@ private:
     {
         
 
-        // // Startup - can be done with new step below
-        // if(no_up_movement())
-        // {
-        //     Eigen::Vector<unsigned int, 4> leg_config = crawl_matrix.col(current_gait_phase);
-
-        //     for(int i = 0; i < 4; ++i) //go over legs
-        //     {
-        //         if(leg_config[i] == 0) // This leg should draw the shape (start the motion)
-        //         {
-        //             legs_trajectory[i].up_movement = true;
-        //         }
-        //         if(leg_config[i] == 1) // Leg should keep touching ground, so is finished
-        //         {
-        //             legs_trajectory[i].up_movement = false;
-        //         }
-        //     }
-
-        // }
         Eigen::Vector<unsigned int, 4> leg_config = crawl_matrix.col(current_gait_phase);
 
         // Set up new step
         if(no_up_movement())
         {
-
-            // reset legs - necessary?
-            // for(Leg leg : legIterator())
-            // {
-            //     legs_trajectory[leg].started = false;
-            //     legs_trajectory[leg].finished = false;
-            // }       
 
             for(int i = 0; i < 4; ++i) //go over legs
             {
@@ -221,13 +199,13 @@ private:
         // Make movement
         for(Leg leg : legIterator())
         {
-            robot_rot.y() = 0.1;
+            robot_rot.y() = 0.05;
             if(legs_trajectory[leg].up_movement)
             {
                 if(leg == Leg::FL || leg == Leg::BL)
-                    robot_rot.x() = -0.2;
+                    robot_rot.x() = -0.1;
                 else
-                    robot_rot.x() = 0.2;
+                    robot_rot.x() = 0.1;
                 legs_pos_before_rotation[leg] = legs_trajectory[leg].get_next_up_pos() + default_leg_pos;
             }
             else
@@ -248,9 +226,11 @@ private:
     }
 
     vec3 legs_pos[sizeof(Leg)] = {{0.0, 0.0, 0.0}};
-    vec3 legs_pos_before_rotation[sizeof(Leg)] = {{0.0, 0.0, 0.0}};
+    
+    const vec3 default_leg_pos{0.0, 0.0, -0.30};
 
-    const vec3 default_leg_pos{0.0, 0.0, -0.25};
+    vec3 legs_pos_before_rotation[sizeof(Leg)] = {this->default_leg_pos, this->default_leg_pos, this->default_leg_pos, this->default_leg_pos};
+
     vec3 robot_rot{0.0, 0.0, 0.0};
 
     vec3 legs_origin[sizeof(Leg)] = {{0.185, 0.0628, 0.0},
