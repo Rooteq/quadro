@@ -2,6 +2,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/joy.hpp>
 #include <std_msgs/msg/float64_multi_array.hpp>
+#include <cmath>
 
 #include "position_controller.hpp"
 
@@ -14,6 +15,7 @@ public:
   TrajectoryPublisher()
   : Node("trajectory_publisher"), position_(0.0), total_duration(3.0), 
     current_roll_(0.0), current_pitch_(0.0), current_yaw_(0.0), rotation_enabled_(false),
+    walk_speed_(0.0), yaw_speed_(0.0), walking_enabled_(false), walking_rotation_(0.0),
     max_joint_velocity_(0.5), control_period(0.03)
   {
     // Create publisher with reliable QoS
@@ -41,7 +43,7 @@ public:
 private:
   void joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg)
   {
-    // Button 5 (index 4) to enable/disable rotation
+    // Button 10 (index 9) to enable/disable rotation
     if (msg->buttons.size() > 10) {
       rotation_enabled_ = msg->buttons[9] > 0;
     }
@@ -64,6 +66,40 @@ private:
       current_pitch_ = 0.0;
       current_yaw_ = 0.0;
     }
+
+    // Button 11 (index 10) to enable/disable walking
+    if (msg->buttons.size() > 11) {
+      walking_enabled_ = msg->buttons[10] > 0;
+    }
+
+    // Only update walking parameters if button 11 is pressed
+    if (walking_enabled_) {
+      // Axes 0 and 1 for x,y speed control
+      if (msg->axes.size() > 1) {
+        double x_speed_ = msg->axes[0];  // Left stick X
+        double y_speed_ = msg->axes[1];  // Left stick Y
+        walk_speed_ = std::sqrt(x_speed_*x_speed_ + y_speed_*y_speed_);
+        
+        // Calculate walking rotation angle from x,y speeds
+        // Only update rotation if we have significant movement to avoid jitter
+        if (walk_speed_ > 0.1) {
+          // Adjust the coordinate system: forward should be stick up (positive Y)
+          // So we swap x and y in atan2 and negate to get correct orientation
+          walking_rotation_ = std::atan2(x_speed_, y_speed_);
+        }
+        RCLCPP_INFO(this->get_logger(), "X: %f, Y: %f, ROT: %f, SPEED: %f", x_speed_, y_speed_, walking_rotation_, walk_speed_);
+      }
+      
+      // Axis 2 for yaw speed control
+      if (msg->axes.size() > 2) {
+        yaw_speed_ = msg->axes[2];  // Right stick X or trigger
+      }
+    } else {
+      // Reset walking speeds when button is not pressed
+      walk_speed_ = 0.0;
+      yaw_speed_ = 0.0;
+      walking_rotation_ = 0.0;
+    }
   }
 
   void timer_callback()
@@ -80,6 +116,7 @@ private:
     else
     {
       pos_controller.set_rotation(current_roll_, current_pitch_, current_yaw_);
+      pos_controller.set_walking_parameters(walk_speed_, yaw_speed_, walking_rotation_, walking_enabled_);
       pos_controller.apply_control();
     }
     // double angle_increment = 2.0 * M_PI / num_of_points;
@@ -135,6 +172,12 @@ private:
   double current_pitch_;
   double current_yaw_;
   bool rotation_enabled_;
+  
+  // Walking control variables
+  double walk_speed_;
+  double yaw_speed_;
+  bool walking_enabled_;
+  double walking_rotation_;
 
   std_msgs::msg::Float64MultiArray positions = std_msgs::msg::Float64MultiArray();
   // std::array<double> positions;

@@ -19,23 +19,23 @@ struct LegTrajectory
 
     vec3 leg_down_offset{0.0,0.0,0.0};
 
-    vec3 leg_offset_before_step;
     vec3 current_leg_pos;
     bool up_movement = false;
     int i = 0;
     int k = 0;
 
     double step_base, step_height;
+    double rotation_angle_{0.0};
 
-    void calculate_shape(const double base, const double height) // add params here
+    void calculate_shape(const double base, const double height, const double walking_speed) // add params here
     {
         step_base = base;
         step_height = height;
 
-        const double x_step = step_base/(TRAJECTORY_POINTS/2);
+        const double x_step = walking_speed * step_base/(TRAJECTORY_POINTS/2);
 
         // SET POINT, WHERE THE LEG WILL RAISE FROM
-        up[0] << -step_base/2, 0.0, 0.0;
+        up[0] << walking_speed*(-step_base/2), 0.0, 0.0;
 
         for(int i = 1; i < TRAJECTORY_POINTS; ++i)
         {
@@ -45,14 +45,24 @@ struct LegTrajectory
                 up[i] << (up[i-1].x() + x_step/2) , 0.0 , (up[i-1].z() - 2.4*x_step/2);
         }
 
-        const double x_step_down = step_base/(TRAJECTORY_POINTS*DOWN_PHASES); 
+        const double x_step_down = walking_speed * step_base/(TRAJECTORY_POINTS*DOWN_PHASES); 
         leg_down_offset = {x_step_down, 0.0, 0.0};
 
         // Apply rotation if needed
-        double rotation_angle = 0.0;
-        if (rotation_angle != 0.0) {
+        apply_rotation();
+    }
+
+    void set_rotation(double rotation_angle)
+    {
+        rotation_angle_ = rotation_angle;
+        // apply_rotation();
+    }
+
+    void apply_rotation()
+    {
+        if (rotation_angle_ != 0.0) {
             Eigen::Matrix3d rotation;
-            rotation = Eigen::AngleAxisd(rotation_angle, Eigen::Vector3d::UnitZ());
+            rotation = Eigen::AngleAxisd(rotation_angle_, Eigen::Vector3d::UnitZ());
             
             for(auto& point : up) {
                 point = rotation * point;
@@ -60,8 +70,6 @@ struct LegTrajectory
 
             leg_down_offset = rotation * leg_down_offset;
         }
-        
-        leg_offset_before_step = leg_down_offset * TRAJECTORY_POINTS * DOWN_PHASES;
     }
 
     const vec3& get_next_up_pos()
@@ -95,7 +103,7 @@ public:
     {
         for(Leg leg : legIterator())
         {
-            legs_trajectory[leg].calculate_shape(crawl_reach, crawl_height);
+            legs_trajectory[leg].calculate_shape(crawl_reach, crawl_height, walking_speed_);
         }
     }
 
@@ -124,6 +132,22 @@ public:
         robot_rot.x() = roll;
         robot_rot.y() = pitch;
         robot_rot.z() = yaw;
+    }
+
+    void set_walking_parameters(const double walk_speed, const double yaw_speed, 
+                               const double walking_rotation, const bool walking_enabled)
+    {
+        walking_speed_ = walk_speed;
+        walking_yaw_speed_ = yaw_speed;
+        walking_rotation_angle_ = walking_rotation;
+        walking_enabled_ = walking_enabled;
+        
+        // Update trajectory rotation if walking is enabled
+        if (walking_enabled_) {
+            for(Leg leg : legIterator()) {
+                legs_trajectory[leg].set_rotation(walking_rotation_angle_);
+            }
+        }
     }
 
     void apply_control()
@@ -173,6 +197,10 @@ private:
         // Set up new step
         if(no_up_movement())
         {
+            for(Leg leg : legIterator())
+            {
+                legs_trajectory[leg].calculate_shape(crawl_reach, crawl_height, walking_speed_);
+            }
 
             for(int i = 0; i < 4; ++i) //go over legs
             {
@@ -188,22 +216,26 @@ private:
         } 
 
 
-        // Make movement
         for(Leg leg : legIterator())
         {
             // robot_rot.y() = 0.05;
             if(legs_trajectory[leg].up_movement)
             {
                 if(leg == Leg::FL || leg == Leg::BL)
-                    robot_rot.x() = -0.1;
+                    robot_rot.x() = walking_speed_ * -0.1;
                 else
-                    robot_rot.x() = 0.1;
+                    robot_rot.x() = walking_speed_ * 0.1;
                 legs_pos_before_rotation[leg] = legs_trajectory[leg].get_next_up_pos() + default_leg_pos;
             }
             else
                 legs_pos_before_rotation[leg] = legs_trajectory[leg].get_next_down_step() + default_leg_pos;
              
         }       
+
+        if(!no_up_movement() && !walking_enabled_)
+        {
+
+        }
     }
 
 private:
@@ -222,11 +254,17 @@ private:
 
     vec3 legs_pos[sizeof(Leg)] = {{0.0, 0.0, 0.0}};
     
-    const vec3 default_leg_pos{-crawl_reach/2, 0.0, -0.30};
+    const vec3 default_leg_pos{-crawl_reach/2, 0.0, -0.27};
 
     vec3 legs_pos_before_rotation[sizeof(Leg)] = {this->default_leg_pos, this->default_leg_pos, this->default_leg_pos, this->default_leg_pos};
 
     vec3 robot_rot{0.0, 0.0, 0.0};
+
+    // Walking control variables
+    double walking_speed_{0.0};
+    double walking_yaw_speed_{0.0};
+    double walking_rotation_angle_{0.0};
+    bool walking_enabled_{false};
 
     vec3 legs_origin[sizeof(Leg)] = {{0.185, 0.0628, 0.0},
                                      {0.185, -0.0628, 0.0},

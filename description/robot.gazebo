@@ -98,23 +98,67 @@
 
 
   <gazebo reference="lin_4_l">
-    <mu1 value="0.5"/>
-    <mu2 value="0.5"/>
+    <mu1>1000000.0</mu1>
+    <mu2>1000000.0</mu2>
+    <collision>
+      <surface>
+        <friction>
+          <torsional>
+            <coefficient>1.0</coefficient>
+            <surface_radius>0.05</surface_radius>
+            <use_patch_radius>true</use_patch_radius>
+          </torsional>
+        </friction>
+      </surface>
+    </collision>
   </gazebo>
 
   <gazebo reference="lin_4_l_2">
-    <mu1 value="0.5"/>
-    <mu2 value="0.5"/>
+    <mu1>1000000.0</mu1>
+    <mu2>1000000.0</mu2>
+    <collision>
+      <surface>
+        <friction>
+          <torsional>
+            <coefficient>1.0</coefficient>
+            <surface_radius>0.05</surface_radius>
+            <use_patch_radius>true</use_patch_radius>
+          </torsional>
+        </friction>
+      </surface>
+    </collision>
   </gazebo>
 
   <gazebo reference="lin_4_r">
-    <mu1 value="0.5"/>
-    <mu2 value="0.5"/>
+    <mu1>1000000.0</mu1>
+    <mu2>1000000.0</mu2>
+    <collision>
+      <surface>
+        <friction>
+          <torsional>
+            <coefficient>1.0</coefficient>
+            <surface_radius>0.05</surface_radius>
+            <use_patch_radius>true</use_patch_radius>
+          </torsional>
+        </friction>
+      </surface>
+    </collision>
   </gazebo>
 
   <gazebo reference="lin_4_r_2">
-    <mu1 value="0.5"/>
-    <mu2 value="0.5"/>
+    <mu1>1000000.0</mu1>
+    <mu2>1000000.0</mu2>
+    <collision>
+      <surface>
+        <friction>
+          <torsional>
+            <coefficient>1.0</coefficient>
+            <surface_radius>0.05</surface_radius>
+            <use_patch_radius>true</use_patch_radius>
+          </torsional>
+        </friction>
+      </surface>
+    </collision>
   </gazebo>
   <!-- <gazebo reference="motor">
     <material>${body_color}</material>
