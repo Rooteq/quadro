@@ -98,67 +98,43 @@
 
 
   <gazebo reference="lin_4_l">
-    <mu1>1000000.0</mu1>
-    <mu2>1000000.0</mu2>
-    <collision>
-      <surface>
-        <friction>
-          <torsional>
-            <coefficient>1.0</coefficient>
-            <surface_radius>0.05</surface_radius>
-            <use_patch_radius>true</use_patch_radius>
-          </torsional>
-        </friction>
-      </surface>
-    </collision>
+    <mu1>1.0</mu1>
+    <mu2>1.0</mu2>
+    <minDepth>0.01</minDepth>
+    <maxVel>10</maxVel>
+    <kp>1e+10</kp>
+    <kd>1.0</kd>
+    <maxContacts>10</maxContacts>
   </gazebo>
 
   <gazebo reference="lin_4_l_2">
-    <mu1>1000000.0</mu1>
-    <mu2>1000000.0</mu2>
-    <collision>
-      <surface>
-        <friction>
-          <torsional>
-            <coefficient>1.0</coefficient>
-            <surface_radius>0.05</surface_radius>
-            <use_patch_radius>true</use_patch_radius>
-          </torsional>
-        </friction>
-      </surface>
-    </collision>
+    <mu1>1.0</mu1>
+    <mu2>1.0</mu2>
+    <minDepth>0.01</minDepth>
+    <maxVel>10</maxVel>
+    <kp>1e+10</kp>
+    <kd>1.0</kd>
+    <maxContacts>10</maxContacts>
   </gazebo>
 
   <gazebo reference="lin_4_r">
-    <mu1>1000000.0</mu1>
-    <mu2>1000000.0</mu2>
-    <collision>
-      <surface>
-        <friction>
-          <torsional>
-            <coefficient>1.0</coefficient>
-            <surface_radius>0.05</surface_radius>
-            <use_patch_radius>true</use_patch_radius>
-          </torsional>
-        </friction>
-      </surface>
-    </collision>
+    <mu1>1.0</mu1>
+    <mu2>1.0</mu2>
+    <minDepth>0.01</minDepth>
+    <maxVel>10</maxVel>
+    <kp>1e+10</kp>
+    <kd>1.0</kd>
+    <maxContacts>10</maxContacts>
   </gazebo>
 
   <gazebo reference="lin_4_r_2">
-    <mu1>1000000.0</mu1>
-    <mu2>1000000.0</mu2>
-    <collision>
-      <surface>
-        <friction>
-          <torsional>
-            <coefficient>1.0</coefficient>
-            <surface_radius>0.05</surface_radius>
-            <use_patch_radius>true</use_patch_radius>
-          </torsional>
-        </friction>
-      </surface>
-    </collision>
+    <mu1>1.0</mu1>
+    <mu2>1.0</mu2>
+    <minDepth>0.01</minDepth>
+    <maxVel>10</maxVel>
+    <kp>1e+10</kp>
+    <kd>1.0</kd>
+    <maxContacts>10</maxContacts>
   </gazebo>
   <!-- <gazebo reference="motor">
     <material>${body_color}</material>

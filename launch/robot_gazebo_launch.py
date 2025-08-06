@@ -67,8 +67,9 @@ def generate_launch_description():
             ]
         ),
         # launch_arguments=[("gz_args", [LaunchConfiguration("world"), ".sdf", " -r"])],
-        # launch_arguments=[("gz_args", [LaunchConfiguration("world"), ".sdf", " -r -v 4" " --physics-engine gz-physics-bullet-featherstone-plugin"])],
-        launch_arguments=[("gz_args", ["empty.sdf", " -r" " --physics-engine gz-physics-bullet-featherstone-plugin"])],
+        launch_arguments=[("gz_args", [os.path.join(pkg_path, "description", "world", "world.sdf"), " -r" " --physics-engine gz-physics-bullet-featherstone-plugin"])],
+        # launch_arguments=[("gz_args", ["empty.sdf", " -r" " --physics-engine gz-physics-bullet-featherstone-plugin"])],
+        # launch_arguments=[("gz_args", ["empty.sdf", " -r"])],
     )
 
     gz_spawn_entity = Node(
