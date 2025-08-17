@@ -34,15 +34,17 @@ struct LegTrajectory
 
         const double x_step = walking_speed * step_base/(TRAJECTORY_POINTS/2);
 
+        double coeff = height / (base/2);
+
         // SET POINT, WHERE THE LEG WILL RAISE FROM
         up[0] << walking_speed*(-step_base/2), 0.0, 0.0;
 
         for(int i = 1; i < TRAJECTORY_POINTS; ++i)
         {
             if(i < TRAJECTORY_POINTS/2)
-                up[i] << (up[i-1].x() + x_step/2) , 0.0 , (up[i-1].z() + 2.4*x_step/2);
+                up[i] << (up[i-1].x() + x_step/2) , 0.0 , (up[i-1].z() + coeff * x_step/2);
             else
-                up[i] << (up[i-1].x() + x_step/2) , 0.0 , (up[i-1].z() - 2.4*x_step/2);
+                up[i] << (up[i-1].x() + x_step/2) , 0.0 , (up[i-1].z() - coeff * x_step/2);
         }
 
         const double x_step_down = walking_speed * step_base/(TRAJECTORY_POINTS*DOWN_PHASES); 
@@ -249,7 +251,7 @@ private:
         return true;
     }
 
-    const double crawl_reach = 0.05;
+    const double crawl_reach = 0.08;
     const double crawl_height = 0.04;
 
     vec3 legs_pos[sizeof(Leg)] = {{0.0, 0.0, 0.0}};
