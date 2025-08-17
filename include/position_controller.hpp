@@ -144,10 +144,40 @@ public:
         walking_rotation_angle_ = walking_rotation;
         walking_enabled_ = walking_enabled;
         
-        // Update trajectory rotation if walking is enabled
+        // This is very much temporary, robot rotation should be calculated based on a rectangle inscribed in a circle (first thought)
+        // It should be possible to have walking on a plane and yaw happen at the same time!!! - needs controller redesign
         if (walking_enabled_) {
             for(Leg leg : legIterator()) {
-                legs_trajectory[leg].set_rotation(walking_rotation_angle_);
+                if(yaw_speed != 0)
+                {
+                    if(yaw_speed > 0)
+                    {
+                        if(leg == Leg::FL || leg == Leg::FR)
+                        {
+                            legs_trajectory[leg].set_rotation(M_PI/2);
+                        }
+                        else
+                        {
+                            legs_trajectory[leg].set_rotation(-M_PI/2);
+                        }
+                    }
+                    else
+                    {
+                        if(leg == Leg::BL || leg == Leg::BR)
+                        {
+                            legs_trajectory[leg].set_rotation(M_PI/2);
+                        }
+                        else
+                        {
+                            legs_trajectory[leg].set_rotation(-M_PI/2);
+                        }
+
+                    }
+
+                    walking_speed_ = std::abs(yaw_speed); // This shit is so bad
+                }
+                else 
+                    legs_trajectory[leg].set_rotation(walking_rotation_angle_);
             }
         }
     }
@@ -196,9 +226,15 @@ private:
 
         Eigen::Vector<unsigned int, 4> leg_config = crawl_matrix.col(current_gait_phase);
 
+        if(no_up_movement() && !walking_enabled_)
+        {
+            return;
+        }
+
         // Set up new step
         if(no_up_movement())
         {
+
             for(Leg leg : legIterator())
             {
                 legs_trajectory[leg].calculate_shape(crawl_reach, crawl_height, walking_speed_);
@@ -234,10 +270,6 @@ private:
              
         }       
 
-        if(!no_up_movement() && !walking_enabled_)
-        {
-
-        }
     }
 
 private:

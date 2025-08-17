@@ -1,6 +1,10 @@
 # quadro
 ros2 quadruped
 
+TODO:
+Walking controller redesign and refactor - it should be possible to have walking on a plane and yaw happen at the same time,
+also the controller should take in walking speed (in m/s) and generate corresponding gait patterns
+
 Add this to robot.urdf
 
 <link name="world"/>

@@ -54,12 +54,9 @@ private:
       if (msg->axes.size() > 1) {
         current_yaw_ = msg->axes[0] * 0.3;    // Scale to reasonable rotation range
         current_pitch_ = msg->axes[1] * 0.3;
-      }
-      
-      // Right stick for roll (axis 3)
-      if (msg->axes.size() > 3) {
         current_roll_ = msg->axes[2] * 0.2;
       }
+      RCLCPP_INFO(this->get_logger(), "R: %f, P: %f, Y: %f", current_roll_, current_pitch_, current_yaw_);
     } else {
       // Reset rotations when button is not pressed
       current_roll_ = 0.0;
@@ -87,12 +84,13 @@ private:
           // So we swap x and y in atan2 and negate to get correct orientation
           walking_rotation_ = std::atan2(x_speed_, y_speed_);
         }
-        RCLCPP_INFO(this->get_logger(), "X: %f, Y: %f, ROT: %f, SPEED: %f", x_speed_, y_speed_, walking_rotation_, walk_speed_);
+        // RCLCPP_INFO(this->get_logger(), "X: %f, Y: %f, ROT: %f, SPEED: %f", x_speed_, y_speed_, walking_rotation_, walk_speed_);
       }
       
       // Axis 2 for yaw speed control
       if (msg->axes.size() > 2) {
         yaw_speed_ = msg->axes[2];  // Right stick X or trigger
+        RCLCPP_INFO(this->get_logger(), "YAW: %f", yaw_speed_);
       }
     } else {
       // Reset walking speeds when button is not pressed
