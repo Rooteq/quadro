@@ -105,7 +105,7 @@ private:
     if(this->get_clock()->now().seconds() - time.seconds() < 2)
     {
       RCLCPP_INFO(this->get_logger(), "STARTUP");
-      pos_controller.startup();
+      crawl_controller->startup();
       set_joints();
       apply_velocity_limiting();
       position_pubilsher_->publish(positions);
@@ -113,9 +113,9 @@ private:
     }
     else
     {
-      pos_controller.set_rotation(current_roll_, current_pitch_, current_yaw_);
-      pos_controller.set_walking_parameters(walk_speed_, yaw_speed_, walking_rotation_, walking_enabled_);
-      pos_controller.apply_control();
+      crawl_controller->set_rotation(current_roll_, current_pitch_, current_yaw_);
+      crawl_controller->set_walking_parameters(walk_speed_, yaw_speed_, walking_rotation_, walking_enabled_);
+      crawl_controller->apply_control();
     }
     // double angle_increment = 2.0 * M_PI / num_of_points;
     // double time_increment = total_duration / num_of_points;
@@ -130,9 +130,9 @@ private:
     unsigned int i = 0;
     for(Leg leg_enum : legIterator())
     {
-      positions.data[i++] = pos_controller.get_leg_joint_positions(leg_enum).q1;
-      positions.data[i++] = pos_controller.get_leg_joint_positions(leg_enum).q2;
-      positions.data[i++] = pos_controller.get_leg_joint_positions(leg_enum).q3;
+      positions.data[i++] = crawl_controller->get_leg_joint_positions(leg_enum).q1;
+      positions.data[i++] = crawl_controller->get_leg_joint_positions(leg_enum).q2;
+      positions.data[i++] = crawl_controller->get_leg_joint_positions(leg_enum).q3;
     }
   }
 
@@ -185,7 +185,7 @@ private:
   std::vector<double> previous_positions_;
 
   // InverseKinematics ik;
-  PositionController pos_controller;
+  std::unique_ptr<GaitController> crawl_controller = std::make_unique<WalkController>();
 
   const double control_period;
 
