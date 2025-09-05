@@ -1,17 +1,20 @@
 <?xml version="1.0" ?>
 <robot name="quadro" xmlns:xacro="http://www.ros.org/wiki/xacro" >
-
-    <ros2_control name="CybergearActuators" type="actuator">
+  <ros2_control name="motor_controller" type="system">
     <hardware>
-      <plugin>quadro/CybergearActuator</plugin>
-      <param name="can_interface">can0</param>
-      <param name="timeout_sec">3.0</param>
-      <param name="use_bus_time">false</param>
-      <param name="interval_sec">0.5</param>
-      <param name="primary_id">0</param>
+      <plugin>odrive_ros2_control_plugin/ODriveHardwareInterface</plugin>
+      <param name="can">can0</param>
     </hardware>
 
     <joint name="br_m1_s1">
+      <command_interface name="position">
+      </command_interface>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <param name="node_id">9</param>
+    </joint>
+
+    <!-- <joint name="br_m1_s1">
       <command_interface name="position">
       </command_interface>
       <state_interface name="position"/>
@@ -86,7 +89,7 @@
       </command_interface>
       <state_interface name="position"/>
       <state_interface name="velocity"/>
-    </joint>
+    </joint> -->
   </ros2_control>
 
 </robot>

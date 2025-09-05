@@ -21,22 +21,21 @@ void InverseKinematics::calcJointPositions(Leg leg, double x, double y, double z
 
     // Apply motor reversals based on URDF axis directions
     // Reversed joints (z = -1): br_m1_s1, br_m2_s2, br_m3_s3, fr_m2_s2, fr_m3_s3
+    // SIMULATION:
     if(leg == Leg::BR) {
-        // Back right: all three joints are reversed
         legs[leg].q1 = -legs[leg].q1;
         legs[leg].q2 = -legs[leg].q2;
         legs[leg].q3 = -legs[leg].q3;
+
+        //VERY IMPORTANT - THE MOTOR IS OFFSET FOR SOME REASON
     }
     else if(leg == Leg::FR) {
-        // Front right: only m2 and m3 are reversed (m1 is normal)
         legs[leg].q2 = -legs[leg].q2;
         legs[leg].q3 = -legs[leg].q3;
     }
     else if(leg == Leg::BL) {
-        // Front right: only m2 and m3 are reversed (m1 is normal)
         legs[leg].q1 = -legs[leg].q1;
     }
-    // BL and FL legs: no reversals needed (all joints have z = 1)
 }
 
 void InverseKinematics::basic_ik_calcs(Leg leg, double x, double y, double z)
