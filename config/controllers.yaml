@@ -10,5 +10,6 @@ forward_position_controller:
   ros__parameters:
     joints:
       - br_m1_s1
+      - br_m2_s2
 
     interface_name: position
