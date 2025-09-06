@@ -9,6 +9,8 @@ also the controller should take in walking speed (in m/s) and generate correspon
 Hardware: 
 - make space for USB cable in each link,
 - change link 1 design so that it can rotate clockwise more (For BR)
+- Make space for a stop in link 4 !
+- in link 3 top, make the stopper longer (?)
 
 Each motor setup:
 - calibrate and save,

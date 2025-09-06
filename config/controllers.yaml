@@ -11,5 +11,6 @@ forward_position_controller:
     joints:
       - br_m1_s1
       - br_m2_s2
+      - br_l4_l3
 
     interface_name: position
