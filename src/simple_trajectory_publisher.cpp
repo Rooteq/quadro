@@ -29,8 +29,8 @@ public:
 
     // num_of_points = 60;
     // positions.resize(12);
-    positions.data.resize(1);
-    previous_positions_.resize(1, 0.0);
+    positions.data.resize(12);
+    previous_positions_.resize(12, 0.0);
 
     // timer_ = this->create_wall_timer(
     // std::chrono::milliseconds(static_cast<int>(total_duration*1000) + 10), std::bind(&TrajectoryPublisher::timer_callback, this));

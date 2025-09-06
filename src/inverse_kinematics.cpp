@@ -36,6 +36,20 @@ void InverseKinematics::calcJointPositions(Leg leg, double x, double y, double z
     else if(leg == Leg::BL) {
         legs[leg].q1 = -legs[leg].q1;
     }
+
+    // if(leg == Leg::FR)
+    // {
+    //     legs[leg].q1 = -legs[leg].q1;
+    // }
+    // else if(leg == Leg::BL) {
+    //     legs[leg].q2 = -legs[leg].q2;
+    //     legs[leg].q3 = -legs[leg].q3;
+    // }
+    // else if(leg == Leg::BR) {
+    //     legs[leg].q1 = -legs[leg].q1;
+    //     legs[leg].q2 = -legs[leg].q2;
+    //     legs[leg].q3 = -legs[leg].q3;
+    // }
 }
 
 void InverseKinematics::basic_ik_calcs(Leg leg, double x, double y, double z)
