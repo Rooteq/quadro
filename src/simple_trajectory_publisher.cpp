@@ -29,8 +29,8 @@ public:
 
     // num_of_points = 60;
     // positions.resize(12);
-    positions.data.resize(3);
-    previous_positions_.resize(3, 0.0);
+    positions.data.resize(6);
+    previous_positions_.resize(6, 0.0);
 
     // timer_ = this->create_wall_timer(
     // std::chrono::milliseconds(static_cast<int>(total_duration*1000) + 10), std::bind(&TrajectoryPublisher::timer_callback, this));
@@ -131,7 +131,13 @@ private:
     for(Leg leg_enum : legIterator())
     {
       // ISOLATING ONLY BR LEG
-      if(leg_enum == Leg::BR)
+      if(leg_enum == Leg::BL)
+      {
+        positions.data[i++] = crawl_controller->get_leg_joint_positions(leg_enum).q1;
+        positions.data[i++] = crawl_controller->get_leg_joint_positions(leg_enum).q2;
+        positions.data[i++] = crawl_controller->get_leg_joint_positions(leg_enum).q3;
+      }
+      else if(leg_enum == Leg::BR)
       {
         positions.data[i++] = crawl_controller->get_leg_joint_positions(leg_enum).q1;
         positions.data[i++] = crawl_controller->get_leg_joint_positions(leg_enum).q2;

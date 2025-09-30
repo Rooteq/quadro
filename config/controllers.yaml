@@ -9,6 +9,9 @@ controller_manager:
 forward_position_controller:
   ros__parameters:
     joints:
+      - bl_m1_s1
+      - bl_m2_s2
+      - bl_l4_l3
       - br_m1_s1
       - br_m2_s2
       - br_l4_l3
