@@ -131,18 +131,18 @@ private:
     for(Leg leg_enum : legIterator())
     {
       // ISOLATING ONLY BR LEG
-      if(leg_enum == Leg::BL)
-      {
+      // if(leg_enum == Leg::BL)
+      // {
         positions.data[i++] = crawl_controller->get_leg_joint_positions(leg_enum).q1;
         positions.data[i++] = crawl_controller->get_leg_joint_positions(leg_enum).q2;
         positions.data[i++] = crawl_controller->get_leg_joint_positions(leg_enum).q3;
-      }
-      else if(leg_enum == Leg::BR)
-      {
-        positions.data[i++] = crawl_controller->get_leg_joint_positions(leg_enum).q1;
-        positions.data[i++] = crawl_controller->get_leg_joint_positions(leg_enum).q2;
-        positions.data[i++] = crawl_controller->get_leg_joint_positions(leg_enum).q3;
-      }
+      // }
+      // else if(leg_enum == Leg::BR)
+      // {
+      //   positions.data[i++] = crawl_controller->get_leg_joint_positions(leg_enum).q1;
+      //   positions.data[i++] = crawl_controller->get_leg_joint_positions(leg_enum).q2;
+      //   positions.data[i++] = crawl_controller->get_leg_joint_positions(leg_enum).q3;
+      // }
       // else
       // {
       //   positions.data[i++] = 0.0;
