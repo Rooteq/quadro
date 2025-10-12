@@ -46,7 +46,7 @@
       <param name="node_id">4</param>
     </joint>
 
-    <joint name="fr_l4_s3">
+    <joint name="fr_l4_l3">
       <command_interface name="position">
       </command_interface>
       <state_interface name="position"/>
