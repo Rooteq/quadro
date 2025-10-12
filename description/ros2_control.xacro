@@ -6,28 +6,52 @@
       <param name="can">can0</param>
     </hardware>
 
-    <joint name="br_m1_s1">
+    <joint name="fl_m1_s1">
       <command_interface name="position">
       </command_interface>
       <state_interface name="position"/>
       <state_interface name="velocity"/>
-      <param name="node_id">9</param>
+      <param name="node_id">0</param>
     </joint>
 
-    <joint name="br_m2_s2">
+    <joint name="fl_m2_s2">
       <command_interface name="position">
       </command_interface>
       <state_interface name="position"/>
       <state_interface name="velocity"/>
-      <param name="node_id">10</param>
+      <param name="node_id">1</param>
     </joint>
 
-    <joint name="br_l4_l3">
+    <joint name="fl_l4_l3">
       <command_interface name="position">
       </command_interface>
       <state_interface name="position"/>
       <state_interface name="velocity"/>
-      <param name="node_id">11</param>
+      <param name="node_id">2</param>
+    </joint>
+    
+    <joint name="fr_m1_s1">
+      <command_interface name="position">
+      </command_interface>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <param name="node_id">3</param>
+    </joint>
+
+    <joint name="fr_m2_s2">
+      <command_interface name="position">
+      </command_interface>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <param name="node_id">4</param>
+    </joint>
+
+    <joint name="fr_l4_s3">
+      <command_interface name="position">
+      </command_interface>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <param name="node_id">5</param>
     </joint>
 
     <joint name="bl_m1_s1">
@@ -52,6 +76,30 @@
       <state_interface name="position"/>
       <state_interface name="velocity"/>
       <param name="node_id">8</param>
+    </joint>
+
+    <joint name="br_m1_s1">
+      <command_interface name="position">
+      </command_interface>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <param name="node_id">9</param>
+    </joint>
+
+    <joint name="br_m2_s2">
+      <command_interface name="position">
+      </command_interface>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <param name="node_id">10</param>
+    </joint>
+
+    <joint name="br_l4_l3">
+      <command_interface name="position">
+      </command_interface>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <param name="node_id">11</param>
     </joint>
     <!-- <joint name="br_m1_s1">
       <command_interface name="position">
