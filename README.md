@@ -2,6 +2,8 @@
 ros2 quadruped
 
 TODO:
+WHEN WALK GAIT (CRAWL) - let the body shift in y axis instead of rotate! - it's way more stable
+
 Walking controller redesign and refactor - it should be possible to have walking on a plane and yaw happen at the same time,
 also the controller should take in walking speed (in m/s) and generate corresponding gait patterns
 
