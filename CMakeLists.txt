@@ -20,7 +20,7 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
 list(APPEND CMAKE_PREFIX_PATH "/usr/local")
 list(APPEND CMAKE_PREFIX_PATH "/opt/openrobots")
 
-find_package(pinocchio REQUIRED)
+#find_package(pinocchio REQUIRED)
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
@@ -49,14 +49,14 @@ ament_target_dependencies(leg_ik
 )
 
 #-------------------TORQUE WITH PINOCCHIO--------------------
-add_executable(torque_controller src/torque_controller.cpp)
-ament_target_dependencies(torque_controller
-  rclcpp
-  ament_index_cpp
-  sensor_msgs
-  std_msgs
-)
-target_link_libraries(torque_controller pinocchio::pinocchio)
+#add_executable(torque_controller src/torque_controller.cpp)
+#ament_target_dependencies(torque_controller
+#  rclcpp
+#  ament_index_cpp
+#  sensor_msgs
+#  std_msgs
+#)
+#target_link_libraries(torque_controller pinocchio::pinocchio)
 
 
 
@@ -106,7 +106,7 @@ install(TARGETS ${PROJECT_NAME}
 install(TARGETS
   leg_ik
   trajectory_publisher
-  torque_controller
+  #torque_controller
   DESTINATION lib/${PROJECT_NAME})
 
 install(
