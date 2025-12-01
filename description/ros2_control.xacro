@@ -29,7 +29,6 @@
       <state_interface name="velocity"/>
       <param name="node_id">2</param>
     </joint>
-    
     <joint name="fr_m1_s1">
       <command_interface name="position">
       </command_interface>
@@ -101,82 +100,7 @@
       <state_interface name="velocity"/>
       <param name="node_id">11</param>
     </joint>
-    <!-- <joint name="br_m1_s1">
-      <command_interface name="position">
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-    </joint>
-    <joint name="br_m2_s2">
-      <command_interface name="position">
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-    </joint>
-    <joint name="br_m3_s3">
-      <command_interface name="position">
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-    </joint>
 
-    <joint name="bl_m1_s1">
-      <command_interface name="position">
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-    </joint>
-    <joint name="bl_m2_s2">
-      <command_interface name="position">
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-    </joint>
-    <joint name="bl_m3_s3">
-      <command_interface name="position">
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-    </joint>
-
-    <joint name="fr_m1_s1">
-      <command_interface name="position">
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-    </joint>
-    <joint name="fr_m2_s2">
-      <command_interface name="position">
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-    </joint>
-    <joint name="fr_m3_s3">
-      <command_interface name="position">
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-    </joint>
-  
-
-    <joint name="fl_m1_s1">
-      <command_interface name="position">
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-    </joint>
-    <joint name="fl_m2_s2">
-      <command_interface name="position">
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-    </joint>
-    <joint name="fl_m3_s3">
-      <command_interface name="position">
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-    </joint> -->
   </ros2_control>
 
 </robot>
