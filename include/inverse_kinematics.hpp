@@ -64,11 +64,11 @@ private:
     }
 
   double l1 = 0.065;
-  double l2 = 0.2;
-  double l3 = 0.2;
+  double l2 = 0.16;
+  double l3 = 0.16;
 
-  double joint_offset_1 = 0.524;
-  double joint_offset_2 = 0.349;
-  double joint_offset_3 = 0.785;
+  double joint_offset_1 = 0.7854;
+  double joint_offset_2 = 0.3491;
+  double joint_offset_3 = 0.3491;
 };
 }

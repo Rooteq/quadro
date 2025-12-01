@@ -1,14 +1,13 @@
 {
     "configuration": "default",
-    "documentId": "ed1b080484db78e51ca91539",
-    "documentMicroversion": "3759fb85dc3cee8a40af5794",
-    "documentVersion": "cc808e001cd9df806f1134d0",
-    "elementId": "107155047db94ad516ba4f88",
+    "documentId": "bab46d1a02d1cb675f27d5f3",
+    "documentMicroversion": "fbb6861df57a33585087b621",
+    "elementId": "aca63b153979f660f5d5797b",
     "fullConfiguration": "default",
     "id": "Mv2Ou7Vs05s1B5tcZ",
     "isStandardContent": false,
     "name": "bearing <11>",
-    "partId": "JKD",
+    "partId": "JuD",
     "suppressed": false,
     "type": "Part"
 }

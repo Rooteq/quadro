@@ -1,13 +1,13 @@
 {
     "configuration": "default",
     "documentId": "bab46d1a02d1cb675f27d5f3",
-    "documentMicroversion": "d43ee48c9ec13b9e6974d5b2",
-    "elementId": "8f7466e64dc3f7bd21f818b8",
+    "documentMicroversion": "fbb6861df57a33585087b621",
+    "elementId": "aca63b153979f660f5d5797b",
     "fullConfiguration": "default",
-    "id": "MlbKYr67YZ7foOffe",
+    "id": "MTxYI+7zbKjoRzKJ7",
     "isStandardContent": false,
-    "name": "main_pipe <1>",
-    "partId": "JZD",
+    "name": "bot_4 <1>",
+    "partId": "JqD",
     "suppressed": false,
     "type": "Part"
 }
