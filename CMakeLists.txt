@@ -37,75 +37,20 @@ ament_target_dependencies(trajectory_publisher
   sensor_msgs
 )
 
-add_library(pos_controller src/inverse_kinematics.cpp src/position_controller.cpp include/inverse_kinematics.hpp include/position_controller.hpp)
+add_library(pos_controller 
+  src/inverse_kinematics.cpp 
+  src/position_controller.cpp
+  include/inverse_kinematics.hpp
+  include/position_controller.hpp
+)
+target_include_directories(pos_controller PUBLIC include)
 target_include_directories(trajectory_publisher PUBLIC include)
 target_link_libraries(trajectory_publisher pos_controller)
 
 #--------------------CUSTOM NODE--------------------------#
-add_executable(leg_ik src/back_legs_trajectory.cpp)
-ament_target_dependencies(leg_ik
-  rclcpp
-  trajectory_msgs
-)
-
-#-------------------TORQUE WITH PINOCCHIO--------------------
-#add_executable(torque_controller src/torque_controller.cpp)
-#ament_target_dependencies(torque_controller
-#  rclcpp
-#  ament_index_cpp
-#  sensor_msgs
-#  std_msgs
-#)
-#target_link_libraries(torque_controller pinocchio::pinocchio)
-
-
-
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
-
-add_library(
-  ${PROJECT_NAME}
-  SHARED
-  hardware/hw_actuators.cpp
-  # hardware/cybergear_driver.cpp
-)
-
-target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
-target_include_directories(${PROJECT_NAME} PUBLIC
-$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/hardware/include>
-$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/hardware>
-$<INSTALL_INTERFACE:include/roboto>
-)
-
-ament_target_dependencies(
-  ${PROJECT_NAME} PUBLIC
-  ${THIS_PACKAGE_INCLUDE_DEPENDS}
-)
-
-pluginlib_export_plugin_description_file(hardware_interface roboto.xml)
-
-install(
-  DIRECTORY hardware/include/
-  DESTINATION include/roboto
-)
-
-install(
-  DIRECTORY hardware/cybergear_driver_core/
-  DESTINATION include/roboto
-)
-
-install(TARGETS ${PROJECT_NAME}
-  EXPORT export_roboto
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-)
-
-#--------------------CUSTOM NODE--------------------------#
 install(TARGETS
-  leg_ik
   trajectory_publisher
+  pos_controller
   #torque_controller
   DESTINATION lib/${PROJECT_NAME})
 
@@ -114,7 +59,7 @@ install(
     description
     launch
     #rviz
-    hardware
+    #hardware
     config
   DESTINATION "share/${PROJECT_NAME}"
 )
@@ -131,6 +76,7 @@ set(ament_cmake_cpplint_FOUND TRUE)
 ament_lint_auto_find_test_dependencies()
 endif()
 
-ament_export_targets(export_roboto HAS_LIBRARY_TARGET)
+# Uncomment when hardware plugin is implemented
+#ament_export_targets(export_roboto HAS_LIBRARY_TARGET)
 ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS})
 ament_package()

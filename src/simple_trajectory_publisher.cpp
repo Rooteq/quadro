@@ -5,6 +5,7 @@
 #include <cmath>
 
 #include "position_controller.hpp"
+#include "inverse_kinematics.hpp"
 
 using namespace std::chrono_literals;
 using namespace IK;

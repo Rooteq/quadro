@@ -22,8 +22,8 @@ struct LegTrajectory
 
     vec3 current_leg_pos;
     bool up_movement = false;
-    int i = 0;
-    int k = 0;
+    unsigned int i = 0;
+    unsigned int k = 0;
 
     double step_base, step_height;
     double rotation_angle_{0.0};
@@ -49,7 +49,7 @@ struct LegTrajectory
         // SET POINT, WHERE THE LEG WILL RAISE FROM
         up[0] << walking_speed*(-step_base/2), 0.0, 0.0;
 
-        for(int i = 1; i < trajectory_points; ++i)
+        for(unsigned int i = 1; i < trajectory_points; ++i)
         {
             if(i < trajectory_points/2)
                 up[i] << (up[i-1].x() + x_step/2) , 0.0 , (up[i-1].z() + coeff * x_step/2);
@@ -86,7 +86,7 @@ struct LegTrajectory
 
     const vec3& get_next_up_pos()
     {
-        int j = i;
+        unsigned int j = i;
         i++;
 
         if(i == trajectory_points)
