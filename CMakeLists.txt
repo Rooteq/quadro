@@ -25,6 +25,10 @@ list(APPEND CMAKE_PREFIX_PATH "/opt/openrobots")
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(controller_manager REQUIRED)
+find_package(Eigen3 REQUIRED)
+find_package(eigen3_cmake_module REQUIRED)
+find_package(pinocchio REQUIRED)
+
 foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
   find_package(${Dependency} REQUIRED)
 endforeach()
@@ -48,10 +52,22 @@ target_include_directories(trajectory_publisher PUBLIC include)
 target_link_libraries(trajectory_publisher pos_controller)
 
 #--------------------CUSTOM NODE--------------------------#
+add_executable(torque_controller src/torque_controller.cpp)
+ament_target_dependencies(torque_controller
+  ament_index_cpp
+  rclcpp
+  trajectory_msgs
+  sensor_msgs
+  Eigen3 
+  eigen3_cmake_module
+)
+target_link_libraries(torque_controller pinocchio::pinocchio)
+
+# ---------------
 install(TARGETS
   trajectory_publisher
   pos_controller
-  #torque_controller
+  torque_controller
   DESTINATION lib/${PROJECT_NAME})
 
 install(
