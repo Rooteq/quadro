@@ -1,0 +1,16 @@
+controller_manager:
+  ros__parameters:
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    forward_effort_controller:
+      type: forward_command_controller/ForwardCommandController
+
+forward_effort_controller:
+  ros__parameters:
+    joints:
+      - bl_m1_s1
+      - bl_m2_s2
+      - bl_l4_l3
+
+    interface_name: effort

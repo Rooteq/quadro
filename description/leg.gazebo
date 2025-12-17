@@ -1,0 +1,101 @@
+<?xml version="1.0" ?>
+<robot name="robot" xmlns:xacro="http://www.ros.org/wiki/xacro" >
+
+<xacro:property name="body_color" value="Gazebo/Silver" />
+
+<xacro:if value="$(arg sim_mode)">
+
+  <ros2_control name="GazeboSystem" type="system">
+    <hardware>
+      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+    </hardware>
+    <joint name="bl_m1_s1">
+      <command_interface name="effort"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+    <joint name="bl_m2_s2">
+      <command_interface name="effort"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+    <joint name="bl_l4_l3">
+      <command_interface name="effort"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+
+  </ros2_control>
+
+  <gazebo>
+    <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+      <parameters>$(find quadro)/config/effort_controller.yaml</parameters>
+    </plugin>
+  </gazebo>
+
+
+  <!-- <gazebo reference="lin_4_l">
+    <mu1>1.0</mu1>
+    <mu2>1.0</mu2>
+    <minDepth>0.01</minDepth>
+    <maxVel>10</maxVel>
+    <kp>1e+10</kp>
+    <kd>1.0</kd>
+    <maxContacts>10</maxContacts>
+  </gazebo>
+
+  <gazebo reference="lin_4_l_2">
+    <mu1>1.0</mu1>
+    <mu2>1.0</mu2>
+    <minDepth>0.01</minDepth>
+    <maxVel>10</maxVel>
+    <kp>1e+10</kp>
+    <kd>1.0</kd>
+    <maxContacts>10</maxContacts>
+  </gazebo>
+
+  <gazebo reference="lin_4_r">
+    <mu1>1.0</mu1>
+    <mu2>1.0</mu2>
+    <minDepth>0.01</minDepth>
+    <maxVel>10</maxVel>
+    <kp>1e+10</kp>
+    <kd>1.0</kd>
+    <maxContacts>10</maxContacts>
+  </gazebo>
+
+  <gazebo reference="lin_4_r_2">
+    <mu1>1.0</mu1>
+    <mu2>1.0</mu2>
+    <minDepth>0.01</minDepth>
+    <maxVel>10</maxVel>
+    <kp>1e+10</kp>
+    <kd>1.0</kd>
+    <maxContacts>10</maxContacts>
+  </gazebo> -->
+  <!-- <gazebo reference="motor">
+    <material>${body_color}</material>
+    <self_collide>true</self_collide>
+    <gravity>true</gravity>
+  </gazebo>
+
+  <gazebo reference="shaft">
+    <material>${body_color}</material>
+    <self_collide>true</self_collide>
+  </gazebo>
+
+  <gazebo reference="joint_br_1">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="joint_br_2">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+  <gazebo reference="joint_br_3">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo> -->
+</xacro:if>
+</robot>

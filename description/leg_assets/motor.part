@@ -1,0 +1,14 @@
+{
+    "configuration": "default",
+    "documentId": "ed1b080484db78e51ca91539",
+    "documentMicroversion": "dce95aeabb9bdbb91315ce0b",
+    "documentVersion": "e54f8b9899b69daad717bee1",
+    "elementId": "6a90a373f21b38227db85484",
+    "fullConfiguration": "default",
+    "id": "MRTFLwJZLDjpl2yuQ",
+    "isStandardContent": false,
+    "name": "motor <4>",
+    "partId": "JFD",
+    "suppressed": false,
+    "type": "Part"
+}
