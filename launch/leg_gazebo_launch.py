@@ -137,8 +137,7 @@ def generate_launch_description():
     my_controller = Node(
         package='quadro',
         executable='torque_controller',
-        name='my_controller',
-        arguments=[robot_desc, 'link'],
+        name='torque_controller',
         output='screen'
     )
 
@@ -177,6 +176,7 @@ def generate_launch_description():
             delayed_spawn,
             bridge,
             rviz,
+            # my_controller
 
             # Node(
             #     package='quadro',

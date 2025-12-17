@@ -8,8 +8,10 @@ Panels:
         - /Status1
         - /TF1
         - /RobotModel1
+        - /RobotModel1/Links1
+        - /RobotModel1/Links1/shaft_21
       Splitter Ratio: 0.5
-    Tree Height: 643
+    Tree Height: 999
   - Class: rviz_common/Selection
     Name: Selection
   - Class: rviz_common/Tool Properties
@@ -56,41 +58,15 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
-        back_plate:
-          Value: true
-        lin_4_l:
-          Value: true
-        lin_4_l_2:
-          Value: true
-        lin_4_r:
-          Value: true
-        lin_4_r_2:
+        l4_l:
           Value: true
         motor:
           Value: true
-        motor_2:
-          Value: true
-        robot:
-          Value: true
         shaft:
-          Value: true
-        shaft_10:
           Value: true
         shaft_2:
           Value: true
         shaft_3:
-          Value: true
-        shaft_4:
-          Value: true
-        shaft_5:
-          Value: true
-        shaft_6:
-          Value: true
-        shaft_7:
-          Value: true
-        shaft_8:
-          Value: true
-        shaft_9:
           Value: true
         world:
           Value: true
@@ -101,42 +77,13 @@ Visualization Manager:
       Show Names: false
       Tree:
         world:
-          back_plate:
-            {}
-          lin_4_l:
-            {}
-          lin_4_l_2:
-            {}
-          lin_4_r:
-            {}
-          lin_4_r_2:
-            {}
           motor:
-            {}
-          motor_2:
-            {}
-          robot:
-            {}
-          shaft:
-            {}
-          shaft_10:
-            {}
-          shaft_2:
-            {}
-          shaft_3:
-            {}
-          shaft_4:
-            {}
-          shaft_5:
-            {}
-          shaft_6:
-            {}
-          shaft_7:
-            {}
-          shaft_8:
-            {}
-          shaft_9:
-            {}
+            shaft:
+              shaft_2:
+                l4_l:
+                  {}
+                shaft_3:
+                  {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -157,27 +104,7 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
-        back_plate:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        lin_4_l:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        lin_4_l_2:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        lin_4_r:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        lin_4_r_2:
+        l4_l:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -187,23 +114,13 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        motor_2:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         shaft:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        shaft_10:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         shaft_2:
-          Alpha: 1
+          Alpha: 0.5
           Show Axes: false
           Show Trail: false
           Value: true
@@ -212,36 +129,10 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        shaft_4:
+        world:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
-        shaft_5:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        shaft_6:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        shaft_7:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        shaft_8:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        shaft_9:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
       Mass Properties:
         Inertia: false
         Mass: false
@@ -296,33 +187,33 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 2.7850098609924316
+      Distance: 0.4564911425113678
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0
-        Y: 0
-        Z: 0
+        X: 0.01709652878344059
+        Y: 0.029538584873080254
+        Z: 0.14211668074131012
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.4553984999656677
+      Pitch: 0.2853986620903015
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz_default_plugins)
-      Yaw: 5.288571357727051
+      Yaw: 1.8335270881652832
     Saved: ~
 Window Geometry:
   Displays:
     collapsed: false
-  Height: 1011
+  Height: 1358
   Hide Left Dock: false
   Hide Right Dock: false
-  QMainWindow State: 000000ff00000000fd00000004000000000000016a0000032afc0200000008fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000007901000003fb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000004f0000032a0000010001000003fb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c0000026100000001000001100000032afc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073010000004f0000032a000000d901000003fb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000073e0000004ffc0100000002fb0000000800540069006d006501000000000000073e000002a801000003fb0000000800540069006d00650100000000000004500000000000000000000004c20000032a00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd00000004000000000000016a0000048bfc0200000008fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000007901000003fb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000004c0000048b000000fd01000003fb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c0000026100000001000001100000048bfc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073010000004c0000048b000000d301000003fb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e1000001970000000300000a000000004ffc0100000002fb0000000800540069006d0065010000000000000a000000026501000003fb0000000800540069006d00650100000000000004500000000000000000000007840000048b00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -331,6 +222,6 @@ Window Geometry:
     collapsed: false
   Views:
     collapsed: false
-  Width: 1854
-  X: 66
-  Y: 360
+  Width: 2560
+  X: 1920
+  Y: 0
