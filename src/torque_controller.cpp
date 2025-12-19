@@ -40,7 +40,7 @@ public:
 
             // Control all 3 joints with gravity compensation
             kp << 0.2, 0.2, 0.2;      // Moderate position gains
-            kd << 0.01, 0.01, 0.01;      // Damping gains
+            kd << 0.1, 0.1, 0.1;      // Damping gains
             
         }
         catch (const std::exception& e) {
@@ -90,13 +90,21 @@ private:
         Eigen::VectorXd v(model_.nv);
         
         // Reorder joints (joint state data is not in order!!!)
-        q[0] = msg->position[1];  // joint1 (bl_m1_s1)
-        q[1] = msg->position[2];  // joint2 (bl_m2_s2)
-        q[2] = msg->position[0];  // joint3 (bl_l4_l3)
+        // q[0] = msg->position[1];  // joint1 (bl_m1_s1)
+        // q[1] = msg->position[2];  // joint2 (bl_m2_s2)
+        // q[2] = msg->position[0];  // joint3 (bl_l4_l3)
         
-        v[0] = msg->velocity[1];
-        v[1] = msg->velocity[2];
-        v[2] = msg->velocity[0];
+        // v[0] = msg->velocity[1];
+        // v[1] = msg->velocity[2];
+        // v[2] = msg->velocity[0];
+
+        q[0] = msg->position[0];  // joint1 (bl_m1_s1)
+        q[1] = msg->position[1];  // joint2 (bl_m2_s2)
+        q[2] = msg->position[2];  // joint3 (bl_l4_l3)
+        
+        v[0] = msg->velocity[0];
+        v[1] = msg->velocity[1];
+        v[2] = msg->velocity[2];
 
         Eigen::VectorXd q_error = q_desired - q;
         Eigen::VectorXd v_error = v_desired - v;
