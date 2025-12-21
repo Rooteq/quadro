@@ -61,7 +61,8 @@ ament_target_dependencies(torque_controller
   Eigen3 
   eigen3_cmake_module
 )
-target_link_libraries(torque_controller pinocchio::pinocchio)
+target_include_directories(torque_controller PUBLIC include)
+target_link_libraries(torque_controller pinocchio::pinocchio pos_controller)
 
 # ---------------
 install(TARGETS
