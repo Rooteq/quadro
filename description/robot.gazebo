@@ -9,77 +9,77 @@
     <hardware>
       <plugin>gz_ros2_control/GazeboSimSystem</plugin>
     </hardware>
-    <joint name="br_m1_s1">
-      <command_interface name="position"/>
+    <joint name="fl_m1_s1">
+      <command_interface name="effort"/>
       <state_interface name="position"/>
       <state_interface name="velocity"/>
       <state_interface name="effort"/>
     </joint>
-    <joint name="br_m2_s2">
-      <command_interface name="position"/>
+    <joint name="fl_m2_s2">
+      <command_interface name="effort"/>
       <state_interface name="position"/>
       <state_interface name="velocity"/>
       <state_interface name="effort"/>
     </joint>
-    <joint name="br_l4_l3">
-      <command_interface name="position"/>
+    <joint name="fl_l4_l3">
+      <command_interface name="effort"/>
       <state_interface name="position"/>
       <state_interface name="velocity"/>
       <state_interface name="effort"/>
     </joint>
 
     <joint name="fr_m1_s1">
-      <command_interface name="position"/>
+      <command_interface name="effort"/>
       <state_interface name="position"/>
       <state_interface name="velocity"/>
       <state_interface name="effort"/>
     </joint>
     <joint name="fr_m2_s2">
-      <command_interface name="position"/>
+      <command_interface name="effort"/>
       <state_interface name="position"/>
       <state_interface name="velocity"/>
       <state_interface name="effort"/>
     </joint>
     <joint name="fr_l4_l3">
-      <command_interface name="position"/>
+      <command_interface name="effort"/>
       <state_interface name="position"/>
       <state_interface name="velocity"/>
       <state_interface name="effort"/>
     </joint>
 
     <joint name="bl_m1_s1">
-      <command_interface name="position"/>
+      <command_interface name="effort"/>
       <state_interface name="position"/>
       <state_interface name="velocity"/>
       <state_interface name="effort"/>
     </joint>
     <joint name="bl_m2_s2">
-      <command_interface name="position"/>
+      <command_interface name="effort"/>
       <state_interface name="position"/>
       <state_interface name="velocity"/>
       <state_interface name="effort"/>
     </joint>
     <joint name="bl_l4_l3">
-      <command_interface name="position"/>
+      <command_interface name="effort"/>
       <state_interface name="position"/>
       <state_interface name="velocity"/>
       <state_interface name="effort"/>
     </joint>
 
-    <joint name="fl_m1_s1">
-      <command_interface name="position"/>
+    <joint name="br_m1_s1">
+      <command_interface name="effort"/>
       <state_interface name="position"/>
       <state_interface name="velocity"/>
       <state_interface name="effort"/>
     </joint>
-    <joint name="fl_m2_s2">
-      <command_interface name="position"/>
+    <joint name="br_m2_s2">
+      <command_interface name="effort"/>
       <state_interface name="position"/>
       <state_interface name="velocity"/>
       <state_interface name="effort"/>
     </joint>
-    <joint name="fl_l4_l3">
-      <command_interface name="position"/>
+    <joint name="br_l4_l3">
+      <command_interface name="effort"/>
       <state_interface name="position"/>
       <state_interface name="velocity"/>
       <state_interface name="effort"/>
@@ -92,12 +92,12 @@
 
   <gazebo>
     <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-      <parameters>$(find quadro)/config/controllers.yaml</parameters>
+      <parameters>$(find quadro)/config/isaac_sim_controllers.yaml</parameters>
     </plugin>
   </gazebo>
 
 
-  <gazebo reference="lin_4_l">
+ <!-- <gazebo reference="lin_4_l">
     <mu1>1.0</mu1>
     <mu2>1.0</mu2>
     <minDepth>0.01</minDepth>
@@ -135,7 +135,7 @@
     <kp>1e+10</kp>
     <kd>1.0</kd>
     <maxContacts>10</maxContacts>
-  </gazebo>
+  </gazebo> -->
   <!-- <gazebo reference="motor">
     <material>${body_color}</material>
     <self_collide>true</self_collide>

@@ -41,6 +41,14 @@ ament_target_dependencies(trajectory_publisher
   sensor_msgs
 )
 
+add_executable(whole_robot_torque_control src/whole_robot_torque_control.cpp) # whole robot torque controller
+ament_target_dependencies(whole_robot_torque_control
+  ament_index_cpp
+  rclcpp
+  trajectory_msgs
+  sensor_msgs
+)
+
 add_library(pos_controller 
   src/inverse_kinematics.cpp 
   src/position_controller.cpp
@@ -49,7 +57,10 @@ add_library(pos_controller
 )
 target_include_directories(pos_controller PUBLIC include)
 target_include_directories(trajectory_publisher PUBLIC include)
+target_include_directories(whole_robot_torque_control PUBLIC include)
+
 target_link_libraries(trajectory_publisher pos_controller)
+target_link_libraries(whole_robot_torque_control pinocchio::pinocchio pos_controller)
 
 #--------------------CUSTOM NODE--------------------------#
 add_executable(torque_controller src/torque_controller.cpp)
@@ -69,6 +80,7 @@ install(TARGETS
   trajectory_publisher
   pos_controller
   torque_controller
+  whole_robot_torque_control
   DESTINATION lib/${PROJECT_NAME})
 
 install(
