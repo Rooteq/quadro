@@ -59,10 +59,14 @@ public:
       dq_ref_ = Eigen::VectorXd::Zero(model_.nv);
       q_ref_prev_ = Eigen::VectorXd::Zero(model_.nq);
 
-      kp_ = Eigen::VectorXd::Constant(model_.nq, 0.9);
-      kd_ = Eigen::VectorXd::Constant(model_.nv, 0.05);
+      kp_ = Eigen::VectorXd::Constant(model_.nq, 25.0);
+      kd_ = Eigen::VectorXd::Constant(model_.nv, 1.4);
 
-
+      // Joint mapping: msg_to_ctrl[i] = controller index for message index i
+      // Isaac publishes: [bl_m1, br_m1, fl_m1, fr_m1, bl_m2, br_m2, fl_m2, fr_m2, bl_l4, br_l4, fl_l4, fr_l4]
+      // Controller wants: [fl_m1, fl_m2, fl_l4, fr_m1, fr_m2, fr_l4, bl_m1, bl_m2, bl_l4, br_m1, br_m2, br_l4]
+      msg_to_ctrl_ = {6, 9, 0, 3, 7, 10, 1, 4, 8, 11, 2, 5};
+      
     }
     catch(const std::exception& e)
     {
@@ -119,10 +123,10 @@ private:
 
       // Eigen::VectorXd friction_compensation = k_damp * dq;
 
-      Eigen::VectorXd tau = tau_pd;// + tau_gravity;// + friction_compensation;
+      Eigen::VectorXd tau = tau_pd + tau_gravity;// + friction_compensation;
       
       // Apply torque saturation - reduced for stability
-      const double max_torque = 5.0;  // Reduced from 8.0 to prevent wild oscillations
+      const double max_torque = 20.0;  // Reduced from 8.0 to prevent wild oscillations
       for (int i = 0; i < tau.size(); ++i) {
           if (std::abs(tau[i]) > max_torque) {
               tau[i] = std::copysign(max_torque, tau[i]);
@@ -131,8 +135,10 @@ private:
       
       auto torque_msg = std_msgs::msg::Float64MultiArray();
       torque_msg.data.resize(num_joints_);
+      // Apply inverse mapping: reorder from controller order to Isaac Sim order
       for(unsigned int i = 0; i < num_joints_; ++i)
       {
+          // torque_msg.data[ctrl_to_msg_[i]] = tau[i];
           torque_msg.data[i] = tau[i];
       }
       torque_pub_->publish(torque_msg);
@@ -283,8 +289,13 @@ private:
           return;
       }
 
-      q_ = Eigen::VectorXd::Map(msg->position.data(), model_.nq);
-      dq_ = Eigen::VectorXd::Map(msg->position.data(), model_.nv);
+      // Apply joint mapping: reorder from Isaac Sim order to controller order
+      for (int i = 0; i < num_joints_; ++i) {
+        q_[msg_to_ctrl_[i]] = msg->position[i];
+        dq_[msg_to_ctrl_[i]] = msg->velocity[i];
+      }
+
+      RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 1000, "q0: %f", q_[0]);
 
       if (!got_state) 
       {
@@ -348,6 +359,9 @@ private:
   Eigen::Matrix3d Kx_;
 
   Eigen::VectorXd q_desired_, v_desired_;
+
+  // Joint mapping: Isaac Sim order -> Controller order
+  std::vector<int> msg_to_ctrl_;  // msg_to_ctrl_[msg_idx] = ctrl_idx
 
   double k_damp = 0.01;
   double k_stiff = 0.1;
