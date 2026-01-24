@@ -43,12 +43,11 @@ def generate_launch_description():
         arguments=['-d', default_rviz_config]
     )
 
-    robot_description = Command(['ros2 param get --hide-type /robot_state_publisher robot_description'])
-    
+    # Use the same robot_desc for controller_manager
     controller_manager = Node(
         package="controller_manager",
         executable="ros2_control_node",
-        parameters=[{'robot_description' : robot_description},
+        parameters=[{'robot_description' : robot_desc},
                     robot_controllers],
         # arguments=["--ros-args", "--log-level", "DEBUG"],
         emulate_tty=True,

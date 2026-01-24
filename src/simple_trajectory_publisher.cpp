@@ -16,7 +16,7 @@ public:
   : Node("trajectory_publisher"), position_(0.0), total_duration(3.0), 
     current_roll_(0.0), current_pitch_(0.0), current_yaw_(0.0), rotation_enabled_(false),
     walk_speed_(0.0), yaw_speed_(0.0), walking_enabled_(false), walking_rotation_(0.0),
-    max_joint_velocity_(0.5), control_period(0.03)
+    max_joint_velocity_(0.5), control_period(0.01)
   {
     // Create publisher with reliable QoS
     auto qos = rclcpp::QoS(1).reliable();
@@ -202,7 +202,7 @@ private:
   std::vector<double> previous_positions_;
 
   // InverseKinematics ik;
-  std::unique_ptr<GaitController> crawl_controller = std::make_unique<WalkController>();
+  std::unique_ptr<GaitController> crawl_controller = std::make_unique<CrawlController>();
 
   const double control_period;
 

@@ -2,8 +2,8 @@
 #include "inverse_kinematics.hpp"
 #include "array"
 
-#define TRAJECTORY_POINTS 6
-#define DOWN_PHASES 3 //number of times an individual leg touches the ground during the whole phase
+#define TRAJECTORY_POINTS 24
+#define DOWN_PHASES 6 //number of times an individual leg touches the ground during the whole phase
 
 namespace IK
 {
@@ -235,8 +235,8 @@ protected:
         return true;
     }
 
-    const double crawl_reach = 0.05;
-    const double crawl_height = 0.03;
+    const double crawl_reach = 0.1;
+    const double crawl_height = 0.04;
 
     vec3 legs_pos[sizeof(Leg)] = {{0.0, 0.0, 0.0}};
     
@@ -270,7 +270,7 @@ public:
     {
         for(auto& leg : legs_trajectory)
         {
-            leg.set_trajectory_points(6, 3);
+            leg.set_trajectory_points(12, 6);
             // leg.up.resize(6);
         }
     }
@@ -311,13 +311,8 @@ public:
 
         for(Leg leg : legIterator())
         {
-            // robot_rot.y() = 0.05;
             if(legs_trajectory[leg].up_movement)
             {
-                if(leg == Leg::FL || leg == Leg::BL)
-                    robot_rot.x() = walking_speed_ * -0.1;
-                else
-                    robot_rot.x() = walking_speed_ * 0.1;
                 legs_pos_before_rotation[leg] = legs_trajectory[leg].get_next_up_pos() + default_leg_pos;
             }
             else
