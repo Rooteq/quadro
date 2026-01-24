@@ -85,6 +85,7 @@ install(TARGETS
 
 install(
   DIRECTORY
+    isaac_sim_files
     description
     launch
     #rviz
