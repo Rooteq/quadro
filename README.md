@@ -1,22 +1,16 @@
-# quadro
-ros2 quadruped
+# Quadro
+Quadro is the name of my ros2 quadruped project.
 
-TODO:
-WHEN WALK GAIT (CRAWL) - let the body shift in y axis instead of rotate! - it's way more stable
+## Overwiev
+I'm developing 12 DoF quadruped robot as a part of my master theses as well as my hobby.
+The project consists of:
+- 3D printed physical physical - fully designed by me. The motors are Steadywin gim6010-8 connected to Raspberry Pi 5 with the use of CAN bus. In the future Nvidia Jetson Orin Nano will be added as a secondary computer for visual SLAM.
+- Simulated robot in Isaac Lab.
 
-Walking controller redesign and refactor - it should be possible to have walking on a plane and yaw happen at the same time,
-also the controller should take in walking speed (in m/s) and generate corresponding gait patterns
+Right now, only the naive position controller works - robot is able to walk, but only in crawl (one leg up at one time). Model-based predictive controller is in the works.
+Controllers, hardware interface and internal communication is based on ROS2 Jazzy. It requires custom **ros_odrive** library with **ros2_control** hardware interface modified to work in my configuration: 
+![custom ros_odrive link](https://github.com/Rooteq/ros_odrive)
+That's how the robot look:
+![real robot moving](images/showcase.gif)
 
-
-Hardware: 
-- make space for USB cable in each link,
-- change link 1 design so that it can rotate clockwise more (For BR)
-- Make space for a stop in link 4 !
-- in link 3 top, make the stopper longer (?)
-
-Each motor setup:
-- calibrate and save,
-- decrease current to 10A max,
-- decrease max vel to 420 rpm,
-- enable can / disable can resistor on some,
-- change filter bandwidth to 25
+## THIS PROJECT IS IN ACTIVE DEVELOPMENT
