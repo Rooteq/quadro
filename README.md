@@ -8,9 +8,8 @@ The project consists of:
 - Simulated robot in Isaac Lab.
 
 Right now, only the naive position controller works - robot is able to walk, but only in crawl (one leg up at one time). Model-based predictive controller is in the works.
-Controllers, hardware interface and internal communication is based on ROS2 Jazzy. It requires custom **ros_odrive** library with **ros2_control** hardware interface modified to work in my configuration: 
-[custom ros_odrive](https://github.com/Rooteq/ros_odrive)
-That's how the robot look:
+Controllers, hardware interface and internal communication are based on ROS2 Jazzy libraries. It requires custom **ros_odrive** library with **ros2_control** hardware interface modified to work in my configuration: 
+[custom ros_odrive](https://github.com/Rooteq/ros_odrive). That's how the robot looks:
 ![real robot moving](images/showcase.gif)
 
 ## THIS PROJECT IS IN ACTIVE DEVELOPMENT
