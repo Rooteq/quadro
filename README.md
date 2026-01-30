@@ -1,7 +1,7 @@
 # Quadro
 Quadro is the name of my ros2 quadruped project.
 
-## Overwiev
+## Overview
 I'm developing 12 DoF quadruped robot as a part of my master theses as well as my hobby.
 The project consists of:
 - 3D printed physical physical - fully designed by me. The motors are Steadywin gim6010-8 connected to Raspberry Pi 5 with the use of CAN bus. In the future Nvidia Jetson Orin Nano will be added as a secondary computer for visual SLAM.
