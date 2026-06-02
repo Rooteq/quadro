@@ -12,4 +12,6 @@ Controllers, hardware interface and internal communication are based on ROS2 Jaz
 [custom ros_odrive](https://github.com/Rooteq/ros_odrive). That's how the robot looks:
 ![real robot moving](images/showcase.gif)
 
+Implementation of the convex model predictive control using this platform is in this repo: [quadruped_mpc_control](https://github.com/Rooteq/quadruped_control/tree/mpc_tests)
+
 ## THIS PROJECT IS IN ACTIVE DEVELOPMENT
